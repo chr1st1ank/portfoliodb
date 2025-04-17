@@ -1,0 +1,10 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  start-backend:
+    cmds:
+      - uv run --directory=backend python manage.py migrate --noinput
+      - uv run --directory=backend python manage.py runserver 0.0.0.0:8000
+    silent: false
