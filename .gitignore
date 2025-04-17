@@ -2,3 +2,5 @@
 **/.node_modules
 .vscode/
 local/
+**/__pycache__
+backend/*.sqlite3
