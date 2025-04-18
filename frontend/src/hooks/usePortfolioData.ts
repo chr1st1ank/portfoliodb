@@ -80,5 +80,5 @@ export const usePortfolioData = (selectedDate?: Date) => {
         };
     }, [rawData, selectedDate]);
 
-    return { portfolioData, loading, error, investments: rawData?.investments || [] };
+    return { portfolioData, loading, error };
 }; 

@@ -73,7 +73,7 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                             </TableCell>
                             <TableCell>
                                 <Tooltip title={investment.name}>
-                                    <span>{investment.shortName}</span>
+                                    <span>{investment.shortname}</span>
                                 </Tooltip>
                             </TableCell>
                             <TableCell align="right">{formatCurrency(investment.paymentSum)}</TableCell>

@@ -96,8 +96,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
     const assetIds = Array.from(new Set(data.flatMap(d => Object.keys(d).filter(key => key !== 'date' && key !== 'value'))));
 
     // Create a map of ISIN to shortname
-    const isinToShortname = investments.reduce((acc, investment) => {
-        acc[investment.isin] = (investment as any).shortname || (investment as any).shortName;
+    const isinToshortname = investments.reduce((acc, investment) => {
+        acc[investment.isin] = (investment as any).shortname || (investment as any).shortname;
         return acc;
     }, {} as Record<string, string>);
 
@@ -137,7 +137,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
                         stroke={getAssetColor(index)}
                         strokeWidth={1}
                         dot={false}
-                        name={isinToShortname[assetId] || assetId}
+                        name={isinToshortname[assetId] || assetId}
                     />
                 ))}
             </LineChart>

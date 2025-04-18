@@ -4,7 +4,7 @@ export interface InvestmentData {
     id: number;
     name: string;
     isin: string;
-    shortName: string;
+    shortname: string;
     paymentSum: number;
     quantityAfter: number;
     valueAfter: number;

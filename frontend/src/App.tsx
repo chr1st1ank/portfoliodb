@@ -11,7 +11,7 @@ import { theme } from './theme';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const { portfolioData, loading, error, investments } = usePortfolioData(selectedDate || undefined);
+  const { portfolioData, loading, error } = usePortfolioData(selectedDate || undefined);
   const [mode, setMode] = useState<'light' | 'dark' | 'system'>('system');
 
   useEffect(() => {
@@ -86,7 +86,7 @@ function App() {
                 portfolioData={portfolioData}
                 performanceData={portfolioData.performance}
                 onDateChange={setSelectedDate}
-                investments={investments}
+                investments={portfolioData.investments}
               />
             }
           />
@@ -99,8 +99,8 @@ function App() {
 
 const InvestmentDetailWrapper: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const { portfolioData, loading, error, investments } = usePortfolioData(selectedDate || undefined);
+  const [selectedDate] = useState<Date | null>(null);
+  const { portfolioData, loading, error } = usePortfolioData(selectedDate || undefined);
 
   if (loading) {
     return (

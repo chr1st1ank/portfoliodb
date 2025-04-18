@@ -45,7 +45,7 @@ export function calculateInvestmentData(
         id: investment.id,
         name: investment.name,
         isin: investment.isin,
-        shortName: investment.shortname,
+        shortname: investment.shortname,
         paymentSum,
         quantityAfter: quantity,
         valueAfter: value,

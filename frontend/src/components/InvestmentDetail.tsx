@@ -132,7 +132,7 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, perform
                                 startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
                                 endDate: new Date()
                             }}
-                            investments={[{ ...investment, shortname: investment.shortName }]}
+                            investments={[{ ...investment }]}
                         />
                     </Box>
                 </Paper>

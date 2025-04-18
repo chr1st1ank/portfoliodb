@@ -78,7 +78,7 @@ const PortfolioComposition: React.FC<PortfolioCompositionProps> = ({ data }) => 
     // Prepare pie chart data with proper asset names
     const pieData = data.investments.map((investment, index) => {
         return {
-            name: investment.shortName,
+            name: investment.shortname,
             fullName: investment.name,
             value: investment.valueAfter,
             color: getAssetColor(index),
