@@ -24,6 +24,9 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
         return `${value.toFixed(2)}%`;
     };
 
+    // Filter investments to only include those with quantity >= 0
+    const activeInvestments = data.investments.filter(investment => investment.quantityAfter >= 0);
+
     return (
         <TableContainer component={Paper}>
             <Table>
@@ -31,7 +34,6 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                     <TableRow>
                         <TableCell>ISIN</TableCell>
                         <TableCell>Name</TableCell>
-                        <TableCell align="right">Previous Value</TableCell>
                         <TableCell align="right">Payment Sum</TableCell>
                         <TableCell align="right">Quantity</TableCell>
                         <TableCell align="right">Current Value</TableCell>
@@ -40,7 +42,7 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.investments.map((investment) => (
+                    {activeInvestments.map((investment) => (
                         <TableRow key={investment.isin}>
                             <TableCell>
                                 <Link
@@ -52,7 +54,6 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                                 </Link>
                             </TableCell>
                             <TableCell>{investment.name}</TableCell>
-                            <TableCell align="right">{formatCurrency(investment.previousValue)}</TableCell>
                             <TableCell align="right">{formatCurrency(investment.paymentSum)}</TableCell>
                             <TableCell align="right">{investment.quantityAfter}</TableCell>
                             <TableCell align="right">{formatCurrency(investment.valueAfter)}</TableCell>
@@ -66,7 +67,6 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                     ))}
                     <TableRow>
                         <TableCell colSpan={2}><strong>Total</strong></TableCell>
-                        <TableCell align="right"><strong>{formatCurrency(data.total.previousValue)}</strong></TableCell>
                         <TableCell align="right"><strong>{formatCurrency(data.total.paymentSum)}</strong></TableCell>
                         <TableCell align="right">-</TableCell>
                         <TableCell align="right"><strong>{formatCurrency(data.total.valueAfter)}</strong></TableCell>

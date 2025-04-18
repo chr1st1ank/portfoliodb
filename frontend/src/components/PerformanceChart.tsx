@@ -14,7 +14,10 @@ import { PerformanceData } from '../types/portfolio';
 
 interface PerformanceChartProps {
     data: PerformanceData[];
-    timeRange: '1M' | '3M' | '6M' | '1Y' | 'ALL';
+    dateRange: {
+        startDate: Date;
+        endDate: Date;
+    };
 }
 
 const ASSET_NAMES = {
@@ -23,7 +26,7 @@ const ASSET_NAMES = {
     'DE000A0F5UH1': 'MSCI Europe',
 };
 
-const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, timeRange }) => {
+const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange }) => {
     const theme = useTheme();
 
     // Generate a color palette for up to 50 assets
@@ -82,27 +85,12 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, timeRange }) 
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
     };
 
-    // Filter data based on time range
+    // Filter data based on date range
     const getFilteredData = () => {
-        const now = new Date();
-        const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
-        const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 2));
-        const sixMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
-        const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
-
-        switch (timeRange) {
-            case '1M':
-                return data.filter(d => d.date >= oneMonthAgo);
-            case '3M':
-                return data.filter(d => d.date >= threeMonthsAgo);
-            case '6M':
-                return data.filter(d => d.date >= sixMonthsAgo);
-            case '1Y':
-                return data.filter(d => d.date >= oneYearAgo);
-            case 'ALL':
-            default:
-                return data;
-        }
+        return data.filter(d => {
+            const date = new Date(d.date);
+            return date >= dateRange.startDate && date <= dateRange.endDate;
+        });
     };
 
     const chartData = getFilteredData();
