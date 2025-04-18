@@ -164,13 +164,9 @@ const InvestmentDetailWrapper: React.FC = () => {
   }
 
   // Filter performance data for this specific investment
-  const investmentInvestmentPerformance = portfolioData.performance
-    .map(data => ({
-      date: new Date(data.date),
-      value: data.investmentValues?.[investment.isin] || 0,
-      investmentValues: { [investment.isin]: data.investmentValues?.[investment.isin] || 0 }
-    }))
-    .filter(data => data.value > 0);
+  console.log('portfolioData.performance', portfolioData.performance);
+    const investmentPerformance = portfolioData.performance
+      .filter(data => data.investment === Number(id));
 
   // Filter and sort movements for this investment
   const investmentMovements = portfolioData.movements
@@ -180,7 +176,7 @@ const InvestmentDetailWrapper: React.FC = () => {
   return (
     <InvestmentDetail
       investment={investment}
-      InvestmentPerformance={investmentInvestmentPerformance}
+      InvestmentPerformance={investmentPerformance}
       movements={investmentMovements}
     />
   );
