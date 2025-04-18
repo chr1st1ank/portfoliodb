@@ -13,7 +13,7 @@ import { useTheme } from '@mui/material/styles';
 import { PerformanceData } from '../types/portfolio';
 
 interface PerformanceChartProps {
-    data: PerformanceData;
+    data: PerformanceData[];
     timeRange: '1M' | '3M' | '6M' | '1Y' | 'ALL';
 }
 
@@ -70,8 +70,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, timeRange }) 
         return assetColors[index % 50];
     };
 
-    const formatDate = (timestamp: number) => {
-        return new Date(timestamp).toLocaleDateString('de-DE', {
+    const formatDate = (date: Date) => {
+        return new Date(date).toLocaleDateString('de-DE', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
@@ -83,39 +83,32 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, timeRange }) 
     };
 
     // Filter data based on time range
-    const now = new Date().getTime();
-    const filterData = (dataPoints: { date: number; value: number }[]) => {
-        if (timeRange === 'ALL') {
-            return dataPoints;
-        }
+    const getFilteredData = () => {
+        const now = new Date();
+        const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
+        const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 2));
+        const sixMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
+        const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
 
-        const msInMonth = 30 * 24 * 60 * 60 * 1000;
-        const cutoff = now - (
-            timeRange === '1M' ? msInMonth :
-                timeRange === '3M' ? 3 * msInMonth :
-                    timeRange === '6M' ? 6 * msInMonth :
-                        12 * msInMonth // 1Y
-        );
-        return dataPoints.filter(point => point.date >= cutoff);
+        switch (timeRange) {
+            case '1M':
+                return data.filter(d => d.date >= oneMonthAgo);
+            case '3M':
+                return data.filter(d => d.date >= threeMonthsAgo);
+            case '6M':
+                return data.filter(d => d.date >= sixMonthsAgo);
+            case '1Y':
+                return data.filter(d => d.date >= oneYearAgo);
+            case 'ALL':
+            default:
+                return data;
+        }
     };
 
-    // Prepare chart data
-    const chartData = filterData(data.total).map(totalPoint => {
-        const point: any = {
-            date: totalPoint.date,
-            Total: totalPoint.value,
-        };
+    const chartData = getFilteredData();
 
-        // Add individual asset values for the same date
-        Object.entries(data.investments).forEach(([isin, points]) => {
-            const assetPoint = points.find(p => p.date === totalPoint.date);
-            if (assetPoint) {
-                point[ASSET_NAMES[isin as keyof typeof ASSET_NAMES]] = assetPoint.value;
-            }
-        });
-
-        return point;
-    });
+    // Get unique asset IDs from the data
+    const assetIds = Array.from(new Set(data.flatMap(d => Object.keys(d).filter(key => key !== 'date' && key !== 'value'))));
 
     return (
         <ResponsiveContainer width="100%" height={400}>
@@ -135,22 +128,25 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, timeRange }) 
                     labelFormatter={formatDate}
                 />
                 <Legend />
+                {/* Total portfolio line */}
                 <Line
                     type="monotone"
-                    dataKey="Total"
+                    dataKey="value"
                     stroke={theme.palette.primary.main}
                     strokeWidth={2}
                     dot={false}
                     name="Gesamtportfolio"
                 />
-                {Object.entries(ASSET_NAMES).map(([isin, name], index) => (
+                {/* Individual asset lines */}
+                {assetIds.map((assetId, index) => (
                     <Line
-                        key={isin}
+                        key={assetId}
                         type="monotone"
-                        dataKey={name}
+                        dataKey={assetId}
                         stroke={getAssetColor(index)}
-                        strokeWidth={2}
+                        strokeWidth={1}
                         dot={false}
+                        name={ASSET_NAMES[assetId as keyof typeof ASSET_NAMES] || assetId}
                     />
                 ))}
             </LineChart>

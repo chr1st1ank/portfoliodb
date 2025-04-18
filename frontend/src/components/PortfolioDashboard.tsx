@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, Paper, Button, ButtonGroup } from '@mui/material';
+import { Box, Container, Typography, Paper, Button, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { PortfolioData, PerformanceData } from '../types/portfolio';
 import PortfolioTable from './PortfolioTable';
@@ -8,7 +8,7 @@ import PortfolioComposition from './PortfolioComposition';
 
 interface PortfolioDashboardProps {
     portfolioData: PortfolioData;
-    performanceData: PerformanceData;
+    performanceData: PerformanceData[];
 }
 
 const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, performanceData }) => {
@@ -16,6 +16,15 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
+    };
+
+    const handleTimeRangeChange = (
+        event: React.MouseEvent<HTMLElement>,
+        newTimeRange: '1M' | '3M' | '6M' | '1Y' | 'ALL',
+    ) => {
+        if (newTimeRange !== null) {
+            setTimeRange(newTimeRange);
+        }
     };
 
     return (
@@ -78,23 +87,18 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                         <Typography variant="h6" gutterBottom>
                             Time Range
                         </Typography>
-                        <ButtonGroup variant="contained" aria-label="time range selector">
-                            <Button onClick={() => setTimeRange('1M')} variant={timeRange === '1M' ? 'contained' : 'outlined'}>
-                                1 Month
-                            </Button>
-                            <Button onClick={() => setTimeRange('3M')} variant={timeRange === '3M' ? 'contained' : 'outlined'}>
-                                3 Months
-                            </Button>
-                            <Button onClick={() => setTimeRange('6M')} variant={timeRange === '6M' ? 'contained' : 'outlined'}>
-                                6 Months
-                            </Button>
-                            <Button onClick={() => setTimeRange('1Y')} variant={timeRange === '1Y' ? 'contained' : 'outlined'}>
-                                1 Year
-                            </Button>
-                            <Button onClick={() => setTimeRange('ALL')} variant={timeRange === 'ALL' ? 'contained' : 'outlined'}>
-                                All Time
-                            </Button>
-                        </ButtonGroup>
+                        <ToggleButtonGroup
+                            value={timeRange}
+                            exclusive
+                            onChange={handleTimeRangeChange}
+                            aria-label="time range"
+                        >
+                            <ToggleButton value="1M">1M</ToggleButton>
+                            <ToggleButton value="3M">3M</ToggleButton>
+                            <ToggleButton value="6M">6M</ToggleButton>
+                            <ToggleButton value="1Y">1Y</ToggleButton>
+                            <ToggleButton value="ALL">ALL</ToggleButton>
+                        </ToggleButtonGroup>
                     </Paper>
                 </Grid>
 
