@@ -4,10 +4,12 @@ version: "3"
 
 tasks:
   makemigrations:
+    desc: "Make Django DB migrations"
     cmds:
       - uv run --directory=backend python manage.py makemigrations
 
   sample-data:
+    desc: "Load sample data into DB"
     cmds:
       - rm backend/db.sqlite3
       - uv run --directory=backend python manage.py migrate --noinput
@@ -15,6 +17,7 @@ tasks:
     silent: false
 
   start-backend:
+    desc: "Start Django backend server"
     cmds:
       - uv run --directory=backend python manage.py migrate --noinput
       - uv run --directory=backend python manage.py runserver 0.0.0.0:8000
