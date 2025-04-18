@@ -3,6 +3,17 @@
 version: "3"
 
 tasks:
+  makemigrations:
+    cmds:
+      - uv run --directory=backend python manage.py makemigrations
+
+  sample-data:
+    cmds:
+      - rm backend/db.sqlite3
+      - uv run --directory=backend python manage.py migrate --noinput
+      - uv run --directory=backend python manage.py loaddata sample_data.json
+    silent: false
+
   start-backend:
     cmds:
       - uv run --directory=backend python manage.py migrate --noinput

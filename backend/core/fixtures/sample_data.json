@@ -1,0 +1,1608 @@
+[
+  {
+    "model": "core.actiontype",
+    "pk": 1,
+    "fields": {
+      "name": "Buy"
+    }
+  },
+  {
+    "model": "core.actiontype",
+    "pk": 2,
+    "fields": {
+      "name": "Sell"
+    }
+  },
+  {
+    "model": "core.actiontype",
+    "pk": 3,
+    "fields": {
+      "name": "Payout"
+    }
+  },
+  {
+    "model": "core.investment",
+    "pk": 1,
+    "fields": {
+      "name": "Acme Corp",
+      "isin": "US000001",
+      "short_name": "ACME"
+    }
+  },
+  {
+    "model": "core.investment",
+    "pk": 2,
+    "fields": {
+      "name": "Beta Inc",
+      "isin": "US000002",
+      "short_name": "BETA"
+    }
+  },
+  {
+    "model": "core.investment",
+    "pk": 3,
+    "fields": {
+      "name": "Gamma Ltd",
+      "isin": "US000003",
+      "short_name": "GAM"
+    }
+  },
+  {
+    "model": "core.investment",
+    "pk": 4,
+    "fields": {
+      "name": "Delta AG",
+      "isin": "US000004",
+      "short_name": "DEL"
+    }
+  },
+  {
+    "model": "core.investment",
+    "pk": 5,
+    "fields": {
+      "name": "Epsilon SE",
+      "isin": "US000005",
+      "short_name": "EPS"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 1,
+    "fields": {
+      "date": "2025-04-01",
+      "investment": 1,
+      "price": "110.1000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 2,
+    "fields": {
+      "date": "2025-04-02",
+      "investment": 1,
+      "price": "110.2000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 3,
+    "fields": {
+      "date": "2025-04-03",
+      "investment": 1,
+      "price": "110.3000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 4,
+    "fields": {
+      "date": "2025-04-04",
+      "investment": 1,
+      "price": "110.4000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 5,
+    "fields": {
+      "date": "2025-04-07",
+      "investment": 1,
+      "price": "110.5000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 6,
+    "fields": {
+      "date": "2025-04-08",
+      "investment": 1,
+      "price": "110.6000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 7,
+    "fields": {
+      "date": "2025-04-09",
+      "investment": 1,
+      "price": "110.7000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 8,
+    "fields": {
+      "date": "2025-04-10",
+      "investment": 1,
+      "price": "110.8000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 9,
+    "fields": {
+      "date": "2025-04-11",
+      "investment": 1,
+      "price": "110.9000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 10,
+    "fields": {
+      "date": "2025-04-14",
+      "investment": 1,
+      "price": "111.0000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 11,
+    "fields": {
+      "date": "2025-04-15",
+      "investment": 1,
+      "price": "111.1000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 12,
+    "fields": {
+      "date": "2025-04-16",
+      "investment": 1,
+      "price": "111.2000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 13,
+    "fields": {
+      "date": "2025-04-17",
+      "investment": 1,
+      "price": "111.3000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 14,
+    "fields": {
+      "date": "2025-04-18",
+      "investment": 1,
+      "price": "111.4000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 15,
+    "fields": {
+      "date": "2025-04-01",
+      "investment": 2,
+      "price": "121.5000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 16,
+    "fields": {
+      "date": "2025-04-02",
+      "investment": 2,
+      "price": "121.6000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 17,
+    "fields": {
+      "date": "2025-04-03",
+      "investment": 2,
+      "price": "121.7000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 18,
+    "fields": {
+      "date": "2025-04-04",
+      "investment": 2,
+      "price": "121.8000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 19,
+    "fields": {
+      "date": "2025-04-07",
+      "investment": 2,
+      "price": "121.9000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 20,
+    "fields": {
+      "date": "2025-04-08",
+      "investment": 2,
+      "price": "122.0000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 21,
+    "fields": {
+      "date": "2025-04-09",
+      "investment": 2,
+      "price": "122.1000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 22,
+    "fields": {
+      "date": "2025-04-10",
+      "investment": 2,
+      "price": "122.2000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 23,
+    "fields": {
+      "date": "2025-04-11",
+      "investment": 2,
+      "price": "122.3000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 24,
+    "fields": {
+      "date": "2025-04-14",
+      "investment": 2,
+      "price": "122.4000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 25,
+    "fields": {
+      "date": "2025-04-15",
+      "investment": 2,
+      "price": "122.5000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 26,
+    "fields": {
+      "date": "2025-04-16",
+      "investment": 2,
+      "price": "122.6000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 27,
+    "fields": {
+      "date": "2025-04-17",
+      "investment": 2,
+      "price": "122.7000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 28,
+    "fields": {
+      "date": "2025-04-18",
+      "investment": 2,
+      "price": "122.8000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 29,
+    "fields": {
+      "date": "2025-04-01",
+      "investment": 3,
+      "price": "132.9000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 30,
+    "fields": {
+      "date": "2025-04-02",
+      "investment": 3,
+      "price": "133.0000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 31,
+    "fields": {
+      "date": "2025-04-03",
+      "investment": 3,
+      "price": "133.1000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 32,
+    "fields": {
+      "date": "2025-04-04",
+      "investment": 3,
+      "price": "133.2000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 33,
+    "fields": {
+      "date": "2025-04-07",
+      "investment": 3,
+      "price": "133.3000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 34,
+    "fields": {
+      "date": "2025-04-08",
+      "investment": 3,
+      "price": "133.4000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 35,
+    "fields": {
+      "date": "2025-04-09",
+      "investment": 3,
+      "price": "133.5000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 36,
+    "fields": {
+      "date": "2025-04-10",
+      "investment": 3,
+      "price": "133.6000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 37,
+    "fields": {
+      "date": "2025-04-11",
+      "investment": 3,
+      "price": "133.7000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 38,
+    "fields": {
+      "date": "2025-04-14",
+      "investment": 3,
+      "price": "133.8000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 39,
+    "fields": {
+      "date": "2025-04-15",
+      "investment": 3,
+      "price": "133.9000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 40,
+    "fields": {
+      "date": "2025-04-16",
+      "investment": 3,
+      "price": "134.0000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 41,
+    "fields": {
+      "date": "2025-04-17",
+      "investment": 3,
+      "price": "134.1000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 42,
+    "fields": {
+      "date": "2025-04-18",
+      "investment": 3,
+      "price": "134.2000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 43,
+    "fields": {
+      "date": "2025-04-01",
+      "investment": 4,
+      "price": "144.3000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 44,
+    "fields": {
+      "date": "2025-04-02",
+      "investment": 4,
+      "price": "144.4000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 45,
+    "fields": {
+      "date": "2025-04-03",
+      "investment": 4,
+      "price": "144.5000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 46,
+    "fields": {
+      "date": "2025-04-04",
+      "investment": 4,
+      "price": "144.6000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 47,
+    "fields": {
+      "date": "2025-04-07",
+      "investment": 4,
+      "price": "144.7000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 48,
+    "fields": {
+      "date": "2025-04-08",
+      "investment": 4,
+      "price": "144.8000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 49,
+    "fields": {
+      "date": "2025-04-09",
+      "investment": 4,
+      "price": "144.9000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 50,
+    "fields": {
+      "date": "2025-04-10",
+      "investment": 4,
+      "price": "145.0000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 51,
+    "fields": {
+      "date": "2025-04-11",
+      "investment": 4,
+      "price": "145.1000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 52,
+    "fields": {
+      "date": "2025-04-14",
+      "investment": 4,
+      "price": "145.2000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 53,
+    "fields": {
+      "date": "2025-04-15",
+      "investment": 4,
+      "price": "145.3000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 54,
+    "fields": {
+      "date": "2025-04-16",
+      "investment": 4,
+      "price": "145.4000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 55,
+    "fields": {
+      "date": "2025-04-17",
+      "investment": 4,
+      "price": "145.5000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 56,
+    "fields": {
+      "date": "2025-04-18",
+      "investment": 4,
+      "price": "145.6000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 57,
+    "fields": {
+      "date": "2025-04-01",
+      "investment": 5,
+      "price": "155.7000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 58,
+    "fields": {
+      "date": "2025-04-02",
+      "investment": 5,
+      "price": "155.8000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 59,
+    "fields": {
+      "date": "2025-04-03",
+      "investment": 5,
+      "price": "155.9000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 60,
+    "fields": {
+      "date": "2025-04-04",
+      "investment": 5,
+      "price": "156.0000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 61,
+    "fields": {
+      "date": "2025-04-07",
+      "investment": 5,
+      "price": "156.1000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 62,
+    "fields": {
+      "date": "2025-04-08",
+      "investment": 5,
+      "price": "156.2000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 63,
+    "fields": {
+      "date": "2025-04-09",
+      "investment": 5,
+      "price": "156.3000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 64,
+    "fields": {
+      "date": "2025-04-10",
+      "investment": 5,
+      "price": "156.4000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 65,
+    "fields": {
+      "date": "2025-04-11",
+      "investment": 5,
+      "price": "156.5000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 66,
+    "fields": {
+      "date": "2025-04-14",
+      "investment": 5,
+      "price": "156.6000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 67,
+    "fields": {
+      "date": "2025-04-15",
+      "investment": 5,
+      "price": "156.7000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 68,
+    "fields": {
+      "date": "2025-04-16",
+      "investment": 5,
+      "price": "156.8000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 69,
+    "fields": {
+      "date": "2025-04-17",
+      "investment": 5,
+      "price": "156.9000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.investmentprice",
+    "pk": 70,
+    "fields": {
+      "date": "2025-04-18",
+      "investment": 5,
+      "price": "157.0000",
+      "source": "AutoGen"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 1,
+    "fields": {
+      "date": "2025-04-01",
+      "action": 3,
+      "investment": 1,
+      "quantity": "40.2904",
+      "amount": "4435.9730",
+      "fee": "1.8498"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 2,
+    "fields": {
+      "date": "2025-04-02",
+      "action": 1,
+      "investment": 1,
+      "quantity": "11.4607",
+      "amount": "1262.9691",
+      "fee": "0.1161"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 3,
+    "fields": {
+      "date": "2025-04-03",
+      "action": 2,
+      "investment": 1,
+      "quantity": "27.0910",
+      "amount": "2988.1373",
+      "fee": "1.7101"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 4,
+    "fields": {
+      "date": "2025-04-04",
+      "action": 3,
+      "investment": 1,
+      "quantity": "31.5182",
+      "amount": "3479.6093",
+      "fee": "2.0330"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 5,
+    "fields": {
+      "date": "2025-04-07",
+      "action": 1,
+      "investment": 1,
+      "quantity": "45.5569",
+      "amount": "5034.0374",
+      "fee": "0.1778"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 6,
+    "fields": {
+      "date": "2025-04-08",
+      "action": 1,
+      "investment": 1,
+      "quantity": "21.6014",
+      "amount": "2389.1148",
+      "fee": "1.6258"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 7,
+    "fields": {
+      "date": "2025-04-09",
+      "action": 2,
+      "investment": 1,
+      "quantity": "7.8718",
+      "amount": "871.4083",
+      "fee": "1.6046"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 8,
+    "fields": {
+      "date": "2025-04-10",
+      "action": 3,
+      "investment": 1,
+      "quantity": "45.1708",
+      "amount": "5004.9246",
+      "fee": "4.8433"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 9,
+    "fields": {
+      "date": "2025-04-11",
+      "action": 1,
+      "investment": 1,
+      "quantity": "23.7036",
+      "amount": "2628.7292",
+      "fee": "4.7600"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 10,
+    "fields": {
+      "date": "2025-04-14",
+      "action": 1,
+      "investment": 1,
+      "quantity": "26.8296",
+      "amount": "2978.0856",
+      "fee": "1.9910"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 11,
+    "fields": {
+      "date": "2025-04-15",
+      "action": 2,
+      "investment": 1,
+      "quantity": "39.7723",
+      "amount": "4418.7025",
+      "fee": "4.3376"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 12,
+    "fields": {
+      "date": "2025-04-16",
+      "action": 1,
+      "investment": 1,
+      "quantity": "16.9303",
+      "amount": "1882.6494",
+      "fee": "1.1493"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 13,
+    "fields": {
+      "date": "2025-04-17",
+      "action": 1,
+      "investment": 1,
+      "quantity": "7.0160",
+      "amount": "780.8808",
+      "fee": "3.8871"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 14,
+    "fields": {
+      "date": "2025-04-18",
+      "action": 1,
+      "investment": 1,
+      "quantity": "8.3488",
+      "amount": "930.0563",
+      "fee": "4.4997"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 15,
+    "fields": {
+      "date": "2025-04-01",
+      "action": 1,
+      "investment": 2,
+      "quantity": "47.7996",
+      "amount": "5807.6514",
+      "fee": "2.3530"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 16,
+    "fields": {
+      "date": "2025-04-02",
+      "action": 2,
+      "investment": 2,
+      "quantity": "35.1988",
+      "amount": "4280.1741",
+      "fee": "3.3408"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 17,
+    "fields": {
+      "date": "2025-04-03",
+      "action": 2,
+      "investment": 2,
+      "quantity": "47.9695",
+      "amount": "5837.8881",
+      "fee": "2.1397"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 18,
+    "fields": {
+      "date": "2025-04-04",
+      "action": 3,
+      "investment": 2,
+      "quantity": "38.3583",
+      "amount": "4672.0409",
+      "fee": "0.2154"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 19,
+    "fields": {
+      "date": "2025-04-07",
+      "action": 1,
+      "investment": 2,
+      "quantity": "5.2850",
+      "amount": "644.2415",
+      "fee": "0.1320"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 20,
+    "fields": {
+      "date": "2025-04-08",
+      "action": 3,
+      "investment": 2,
+      "quantity": "19.0316",
+      "amount": "2321.8552",
+      "fee": "1.9406"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 21,
+    "fields": {
+      "date": "2025-04-09",
+      "action": 1,
+      "investment": 2,
+      "quantity": "31.3404",
+      "amount": "3826.6628",
+      "fee": "2.1965"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 22,
+    "fields": {
+      "date": "2025-04-10",
+      "action": 3,
+      "investment": 2,
+      "quantity": "45.4305",
+      "amount": "5551.6071",
+      "fee": "0.4621"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 23,
+    "fields": {
+      "date": "2025-04-11",
+      "action": 1,
+      "investment": 2,
+      "quantity": "29.1397",
+      "amount": "3563.7853",
+      "fee": "4.8885"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 24,
+    "fields": {
+      "date": "2025-04-14",
+      "action": 2,
+      "investment": 2,
+      "quantity": "35.4104",
+      "amount": "4334.2330",
+      "fee": "0.9951"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 25,
+    "fields": {
+      "date": "2025-04-15",
+      "action": 1,
+      "investment": 2,
+      "quantity": "8.2133",
+      "amount": "1006.1293",
+      "fee": "3.1042"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 26,
+    "fields": {
+      "date": "2025-04-16",
+      "action": 2,
+      "investment": 2,
+      "quantity": "23.5071",
+      "amount": "2881.9705",
+      "fee": "1.1503"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 27,
+    "fields": {
+      "date": "2025-04-17",
+      "action": 2,
+      "investment": 2,
+      "quantity": "29.2324",
+      "amount": "3586.8155",
+      "fee": "1.3480"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 28,
+    "fields": {
+      "date": "2025-04-18",
+      "action": 3,
+      "investment": 2,
+      "quantity": "47.8760",
+      "amount": "5879.1728",
+      "fee": "4.5530"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 29,
+    "fields": {
+      "date": "2025-04-01",
+      "action": 2,
+      "investment": 3,
+      "quantity": "10.2955",
+      "amount": "1368.2720",
+      "fee": "4.6225"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 30,
+    "fields": {
+      "date": "2025-04-02",
+      "action": 2,
+      "investment": 3,
+      "quantity": "31.0010",
+      "amount": "4123.1330",
+      "fee": "4.4705"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 31,
+    "fields": {
+      "date": "2025-04-03",
+      "action": 2,
+      "investment": 3,
+      "quantity": "44.6239",
+      "amount": "5939.4411",
+      "fee": "1.9376"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 32,
+    "fields": {
+      "date": "2025-04-04",
+      "action": 3,
+      "investment": 3,
+      "quantity": "18.7770",
+      "amount": "2501.0964",
+      "fee": "1.7242"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 33,
+    "fields": {
+      "date": "2025-04-07",
+      "action": 1,
+      "investment": 3,
+      "quantity": "8.2314",
+      "amount": "1097.2456",
+      "fee": "2.9742"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 34,
+    "fields": {
+      "date": "2025-04-08",
+      "action": 3,
+      "investment": 3,
+      "quantity": "37.0560",
+      "amount": "4943.2704",
+      "fee": "3.5493"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 35,
+    "fields": {
+      "date": "2025-04-09",
+      "action": 3,
+      "investment": 3,
+      "quantity": "18.1795",
+      "amount": "2426.9633",
+      "fee": "4.5030"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 36,
+    "fields": {
+      "date": "2025-04-10",
+      "action": 1,
+      "investment": 3,
+      "quantity": "18.0454",
+      "amount": "2410.8654",
+      "fee": "4.1177"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 37,
+    "fields": {
+      "date": "2025-04-11",
+      "action": 1,
+      "investment": 3,
+      "quantity": "28.9732",
+      "amount": "3873.7168",
+      "fee": "4.6537"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 38,
+    "fields": {
+      "date": "2025-04-14",
+      "action": 2,
+      "investment": 3,
+      "quantity": "9.6758",
+      "amount": "1294.6220",
+      "fee": "2.7929"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 39,
+    "fields": {
+      "date": "2025-04-15",
+      "action": 2,
+      "investment": 3,
+      "quantity": "15.6228",
+      "amount": "2091.8929",
+      "fee": "1.8482"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 40,
+    "fields": {
+      "date": "2025-04-16",
+      "action": 3,
+      "investment": 3,
+      "quantity": "33.7853",
+      "amount": "4527.2302",
+      "fee": "1.4531"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 41,
+    "fields": {
+      "date": "2025-04-17",
+      "action": 1,
+      "investment": 3,
+      "quantity": "18.5136",
+      "amount": "2482.6738",
+      "fee": "2.3713"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 42,
+    "fields": {
+      "date": "2025-04-18",
+      "action": 1,
+      "investment": 3,
+      "quantity": "26.8168",
+      "amount": "3598.8146",
+      "fee": "0.0134"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 43,
+    "fields": {
+      "date": "2025-04-01",
+      "action": 2,
+      "investment": 4,
+      "quantity": "34.0974",
+      "amount": "4920.2548",
+      "fee": "3.9216"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 44,
+    "fields": {
+      "date": "2025-04-02",
+      "action": 2,
+      "investment": 4,
+      "quantity": "44.1973",
+      "amount": "6382.0901",
+      "fee": "1.8536"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 45,
+    "fields": {
+      "date": "2025-04-03",
+      "action": 1,
+      "investment": 4,
+      "quantity": "11.2948",
+      "amount": "1632.0986",
+      "fee": "1.2811"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 46,
+    "fields": {
+      "date": "2025-04-04",
+      "action": 1,
+      "investment": 4,
+      "quantity": "6.2777",
+      "amount": "907.7554",
+      "fee": "3.2174"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 47,
+    "fields": {
+      "date": "2025-04-07",
+      "action": 3,
+      "investment": 4,
+      "quantity": "48.5111",
+      "amount": "7019.5562",
+      "fee": "1.1271"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 48,
+    "fields": {
+      "date": "2025-04-08",
+      "action": 2,
+      "investment": 4,
+      "quantity": "16.1682",
+      "amount": "2341.1554",
+      "fee": "4.2580"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 49,
+    "fields": {
+      "date": "2025-04-09",
+      "action": 1,
+      "investment": 4,
+      "quantity": "14.8298",
+      "amount": "2148.8380",
+      "fee": "0.3595"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 50,
+    "fields": {
+      "date": "2025-04-10",
+      "action": 3,
+      "investment": 4,
+      "quantity": "31.5104",
+      "amount": "4569.0080",
+      "fee": "3.5688"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 51,
+    "fields": {
+      "date": "2025-04-11",
+      "action": 3,
+      "investment": 4,
+      "quantity": "45.6108",
+      "amount": "6618.1271",
+      "fee": "1.6494"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 52,
+    "fields": {
+      "date": "2025-04-14",
+      "action": 2,
+      "investment": 4,
+      "quantity": "44.9928",
+      "amount": "6532.9546",
+      "fee": "4.1486"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 53,
+    "fields": {
+      "date": "2025-04-15",
+      "action": 2,
+      "investment": 4,
+      "quantity": "27.7736",
+      "amount": "4035.5041",
+      "fee": "0.4979"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 54,
+    "fields": {
+      "date": "2025-04-16",
+      "action": 3,
+      "investment": 4,
+      "quantity": "33.5392",
+      "amount": "4876.5997",
+      "fee": "2.0497"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 55,
+    "fields": {
+      "date": "2025-04-17",
+      "action": 3,
+      "investment": 4,
+      "quantity": "6.1285",
+      "amount": "891.6967",
+      "fee": "1.8202"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 56,
+    "fields": {
+      "date": "2025-04-18",
+      "action": 1,
+      "investment": 4,
+      "quantity": "38.1049",
+      "amount": "5548.0734",
+      "fee": "0.0237"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 57,
+    "fields": {
+      "date": "2025-04-01",
+      "action": 3,
+      "investment": 5,
+      "quantity": "21.7527",
+      "amount": "3386.8954",
+      "fee": "4.0422"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 58,
+    "fields": {
+      "date": "2025-04-02",
+      "action": 1,
+      "investment": 5,
+      "quantity": "28.9030",
+      "amount": "4503.0874",
+      "fee": "1.2318"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 59,
+    "fields": {
+      "date": "2025-04-03",
+      "action": 2,
+      "investment": 5,
+      "quantity": "44.7372",
+      "amount": "6974.5295",
+      "fee": "4.8524"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 60,
+    "fields": {
+      "date": "2025-04-04",
+      "action": 3,
+      "investment": 5,
+      "quantity": "42.0231",
+      "amount": "6555.6036",
+      "fee": "2.1553"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 61,
+    "fields": {
+      "date": "2025-04-07",
+      "action": 2,
+      "investment": 5,
+      "quantity": "32.4676",
+      "amount": "5068.1924",
+      "fee": "3.8080"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 62,
+    "fields": {
+      "date": "2025-04-08",
+      "action": 2,
+      "investment": 5,
+      "quantity": "25.7998",
+      "amount": "4029.9288",
+      "fee": "3.6783"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 63,
+    "fields": {
+      "date": "2025-04-09",
+      "action": 3,
+      "investment": 5,
+      "quantity": "22.7515",
+      "amount": "3556.0595",
+      "fee": "4.8285"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 64,
+    "fields": {
+      "date": "2025-04-10",
+      "action": 1,
+      "investment": 5,
+      "quantity": "10.0290",
+      "amount": "1568.5356",
+      "fee": "0.7235"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 65,
+    "fields": {
+      "date": "2025-04-11",
+      "action": 2,
+      "investment": 5,
+      "quantity": "21.8152",
+      "amount": "3414.0788",
+      "fee": "4.9499"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 66,
+    "fields": {
+      "date": "2025-04-14",
+      "action": 2,
+      "investment": 5,
+      "quantity": "29.1026",
+      "amount": "4557.4672",
+      "fee": "2.0607"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 67,
+    "fields": {
+      "date": "2025-04-15",
+      "action": 3,
+      "investment": 5,
+      "quantity": "43.3476",
+      "amount": "6792.5689",
+      "fee": "3.0273"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 68,
+    "fields": {
+      "date": "2025-04-16",
+      "action": 3,
+      "investment": 5,
+      "quantity": "11.4809",
+      "amount": "1800.2051",
+      "fee": "4.9641"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 69,
+    "fields": {
+      "date": "2025-04-17",
+      "action": 1,
+      "investment": 5,
+      "quantity": "25.4659",
+      "amount": "3995.5997",
+      "fee": "3.9568"
+    }
+  },
+  {
+    "model": "core.movement",
+    "pk": 70,
+    "fields": {
+      "date": "2025-04-18",
+      "action": 2,
+      "investment": 5,
+      "quantity": "42.1368",
+      "amount": "6615.4776",
+      "fee": "1.5184"
+    }
+  }
+]

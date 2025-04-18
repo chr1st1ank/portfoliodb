@@ -1,11 +1,17 @@
 from rest_framework import viewsets
-from .models import ActionType, Investment, InvestmentPrice, Movement, Development
+from .models import (
+    ActionType,
+    Investment,
+    InvestmentPrice,
+    Movement,
+    PrecalculatedDevelopment,
+)
 from .serializers import (
     ActionTypeSerializer,
     InvestmentSerializer,
     InvestmentPriceSerializer,
     MovementSerializer,
-    DevelopmentSerializer,
+    PrecalculatedDevelopmentSerializer,
 )
 
 
@@ -29,6 +35,6 @@ class MovementViewSet(viewsets.ModelViewSet):
     serializer_class = MovementSerializer
 
 
-class DevelopmentViewSet(viewsets.ModelViewSet):
-    queryset = Development.objects.all()
-    serializer_class = DevelopmentSerializer
+class PrecalculatedDevelopmentViewSet(viewsets.ModelViewSet):
+    queryset = PrecalculatedDevelopment.objects.all()
+    serializer_class = PrecalculatedDevelopmentSerializer
