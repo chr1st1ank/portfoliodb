@@ -26,7 +26,7 @@ router.register(r"actiontypes", core_views.ActionTypeViewSet)
 router.register(r"investments", core_views.InvestmentViewSet)
 router.register(r"investmentprices", core_views.InvestmentPriceViewSet)
 router.register(r"movements", core_views.MovementViewSet)
-router.register(r"developments", core_views.PrecalculatedDevelopmentViewSet)
+router.register(r"precalculateddevelopments", core_views.PrecalculatedDevelopmentViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
