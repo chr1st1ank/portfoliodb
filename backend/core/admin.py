@@ -4,11 +4,9 @@ from .models import (
     Investment,
     InvestmentPrice,
     Movement,
-    PrecalculatedDevelopment,
 )
 
 admin.site.register(ActionType)
 admin.site.register(Investment)
 admin.site.register(InvestmentPrice)
 admin.site.register(Movement)
-admin.site.register(PrecalculatedDevelopment)

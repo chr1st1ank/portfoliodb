@@ -4,7 +4,6 @@ from .models import (
     Investment,
     InvestmentPrice,
     Movement,
-    PrecalculatedDevelopment,
 )
 
 
@@ -32,7 +31,9 @@ class MovementSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PrecalculatedDevelopmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PrecalculatedDevelopment
-        fields = "__all__"
+class DevelopmentSerializer(serializers.Serializer):
+    investment = serializers.IntegerField()
+    date = serializers.DateField()
+    price = serializers.DecimalField(max_digits=14, decimal_places=8)
+    quantity = serializers.DecimalField(max_digits=37, decimal_places=8)
+    value = serializers.DecimalField(max_digits=51, decimal_places=16)

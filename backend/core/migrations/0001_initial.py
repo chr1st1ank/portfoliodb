@@ -63,51 +63,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name="PrecalculatedDevelopment",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("date", models.DateField(db_column="Date", null=True)),
-                (
-                    "price",
-                    models.DecimalField(
-                        db_column="Price", decimal_places=8, max_digits=14, null=True
-                    ),
-                ),
-                (
-                    "quantity",
-                    models.DecimalField(
-                        db_column="Quantity", decimal_places=8, max_digits=37, null=True
-                    ),
-                ),
-                (
-                    "value",
-                    models.DecimalField(
-                        db_column="Value", decimal_places=16, max_digits=51, null=True
-                    ),
-                ),
-                (
-                    "investment",
-                    models.ForeignKey(
-                        db_column="InvestmentID",
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        to="core.investment",
-                    ),
-                ),
-            ],
-            options={
-                "db_table": "PrecalculatedDevelopment",
-            },
-        ),
-        migrations.CreateModel(
             name="InvestmentPrice",
             fields=[
                 (

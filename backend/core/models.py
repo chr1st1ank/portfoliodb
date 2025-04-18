@@ -63,25 +63,3 @@ class Movement(models.Model):
 
     class Meta:
         db_table = "Movement"
-
-
-class PrecalculatedDevelopment(models.Model):
-    investment = models.ForeignKey(
-        Investment,
-        on_delete=models.DO_NOTHING,
-        db_column="InvestmentID",
-        null=True,
-    )
-    date = models.DateField(null=True, db_column="Date")
-    price = models.DecimalField(
-        max_digits=14, decimal_places=8, null=True, db_column="Price"
-    )
-    quantity = models.DecimalField(
-        max_digits=37, decimal_places=8, null=True, db_column="Quantity"
-    )
-    value = models.DecimalField(
-        max_digits=51, decimal_places=16, null=True, db_column="Value"
-    )
-
-    class Meta:
-        db_table = "PrecalculatedDevelopment"
