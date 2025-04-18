@@ -73,6 +73,7 @@ export const usePortfolioData = (selectedDate?: Date) => {
         return {
             investments: transformedInvestments,
             performance: performanceData,
+            movements: movements,
             latestDate,
             currentDate: targetDate.toLocaleDateString('de-DE'),
             total,

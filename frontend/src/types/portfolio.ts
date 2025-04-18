@@ -21,14 +21,28 @@ export interface PortfolioTotal {
 export interface PortfolioData {
     investments: InvestmentData[];
     performance: PerformanceData[];
+    movements: Movement[];
     latestDate: Date;
     currentDate: string;
     total: PortfolioTotal;
 }
 
-export interface PerformanceData {
+export interface InvestmentPerformance {
     date: Date;
     value: number;
+    investmentValues: Record<string, number>;  // ISIN -> value mapping
 }
 
-export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL'; 
+export interface PerformanceData extends InvestmentPerformance { }
+
+export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL';
+
+export interface Movement {
+    id: number;
+    date: string;
+    action: number;  // ActionType ID
+    investment: number;  // Investment ID
+    quantity: number;  // Decimal(10,4)
+    amount: number;  // Decimal(10,4)
+    fee: number;  // Decimal(10,4)
+} 

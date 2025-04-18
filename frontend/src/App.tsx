@@ -163,14 +163,25 @@ const InvestmentDetailWrapper: React.FC = () => {
     );
   }
 
-  // TODO: Fetch transactions for this investment
-  const transactions: any[] = [];
+  // Filter performance data for this specific investment
+  const investmentPerformanceData = portfolioData.performance
+    .map(data => ({
+      date: new Date(data.date),
+      value: data.investmentValues?.[investment.isin] || 0,
+      investmentValues: { [investment.isin]: data.investmentValues?.[investment.isin] || 0 }
+    }))
+    .filter(data => data.value > 0);
+
+  // Filter and sort movements for this investment
+  const investmentMovements = portfolioData.movements
+    .filter(movement => movement.investment === Number(id))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <InvestmentDetail
       investment={investment}
-      performanceData={portfolioData.performance}
-      transactions={transactions}
+      performanceData={investmentPerformanceData}
+      movements={investmentMovements}
     />
   );
 };

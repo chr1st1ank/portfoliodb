@@ -4,26 +4,17 @@ import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton, Gri
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { InvestmentData, TimeRange } from '../types/portfolio';
+import { InvestmentData, TimeRange, PerformanceData, Movement } from '../types/portfolio';
 import PerformanceChart from './PerformanceChart';
-
-interface Transaction {
-    date: Date;
-    type: 'Buy' | 'Sell';
-    quantity: number;
-    amount: number;
-    fees: number;
-    totalQuantity: number;
-    totalValue: number;
-}
+import { formatAction, formatDate } from '../utils/formatting';
 
 interface InvestmentDetailProps {
     investment: InvestmentData;
-    performanceData: { date: Date; value: number }[];
-    transactions: Transaction[];
+    performanceData: PerformanceData[];
+    movements: Movement[];
 }
 
-const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, performanceData, transactions }) => {
+const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, performanceData, movements }) => {
     const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
     const [endDate, setEndDate] = useState<Date | null>(null);
 
@@ -44,8 +35,8 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, perform
         setEndDate(date);
     };
 
-    const totalFees = transactions.reduce((sum, t) => sum + t.fees, 0);
-    const totalPayments = transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const totalFees = movements.reduce((sum, m) => sum + m.fee, 0);
+    const totalPayments = movements.reduce((sum, m) => sum + Math.abs(m.amount), 0);
 
     return (
         <Container maxWidth="xl" sx={{ mt: 2, mb: 4 }}>
@@ -159,20 +150,16 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, perform
                                 <TableCell align="right">Menge</TableCell>
                                 <TableCell align="right">Betrag</TableCell>
                                 <TableCell align="right">Gebühren</TableCell>
-                                <TableCell align="right">Gesamtmenge</TableCell>
-                                <TableCell align="right">Gesamtwert</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {transactions.map((transaction, index) => (
+                            {movements.map((movement, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{transaction.date.toLocaleDateString('de-DE')}</TableCell>
-                                    <TableCell>{transaction.type}</TableCell>
-                                    <TableCell align="right">{transaction.quantity}</TableCell>
-                                    <TableCell align="right">{formatCurrency(transaction.amount)}</TableCell>
-                                    <TableCell align="right">{formatCurrency(transaction.fees)}</TableCell>
-                                    <TableCell align="right">{transaction.totalQuantity}</TableCell>
-                                    <TableCell align="right">{formatCurrency(transaction.totalValue)}</TableCell>
+                                    <TableCell>{formatDate(movement.date)}</TableCell>
+                                    <TableCell>{formatAction(movement.action)}</TableCell>
+                                    <TableCell align="right">{movement.quantity}</TableCell>
+                                    <TableCell align="right">{formatCurrency(movement.amount)}</TableCell>
+                                    <TableCell align="right">{formatCurrency(movement.fee)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

@@ -42,4 +42,17 @@ export const formatTimeRange = (timeRange: string): string => {
         'ALL': 'Gesamter Zeitraum'
     };
     return translations[timeRange] || timeRange;
-}; 
+};
+
+export function formatAction(action: number): string {
+    switch (action) {
+        case 1:
+            return 'Kauf';
+        case 2:
+            return 'Verkauf';
+        case 3:
+            return 'Ausschüttung';
+        default:
+            return 'Unbekannt';
+    }
+} 
