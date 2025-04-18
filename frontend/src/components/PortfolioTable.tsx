@@ -43,7 +43,7 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                 </TableHead>
                 <TableBody>
                     {activeInvestments.map((investment) => (
-                        <TableRow key={investment.isin}>
+                        <TableRow key={`${investment.isin}-${investment.id}`}>
                             <TableCell>
                                 <Link
                                     href={`https://www.comdirect.de/inf/etfs/detail/uebersicht.html?ID_NOTATION=${investment.isin}`}

@@ -31,4 +31,6 @@ export interface PortfolioData {
 export interface PerformanceData {
     date: Date;
     value: number;
-} 
+}
+
+export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL'; 

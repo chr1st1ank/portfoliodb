@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { usePortfolioData } from './hooks/usePortfolioData';
@@ -12,7 +12,8 @@ const theme = createTheme({
 });
 
 function App() {
-  const { portfolioData, loading, error } = usePortfolioData();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const { portfolioData, loading, error } = usePortfolioData(selectedDate || undefined);
 
   if (loading) {
     return (
@@ -65,6 +66,7 @@ function App() {
       <PortfolioDashboard
         portfolioData={portfolioData}
         performanceData={portfolioData.performance}
+        onDateChange={setSelectedDate}
       />
     </ThemeProvider>
   );

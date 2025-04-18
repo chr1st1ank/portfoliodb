@@ -1,10 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton, Grid } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import Grid from '@mui/material/Grid';
-import { PortfolioData, PerformanceData } from '../types/portfolio';
+import { PortfolioData, PerformanceData, TimeRange } from '../types/portfolio';
 import PortfolioTable from './PortfolioTable';
 import PerformanceChart from './PerformanceChart';
 import PortfolioComposition from './PortfolioComposition';
@@ -12,6 +11,7 @@ import PortfolioComposition from './PortfolioComposition';
 interface PortfolioDashboardProps {
     portfolioData: PortfolioData;
     performanceData: PerformanceData[];
+    onDateChange: (date: Date | null) => void;
 }
 
 interface DateRange {
@@ -19,9 +19,10 @@ interface DateRange {
     endDate: Date;
 }
 
-const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, performanceData }) => {
-    const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('ALL');
+const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, performanceData, onDateChange }) => {
+    const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
     const [endDate, setEndDate] = useState<Date | null>(null);
+    const [, setAnchorEl] = useState<null | HTMLElement>(null);
 
     // Get the last date from performance data
     const lastDataDate = useMemo(() => {
@@ -61,11 +62,22 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
 
     const handleTimeRangeChange = (
         _: React.MouseEvent<HTMLElement>,
-        newTimeRange: '1M' | '3M' | '6M' | '1Y' | 'ALL',
+        newTimeRange: TimeRange,
     ) => {
         if (newTimeRange !== null) {
             setTimeRange(newTimeRange);
         }
+    };
+
+
+    const handleDateClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleDateSelect = (date: Date | null) => {
+        setEndDate(date);
+        onDateChange(date);
+        handleDateClose();
     };
 
     return (
@@ -145,7 +157,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                                 <DatePicker
                                     label="End Date"
                                     value={endDate}
-                                    onChange={(newValue: Date | null) => setEndDate(newValue)}
+                                    onChange={handleDateSelect}
                                     maxDate={lastDataDate}
                                 />
                             </LocalizationProvider>
