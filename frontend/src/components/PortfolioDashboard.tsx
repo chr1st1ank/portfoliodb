@@ -130,7 +130,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                                         Gesamtwert
                                     </Typography>
                                     <Typography variant="h6">
-                                        {formatCurrency(portfolioData.total.endValue)}
+                                        {formatCurrency(portfolioData.total.valueAfter)}
                                     </Typography>
                                 </Box>
                             </Grid>

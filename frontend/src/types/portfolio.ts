@@ -1,4 +1,4 @@
-export interface Investment {
+export interface InvestmentData {
     id: number;
     name: string;
     isin: string;
@@ -7,7 +7,6 @@ export interface Investment {
     quantityAfter: number;
     valueAfter: number;
     balance: number;
-    endValue: number;
     return: number;
 }
 
@@ -17,11 +16,10 @@ export interface PortfolioTotal {
     valueAfter: number;
     balance: number;
     return: number;
-    endValue: number;
 }
 
 export interface PortfolioData {
-    investments: Investment[];
+    investments: InvestmentData[];
     performance: PerformanceData[];
     latestDate: Date;
     currentDate: string;
