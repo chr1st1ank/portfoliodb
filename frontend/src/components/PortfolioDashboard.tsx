@@ -4,6 +4,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { PortfolioData, PerformanceData, TimeRange } from '../types/portfolio';
+import { Investment } from '../services/api';
 import PortfolioTable from './PortfolioTable';
 import PerformanceChart from './PerformanceChart';
 import PortfolioComposition from './PortfolioComposition';
@@ -12,6 +13,7 @@ interface PortfolioDashboardProps {
     portfolioData: PortfolioData;
     performanceData: PerformanceData[];
     onDateChange: (date: Date | null) => void;
+    investments: Investment[];
 }
 
 interface DateRange {
@@ -19,10 +21,11 @@ interface DateRange {
     endDate: Date;
 }
 
-const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, performanceData, onDateChange }) => {
+const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, performanceData, onDateChange, investments }) => {
     const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [showPerformanceChart, setShowPerformanceChart] = useState(true);
 
     // Get the last date from performance data
     const lastDataDate = useMemo(() => {
@@ -81,113 +84,124 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
     };
 
     return (
-        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Portfolio Overview
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                    Current Status ({portfolioData.currentDate})
-                </Typography>
+        <Container maxWidth="xl" sx={{ mt: 2, mb: 4 }}>
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                    <Typography variant="h5" component="h1">
+                        Portfolio Overview
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {portfolioData.currentDate}
+                    </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <ToggleButtonGroup
+                        value={timeRange}
+                        exclusive
+                        onChange={handleTimeRangeChange}
+                        aria-label="time range"
+                        size="small"
+                    >
+                        <ToggleButton value="1M">1M</ToggleButton>
+                        <ToggleButton value="3M">3M</ToggleButton>
+                        <ToggleButton value="6M">6M</ToggleButton>
+                        <ToggleButton value="1Y">1Y</ToggleButton>
+                        <ToggleButton value="ALL">ALL</ToggleButton>
+                    </ToggleButtonGroup>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                            label="End Date"
+                            value={endDate}
+                            onChange={handleDateSelect}
+                            maxDate={lastDataDate}
+                            slotProps={{ textField: { size: 'small' } }}
+                        />
+                    </LocalizationProvider>
+                </Box>
             </Box>
 
-            <Grid container spacing={3}>
-                {/* Summary Cards */}
-                <Grid size={{ xs: 12, md: 3 }}>
-                    <Paper sx={{ p: 2 }}>
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
-                            Total Value
-                        </Typography>
-                        <Typography variant="h4">
-                            {formatCurrency(portfolioData.total.endValue)}
-                        </Typography>
-                    </Paper>
-                </Grid>
-                <Grid size={{ xs: 12, md: 3 }}>
-                    <Paper sx={{ p: 2 }}>
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
-                            Total Return
-                        </Typography>
-                        <Typography variant="h4" color={portfolioData.total.return >= 0 ? 'success.main' : 'error.main'}>
-                            {portfolioData.total.return.toFixed(2)}%
-                        </Typography>
-                    </Paper>
-                </Grid>
-                <Grid size={{ xs: 12, md: 3 }}>
-                    <Paper sx={{ p: 2 }}>
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
-                            Total Payments
-                        </Typography>
-                        <Typography variant="h4">
-                            {formatCurrency(portfolioData.total.paymentSum)}
-                        </Typography>
-                    </Paper>
-                </Grid>
-                <Grid size={{ xs: 12, md: 3 }}>
-                    <Paper sx={{ p: 2 }}>
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
-                            Balance
-                        </Typography>
-                        <Typography variant="h4" color={portfolioData.total.balance >= 0 ? 'success.main' : 'error.main'}>
-                            {formatCurrency(portfolioData.total.balance)}
-                        </Typography>
+            <Grid container spacing={2}>
+                {/* Summary Cards - More compact layout */}
+                <Grid size={{ xs: 12 }}>
+                    <Paper sx={{ p: 1 }}>
+                        <Grid container spacing={1}>
+                            <Grid size={{ xs: 6, sm: 3 }}>
+                                <Box sx={{ p: 1 }}>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                        Total Value
+                                    </Typography>
+                                    <Typography variant="h6">
+                                        {formatCurrency(portfolioData.total.endValue)}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                            <Grid size={{ xs: 6, sm: 3 }}>
+                                <Box sx={{ p: 1 }}>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                        Total Return
+                                    </Typography>
+                                    <Typography variant="h6" color={portfolioData.total.return >= 0 ? 'success.main' : 'error.main'}>
+                                        {portfolioData.total.return.toFixed(2)}%
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                            <Grid size={{ xs: 6, sm: 3 }}>
+                                <Box sx={{ p: 1 }}>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                        Total Payments
+                                    </Typography>
+                                    <Typography variant="h6">
+                                        {formatCurrency(portfolioData.total.paymentSum)}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                            <Grid size={{ xs: 6, sm: 3 }}>
+                                <Box sx={{ p: 1 }}>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                        Balance
+                                    </Typography>
+                                    <Typography variant="h6" color={portfolioData.total.balance >= 0 ? 'success.main' : 'error.main'}>
+                                        {formatCurrency(portfolioData.total.balance)}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        </Grid>
                     </Paper>
                 </Grid>
 
-                {/* Time Range Selector */}
-                <Grid size={{ xs: 12 }}>
-                    <Paper sx={{ p: 2, mb: 3 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Time Range
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                {/* Chart Toggle and Main Chart Area */}
+                <Grid size={{ xs: 12 }} sx={{ mb: 2 }}>
+                    <Paper sx={{ p: 2, height: '500px' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h6">
+                                {showPerformanceChart ? 'Performance' : 'Portfolio Composition'}
+                            </Typography>
                             <ToggleButtonGroup
-                                value={timeRange}
+                                value={showPerformanceChart}
                                 exclusive
-                                onChange={handleTimeRangeChange}
-                                aria-label="time range"
+                                onChange={(_, newValue) => setShowPerformanceChart(newValue)}
+                                aria-label="chart type"
+                                size="small"
                             >
-                                <ToggleButton value="1M">1M</ToggleButton>
-                                <ToggleButton value="3M">3M</ToggleButton>
-                                <ToggleButton value="6M">6M</ToggleButton>
-                                <ToggleButton value="1Y">1Y</ToggleButton>
-                                <ToggleButton value="ALL">ALL</ToggleButton>
+                                <ToggleButton value={true}>Performance</ToggleButton>
+                                <ToggleButton value={false}>Composition</ToggleButton>
                             </ToggleButtonGroup>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <DatePicker
-                                    label="End Date"
-                                    value={endDate}
-                                    onChange={handleDateSelect}
-                                    maxDate={lastDataDate}
-                                />
-                            </LocalizationProvider>
                         </Box>
-                    </Paper>
-                </Grid>
-
-                {/* Performance Chart */}
-                <Grid size={{ xs: 12 }}>
-                    <Paper sx={{ p: 2, mb: 3 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Performance
-                        </Typography>
-                        <PerformanceChart data={performanceData} dateRange={dateRange} />
-                    </Paper>
-                </Grid>
-
-                {/* Portfolio Composition */}
-                <Grid size={{ xs: 12 }}>
-                    <Paper sx={{ p: 2, mb: 3 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Portfolio Composition
-                        </Typography>
-                        <PortfolioComposition data={portfolioData} />
+                        {showPerformanceChart ? (
+                            <PerformanceChart
+                                data={performanceData}
+                                dateRange={dateRange}
+                                investments={investments}
+                            />
+                        ) : (
+                            <PortfolioComposition data={portfolioData} />
+                        )}
                     </Paper>
                 </Grid>
 
                 {/* Portfolio Table */}
                 <Grid size={{ xs: 12 }}>
-                    <Paper sx={{ p: 2 }}>
+                    <Paper sx={{ p: 2, height: '400px', overflow: 'auto' }}>
                         <Typography variant="h6" gutterBottom>
                             Detailed Holdings
                         </Typography>

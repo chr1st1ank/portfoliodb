@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
 import { PerformanceData } from '../types/portfolio';
+import { Investment } from '../services/api';
 
 interface PerformanceChartProps {
     data: PerformanceData[];
@@ -18,6 +19,7 @@ interface PerformanceChartProps {
         startDate: Date;
         endDate: Date;
     };
+    investments: Investment[];
 }
 
 const ASSET_NAMES = {
@@ -26,7 +28,7 @@ const ASSET_NAMES = {
     'DE000A0F5UH1': 'MSCI Europe',
 };
 
-const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange }) => {
+const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, investments }) => {
     const theme = useTheme();
 
     // Generate a color palette for up to 50 assets
@@ -98,6 +100,12 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange }) 
     // Get unique asset IDs from the data
     const assetIds = Array.from(new Set(data.flatMap(d => Object.keys(d).filter(key => key !== 'date' && key !== 'value'))));
 
+    // Create a map of ISIN to shortname
+    const isinToShortname = investments.reduce((acc, investment) => {
+        acc[investment.isin] = investment.shortname;
+        return acc;
+    }, {} as Record<string, string>);
+
     return (
         <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -134,7 +142,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange }) 
                         stroke={getAssetColor(index)}
                         strokeWidth={1}
                         dot={false}
-                        name={ASSET_NAMES[assetId as keyof typeof ASSET_NAMES] || assetId}
+                        name={isinToShortname[assetId] || assetId}
                     />
                 ))}
             </LineChart>

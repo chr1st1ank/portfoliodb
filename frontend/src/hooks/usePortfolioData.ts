@@ -40,7 +40,7 @@ const calculateInvestmentData = (
         id: investment.id,
         name: investment.name,
         isin: investment.isin,
-        shortName: investment.short_name,
+        shortName: investment.shortname,
         paymentSum,
         quantityAfter: quantity,
         valueAfter: value,
@@ -176,5 +176,5 @@ export const usePortfolioData = (selectedDate?: Date) => {
         };
     }, [rawData, selectedDate]);
 
-    return { portfolioData, loading, error };
+    return { portfolioData, loading, error, investments: rawData?.investments || [] };
 }; 

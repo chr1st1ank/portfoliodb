@@ -6,7 +6,7 @@ export interface Investment {
     id: number;
     name: string;
     isin: string;
-    short_name: string;
+    shortname: string;
 }
 
 export interface InvestmentPrice {

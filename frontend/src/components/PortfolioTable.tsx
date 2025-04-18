@@ -8,6 +8,7 @@ import {
     TableRow,
     Paper,
     Link,
+    Tooltip,
 } from '@mui/material';
 import { PortfolioData } from '../types/portfolio';
 
@@ -53,7 +54,11 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                                     {investment.isin}
                                 </Link>
                             </TableCell>
-                            <TableCell>{investment.name}</TableCell>
+                            <TableCell>
+                                <Tooltip title={investment.name}>
+                                    <span>{investment.shortName}</span>
+                                </Tooltip>
+                            </TableCell>
                             <TableCell align="right">{formatCurrency(investment.paymentSum)}</TableCell>
                             <TableCell align="right">{investment.quantityAfter}</TableCell>
                             <TableCell align="right">{formatCurrency(investment.valueAfter)}</TableCell>

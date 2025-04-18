@@ -77,9 +77,9 @@ const PortfolioComposition: React.FC<PortfolioCompositionProps> = ({ data }) => 
 
     // Prepare pie chart data with proper asset names
     const pieData = data.investments.map((investment, index) => {
-        const assetName = ASSET_NAMES[investment.isin as keyof typeof ASSET_NAMES] || investment.name;
         return {
-            name: assetName,
+            name: investment.shortName,
+            fullName: investment.name,
             value: investment.valueAfter,
             color: getAssetColor(index),
         };
@@ -110,12 +110,12 @@ const PortfolioComposition: React.FC<PortfolioCompositionProps> = ({ data }) => 
                     ))}
                 </Pie>
                 <Tooltip
-                    formatter={(value: number) => [
+                    formatter={(value: number, name: string, props: any) => [
                         formatCurrency(value),
-                        `${((value / totalValue) * 100).toFixed(1)}%`
+                        `${((value / totalValue) * 100).toFixed(1)}%`,
+                        props.payload.fullName
                     ]}
                 />
-                <Legend />
             </PieChart>
         </ResponsiveContainer>
     );

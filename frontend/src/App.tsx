@@ -13,7 +13,7 @@ const theme = createTheme({
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const { portfolioData, loading, error } = usePortfolioData(selectedDate || undefined);
+  const { portfolioData, loading, error, investments } = usePortfolioData(selectedDate || undefined);
 
   if (loading) {
     return (
@@ -67,6 +67,7 @@ function App() {
         portfolioData={portfolioData}
         performanceData={portfolioData.performance}
         onDateChange={setSelectedDate}
+        investments={investments}
       />
     </ThemeProvider>
   );
