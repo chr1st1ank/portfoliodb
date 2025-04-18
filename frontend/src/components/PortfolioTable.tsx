@@ -35,11 +35,11 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                     <TableRow>
                         <TableCell>ISIN</TableCell>
                         <TableCell>Name</TableCell>
-                        <TableCell align="right">Payment Sum</TableCell>
-                        <TableCell align="right">Quantity</TableCell>
-                        <TableCell align="right">Current Value</TableCell>
-                        <TableCell align="right">Balance</TableCell>
-                        <TableCell align="right">Return</TableCell>
+                        <TableCell align="right">Zahlungssumme</TableCell>
+                        <TableCell align="right">Menge</TableCell>
+                        <TableCell align="right">Aktueller Wert</TableCell>
+                        <TableCell align="right">Saldo</TableCell>
+                        <TableCell align="right">Rendite</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -71,7 +71,7 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                         </TableRow>
                     ))}
                     <TableRow>
-                        <TableCell colSpan={2}><strong>Total</strong></TableCell>
+                        <TableCell colSpan={2}><strong>Gesamt</strong></TableCell>
                         <TableCell align="right"><strong>{formatCurrency(data.total.paymentSum)}</strong></TableCell>
                         <TableCell align="right">-</TableCell>
                         <TableCell align="right"><strong>{formatCurrency(data.total.valueAfter)}</strong></TableCell>

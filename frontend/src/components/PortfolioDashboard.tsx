@@ -88,7 +88,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
             <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
                     <Typography variant="h5" component="h1">
-                        Portfolio Overview
+                        Portfolio Übersicht
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         {portfolioData.currentDate}
@@ -99,18 +99,18 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                         value={timeRange}
                         exclusive
                         onChange={handleTimeRangeChange}
-                        aria-label="time range"
+                        aria-label="Zeitraum"
                         size="small"
                     >
                         <ToggleButton value="1M">1M</ToggleButton>
                         <ToggleButton value="3M">3M</ToggleButton>
                         <ToggleButton value="6M">6M</ToggleButton>
-                        <ToggleButton value="1Y">1Y</ToggleButton>
-                        <ToggleButton value="ALL">ALL</ToggleButton>
+                        <ToggleButton value="1Y">1J</ToggleButton>
+                        <ToggleButton value="ALL">Alle</ToggleButton>
                     </ToggleButtonGroup>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
-                            label="End Date"
+                            label="Enddatum"
                             value={endDate}
                             onChange={handleDateSelect}
                             maxDate={lastDataDate}
@@ -121,14 +121,13 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
             </Box>
 
             <Grid container spacing={2}>
-                {/* Summary Cards - More compact layout */}
                 <Grid size={{ xs: 12 }}>
                     <Paper sx={{ p: 1 }}>
                         <Grid container spacing={1}>
                             <Grid size={{ xs: 6, sm: 3 }}>
                                 <Box sx={{ p: 1 }}>
                                     <Typography variant="subtitle2" color="text.secondary">
-                                        Total Value
+                                        Gesamtwert
                                     </Typography>
                                     <Typography variant="h6">
                                         {formatCurrency(portfolioData.total.endValue)}
@@ -138,7 +137,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                             <Grid size={{ xs: 6, sm: 3 }}>
                                 <Box sx={{ p: 1 }}>
                                     <Typography variant="subtitle2" color="text.secondary">
-                                        Total Return
+                                        Gesamtrendite
                                     </Typography>
                                     <Typography variant="h6" color={portfolioData.total.return >= 0 ? 'success.main' : 'error.main'}>
                                         {portfolioData.total.return.toFixed(2)}%
@@ -148,7 +147,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                             <Grid size={{ xs: 6, sm: 3 }}>
                                 <Box sx={{ p: 1 }}>
                                     <Typography variant="subtitle2" color="text.secondary">
-                                        Total Payments
+                                        Gesamtzahlungen
                                     </Typography>
                                     <Typography variant="h6">
                                         {formatCurrency(portfolioData.total.paymentSum)}
@@ -158,7 +157,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                             <Grid size={{ xs: 6, sm: 3 }}>
                                 <Box sx={{ p: 1 }}>
                                     <Typography variant="subtitle2" color="text.secondary">
-                                        Balance
+                                        Saldo
                                     </Typography>
                                     <Typography variant="h6" color={portfolioData.total.balance >= 0 ? 'success.main' : 'error.main'}>
                                         {formatCurrency(portfolioData.total.balance)}
@@ -169,22 +168,21 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                     </Paper>
                 </Grid>
 
-                {/* Chart Toggle and Main Chart Area */}
                 <Grid size={{ xs: 12 }} sx={{ mb: 2 }}>
                     <Paper sx={{ p: 2, height: '500px' }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                             <Typography variant="h6">
-                                {showPerformanceChart ? 'Performance' : 'Portfolio Composition'}
+                                {showPerformanceChart ? 'Performance' : 'Portfolio-Zusammensetzung'}
                             </Typography>
                             <ToggleButtonGroup
                                 value={showPerformanceChart}
                                 exclusive
                                 onChange={(_, newValue) => setShowPerformanceChart(newValue)}
-                                aria-label="chart type"
+                                aria-label="Diagrammtyp"
                                 size="small"
                             >
                                 <ToggleButton value={true}>Performance</ToggleButton>
-                                <ToggleButton value={false}>Composition</ToggleButton>
+                                <ToggleButton value={false}>Zusammensetzung</ToggleButton>
                             </ToggleButtonGroup>
                         </Box>
                         {showPerformanceChart ? (
@@ -199,11 +197,10 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                     </Paper>
                 </Grid>
 
-                {/* Portfolio Table */}
                 <Grid size={{ xs: 12 }}>
                     <Paper sx={{ p: 2, height: '400px', overflow: 'auto' }}>
                         <Typography variant="h6" gutterBottom>
-                            Detailed Holdings
+                            Detaillierte Bestände
                         </Typography>
                         <PortfolioTable data={portfolioData} />
                     </Paper>

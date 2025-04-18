@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme, useColorScheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { usePortfolioData } from './hooks/usePortfolioData';
@@ -40,8 +40,8 @@ function ThemeToggle() {
           }
         >
           <FormControlLabel value="system" control={<Radio size="small" />} label="System" />
-          <FormControlLabel value="light" control={<Radio size="small" />} label="Light" />
-          <FormControlLabel value="dark" control={<Radio size="small" />} label="Dark" />
+          <FormControlLabel value="light" control={<Radio size="small" />} label="Hell" />
+          <FormControlLabel value="dark" control={<Radio size="small" />} label="Dunkel" />
         </RadioGroup>
       </FormControl>
     </Box>
@@ -51,6 +51,10 @@ function ThemeToggle() {
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { portfolioData, loading, error, investments } = usePortfolioData(selectedDate || undefined);
+
+  useEffect(() => {
+    document.title = "Portfolio";
+  }, []);
 
   if (loading) {
     return (
@@ -75,7 +79,7 @@ function App() {
         p={2}
       >
         <Alert severity="error">
-          <Typography variant="h6">Error loading portfolio data</Typography>
+          <Typography variant="h6">Fehler beim Laden der Portfoliodaten</Typography>
           <Typography>{error}</Typography>
         </Alert>
       </Box>
@@ -91,7 +95,7 @@ function App() {
         minHeight="100vh"
       >
         <Alert severity="warning">
-          <Typography>No portfolio data available</Typography>
+          <Typography>Keine Portfoliodaten verfügbar</Typography>
         </Alert>
       </Box>
     );
