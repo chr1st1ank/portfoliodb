@@ -4,7 +4,8 @@ import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton, Gri
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { InvestmentData, TimeRange, PerformanceData, Movement } from '../types/portfolio';
+import { InvestmentData, TimeRange, PerformanceData } from '../types/portfolio';
+import { Movement } from '../types/api';
 import PerformanceChart from './PerformanceChart';
 import { formatAction, formatDate } from '../utils/formatting';
 

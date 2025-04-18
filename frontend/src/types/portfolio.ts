@@ -1,3 +1,5 @@
+import { Movement } from './api';
+
 export interface InvestmentData {
     id: number;
     name: string;
@@ -35,14 +37,4 @@ export interface InvestmentPerformance {
 
 export interface PerformanceData extends InvestmentPerformance { }
 
-export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL';
-
-export interface Movement {
-    id: number;
-    date: string;
-    action: number;  // ActionType ID
-    investment: number;  // Investment ID
-    quantity: number;  // Decimal(10,4)
-    amount: number;  // Decimal(10,4)
-    fee: number;  // Decimal(10,4)
-} 
+export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL'; 

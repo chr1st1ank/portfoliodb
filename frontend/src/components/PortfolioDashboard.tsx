@@ -4,7 +4,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { PortfolioData, PerformanceData, TimeRange } from '../types/portfolio';
-import { Investment } from '../services/api';
+import { Investment } from '../types/api';
 import PortfolioTable from './PortfolioTable';
 import PerformanceChart from './PerformanceChart';
 import PortfolioComposition from './PortfolioComposition';

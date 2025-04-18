@@ -1,43 +1,14 @@
 import axios from 'axios';
+import { Movement, Investment, InvestmentPrice, Development, ActionType } from '../types/api';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
-export interface Investment {
-    id: number;
-    name: string;
-    isin: string;
-    shortname: string;
-}
-
-export interface InvestmentPrice {
-    id: number;
-    investment: number;
-    date: string;
-    price: number;
-}
-
-export interface Movement {
-    id: number;
-    date: string;
-    action: number;
-    investment: number;
-    quantity: number;
-    amount: number;
-    fee: number;
-}
-
-export interface ActionType {
-    id: number;
-    name: string;
-}
-
-export interface Development {
-    investment: number;
-    date: string;
-    price: number;
-    quantity: number;
-    value: number;
-}
+const convertDates = (data: any[]): any[] => {
+    return data.map(item => ({
+        ...item,
+        date: new Date(item.date)
+    }));
+};
 
 export const api = {
     actionTypes: {
@@ -55,19 +26,19 @@ export const api = {
     investmentPrices: {
         getAll: async (): Promise<InvestmentPrice[]> => {
             const response = await axios.get(`${API_BASE_URL}/investmentprices/`);
-            return response.data;
+            return convertDates(response.data);
         },
     },
     movements: {
         getAll: async (): Promise<Movement[]> => {
             const response = await axios.get(`${API_BASE_URL}/movements/`);
-            return response.data;
+            return convertDates(response.data);
         },
     },
     developments: {
         getAll: async (): Promise<Development[]> => {
             const response = await axios.get(`${API_BASE_URL}/developments/`);
-            return response.data;
+            return convertDates(response.data);
         },
     },
 }; 

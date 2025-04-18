@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
 import { PerformanceData } from '../types/portfolio';
-import { Investment } from '../services/api';
+import { Investment } from '../types/api';
 
 interface PerformanceChartProps {
     data: PerformanceData[];
