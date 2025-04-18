@@ -22,3 +22,9 @@ tasks:
       - uv run --directory=backend python manage.py migrate --noinput
       - uv run --directory=backend python manage.py runserver 0.0.0.0:8000
     silent: false
+
+  start-frontend:
+    desc: "Start Vite frontend development server"
+    cmds:
+      - cd frontend && npm run dev
+    silent: false
