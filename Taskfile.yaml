@@ -16,6 +16,15 @@ tasks:
       - uv run --directory=backend python manage.py loaddata sample_data.json
     silent: false
 
+  real-data:
+    desc: "Load real data into DB"
+    cmds:
+      - python local/read_sql.py
+      - rm backend/db.sqlite3
+      - uv run --directory=backend python manage.py migrate --noinput
+      - uv run --directory=backend python manage.py loaddata real_data.json
+    silent: false
+
   start-backend:
     desc: "Start Django backend server"
     cmds:

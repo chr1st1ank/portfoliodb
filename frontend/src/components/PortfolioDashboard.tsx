@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, Paper, Button, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { PortfolioData, PerformanceData } from '../types/portfolio';
 import PortfolioTable from './PortfolioTable';
@@ -19,7 +19,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
     };
 
     const handleTimeRangeChange = (
-        event: React.MouseEvent<HTMLElement>,
+        _: React.MouseEvent<HTMLElement>,
         newTimeRange: '1M' | '3M' | '6M' | '1Y' | 'ALL',
     ) => {
         if (newTimeRange !== null) {

@@ -7,8 +7,6 @@ export const usePortfolioData = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
-    const [investments, setInvestments] = useState<Investment[]>([]);
-    const [developments, setDevelopments] = useState<Development[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,9 +21,6 @@ export const usePortfolioData = () => {
                 ]);
 
                 console.log('Raw API Data:', { investmentsData, developmentsData });
-
-                setInvestments(investmentsData);
-                setDevelopments(developmentsData);
 
                 // Get the latest date from developments
                 const validDates = developmentsData

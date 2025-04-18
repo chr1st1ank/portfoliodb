@@ -13,7 +13,7 @@ class Investment(models.Model):
     id = models.AutoField(primary_key=True, db_column="ID")
     name = models.TextField(null=True, db_column="Name")
     isin = models.CharField(max_length=20, null=True, db_column="ISIN")
-    short_name = models.CharField(max_length=30, null=True, db_column="ShortName")
+    shortname = models.CharField(max_length=30, null=True, db_column="ShortName")
 
     class Meta:
         db_table = "Investment"
