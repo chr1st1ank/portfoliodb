@@ -9,14 +9,18 @@ import {
     Paper,
     Link,
     Tooltip,
+    TableSortLabel,
 } from '@mui/material';
-import { PortfolioData } from '../types/portfolio';
+import { PortfolioData, InvestmentData } from '../types/portfolio';
+import { useNavigate } from 'react-router-dom';
 
 interface PortfolioTableProps {
     data: PortfolioData;
 }
 
 const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
+    const navigate = useNavigate();
+
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
     };
@@ -27,6 +31,10 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
 
     // Filter investments to only include those with quantity >= 0
     const activeInvestments = data.investments.filter(investment => investment.quantityAfter >= 0);
+
+    const handleRowClick = (investment: InvestmentData) => {
+        navigate(`/investment/${investment.id}`);
+    };
 
     return (
         <TableContainer component={Paper}>
@@ -44,7 +52,16 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ data }) => {
                 </TableHead>
                 <TableBody>
                     {activeInvestments.map((investment) => (
-                        <TableRow key={`${investment.isin}-${investment.id}`}>
+                        <TableRow
+                            key={`${investment.isin}-${investment.id}`}
+                            onClick={() => handleRowClick(investment)}
+                            sx={{
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    backgroundColor: 'action.hover',
+                                }
+                            }}
+                        >
                             <TableCell>
                                 <Link
                                     href={`https://www.comdirect.de/inf/etfs/detail/uebersicht.html?ID_NOTATION=${investment.isin}`}

@@ -97,7 +97,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
 
     // Create a map of ISIN to shortname
     const isinToShortname = investments.reduce((acc, investment) => {
-        acc[investment.isin] = investment.shortname;
+        acc[investment.isin] = (investment as any).shortname || (investment as any).shortName;
         return acc;
     }, {} as Record<string, string>);
 
