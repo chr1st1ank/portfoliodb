@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { api } from '../services/api';
 import { PortfolioData } from '../types/portfolio';
-import { calculateInvestmentData, calculatePerformanceData, calculateTotals } from '../utils/portfolioTransformations';
+import { calculateInvestmentData, calculateInvestmentPerformance, calculateTotals } from '../utils/portfolioTransformations';
 
 export const usePortfolioData = (selectedDate?: Date) => {
     const [loading, setLoading] = useState(true);
@@ -65,14 +65,14 @@ export const usePortfolioData = (selectedDate?: Date) => {
         );
 
         // Calculate performance data
-        const performanceData = calculatePerformanceData(developments, investments, targetDate);
+        const InvestmentPerformance = calculateInvestmentPerformance(developments, investments, targetDate);
 
         // Calculate totals
         const total = calculateTotals(transformedInvestments);
 
         return {
             investments: transformedInvestments,
-            performance: performanceData,
+            performance: InvestmentPerformance,
             movements: movements,
             latestDate,
             currentDate: targetDate.toLocaleDateString('de-DE'),

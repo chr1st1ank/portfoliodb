@@ -84,7 +84,7 @@ function App() {
             element={
               <PortfolioDashboard
                 portfolioData={portfolioData}
-                performanceData={portfolioData.performance}
+                InvestmentPerformance={portfolioData.performance}
                 onDateChange={setSelectedDate}
                 investments={portfolioData.investments}
               />
@@ -164,7 +164,7 @@ const InvestmentDetailWrapper: React.FC = () => {
   }
 
   // Filter performance data for this specific investment
-  const investmentPerformanceData = portfolioData.performance
+  const investmentInvestmentPerformance = portfolioData.performance
     .map(data => ({
       date: new Date(data.date),
       value: data.investmentValues?.[investment.isin] || 0,
@@ -180,7 +180,7 @@ const InvestmentDetailWrapper: React.FC = () => {
   return (
     <InvestmentDetail
       investment={investment}
-      performanceData={investmentPerformanceData}
+      InvestmentPerformance={investmentInvestmentPerformance}
       movements={investmentMovements}
     />
   );

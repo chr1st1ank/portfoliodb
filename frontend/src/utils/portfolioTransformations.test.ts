@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateInvestmentData, calculatePerformanceData, calculateTotals } from './portfolioTransformations';
+import { calculateInvestmentData, calculateInvestmentPerformance, calculateTotals } from './portfolioTransformations';
 import { Investment, Development, Movement } from '../services/api';
 
 describe('portfolio transformations', () => {
@@ -217,7 +217,7 @@ describe('portfolio transformations', () => {
         });
     });
 
-    describe('calculatePerformanceData', () => {
+    describe('calculateInvestmentPerformance', () => {
         it('calculates performance data correctly', () => {
             const investments: Investment[] = [
                 {
@@ -258,7 +258,7 @@ describe('portfolio transformations', () => {
                 },
             ];
 
-            const result = calculatePerformanceData(
+            const result = calculateInvestmentPerformance(
                 developments,
                 investments,
                 new Date('2023-01-02')

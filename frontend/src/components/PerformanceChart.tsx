@@ -10,11 +10,11 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
-import { PerformanceData } from '../types/portfolio';
+import { InvestmentPerformance } from '../types/portfolio';
 import { Investment } from '../types/api';
 
 interface PerformanceChartProps {
-    data: PerformanceData[];
+    data: InvestmentPerformance[];
     dateRange: {
         startDate: Date;
         endDate: Date;

@@ -4,18 +4,18 @@ import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton, Gri
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { InvestmentData, TimeRange, PerformanceData } from '../types/portfolio';
+import { InvestmentData, TimeRange, InvestmentPerformance } from '../types/portfolio';
 import { Movement } from '../types/api';
 import PerformanceChart from './PerformanceChart';
 import { formatAction, formatDate } from '../utils/formatting';
 
 interface InvestmentDetailProps {
     investment: InvestmentData;
-    performanceData: PerformanceData[];
+    InvestmentPerformance: InvestmentPerformance[];
     movements: Movement[];
 }
 
-const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, performanceData, movements }) => {
+const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, InvestmentPerformance, movements }) => {
     const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
     const [endDate, setEndDate] = useState<Date | null>(null);
 
@@ -127,7 +127,7 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, perform
                     </Box>
                     <Box sx={{ height: 400 }}>
                         <PerformanceChart
-                            data={performanceData}
+                            data={InvestmentPerformance}
                             dateRange={{
                                 startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
                                 endDate: new Date()

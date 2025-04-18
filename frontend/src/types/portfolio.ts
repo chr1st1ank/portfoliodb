@@ -22,7 +22,7 @@ export interface PortfolioTotal {
 
 export interface PortfolioData {
     investments: InvestmentData[];
-    performance: PerformanceData[];
+    performance: InvestmentPerformance[];
     movements: Movement[];
     latestDate: Date;
     currentDate: string;
@@ -34,7 +34,5 @@ export interface InvestmentPerformance {
     value: number;
     investmentValues: Record<string, number>;  // ISIN -> value mapping
 }
-
-export interface PerformanceData extends InvestmentPerformance { }
 
 export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL'; 

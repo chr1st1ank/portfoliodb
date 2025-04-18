@@ -1,5 +1,5 @@
 import { Investment, Development, Movement } from '../services/api';
-import { PortfolioData, PerformanceData } from '../types/portfolio';
+import { PortfolioData, InvestmentPerformance } from '../types/portfolio';
 
 export function calculateInvestmentData(
     investment: Investment,
@@ -54,11 +54,11 @@ export function calculateInvestmentData(
     };
 }
 
-export function calculatePerformanceData(
+export function calculateInvestmentPerformance(
     developments: Development[],
     investments: Investment[],
     targetDate: Date
-): PerformanceData[] {
+): InvestmentPerformance[] {
     const developmentsByDate = developments
         .filter(d => new Date(d.date) <= targetDate)
         .reduce((acc: { [key: string]: Development[] }, dev: Development) => {
