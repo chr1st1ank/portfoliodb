@@ -22,11 +22,6 @@ interface PerformanceChartProps {
     investments: Investment[];
 }
 
-const ASSET_NAMES = {
-    'DE000A0F5UF5': 'MSCI World',
-    'IE00B4L5Y983': 'MSCI EM',
-    'DE000A0F5UH1': 'MSCI Europe',
-};
 
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, investments }) => {
     const theme = useTheme();
