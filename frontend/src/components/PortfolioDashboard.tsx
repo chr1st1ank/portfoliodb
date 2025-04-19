@@ -3,7 +3,7 @@ import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton, Gri
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { PortfolioData, InvestmentPerformance, TimeRange } from '../types/portfolio';
+import { PortfolioData, TimeRange } from '../types/portfolio';
 import { Investment } from '../types/api';
 import PortfolioTable from './PortfolioTable';
 import PerformanceChart from './PerformanceChart';
@@ -11,7 +11,6 @@ import PortfolioComposition from './PortfolioComposition';
 
 interface PortfolioDashboardProps {
     portfolioData: PortfolioData;
-    InvestmentPerformance: InvestmentPerformance[];
     onDateChange: (date: Date | null) => void;
     investments: Investment[];
 }
@@ -21,17 +20,17 @@ interface DateRange {
     endDate: Date;
 }
 
-const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, InvestmentPerformance, onDateChange, investments }) => {
+const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, onDateChange, investments }) => {
     const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [, setAnchorEl] = useState<null | HTMLElement>(null);
     const [showPerformanceChart, setShowPerformanceChart] = useState(true);
 
-    // Get the last date from performance data
+    // Get the last date from developments data
     const lastDataDate = useMemo(() => {
-        if (InvestmentPerformance.length === 0) return new Date();
-        return new Date(Math.max(...InvestmentPerformance.map(d => new Date(d.date).getTime())));
-    }, [InvestmentPerformance]);
+        const dates = portfolioData.developments.map(d => new Date(d.date).getTime());
+        return dates.length ? new Date(Math.max(...dates)) : new Date();
+    }, [portfolioData.developments]);
 
     const dateRange = useMemo<DateRange>(() => {
         const endDateValue = endDate || lastDataDate;
@@ -51,13 +50,13 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                 startDate.setFullYear(startDate.getFullYear() - 1);
                 break;
             case 'ALL':
-                // Find the earliest date in the performance data
-                startDate = new Date(Math.min(...InvestmentPerformance.map(d => new Date(d.date).getTime())));
+                // Find the earliest date in the developments data
+                startDate = new Date(Math.min(...portfolioData.developments.map(d => new Date(d.date).getTime())));
                 break;
         }
 
         return { startDate, endDate: endDateValue };
-    }, [timeRange, InvestmentPerformance, endDate, lastDataDate]);
+    }, [timeRange, portfolioData.developments, endDate, lastDataDate]);
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
@@ -71,7 +70,6 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
             setTimeRange(newTimeRange);
         }
     };
-
 
     const handleDateClose = () => {
         setAnchorEl(null);
@@ -187,7 +185,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                         </Box>
                         {showPerformanceChart ? (
                             <PerformanceChart
-                                data={InvestmentPerformance}
+                                data={portfolioData.developments}
                                 dateRange={dateRange}
                                 investments={investments}
                             />
@@ -210,4 +208,4 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
     );
 };
 
-export default PortfolioDashboard; 
+export default PortfolioDashboard;

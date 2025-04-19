@@ -10,18 +10,16 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
-import { InvestmentPerformance } from '../types/portfolio';
-import { Investment } from '../types/api';
+import { Development, Investment } from '../types/api';
 
 interface PerformanceChartProps {
-    data: InvestmentPerformance[];
+    data: Development[];
     dateRange: {
         startDate: Date;
         endDate: Date;
     };
     investments: Investment[];
 }
-
 
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, investments }) => {
     const theme = useTheme();
@@ -82,24 +80,41 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
     };
 
-    // Filter data based on date range
-    const getFilteredData = () => {
-        return data.filter(d => {
-            const date = new Date(d.date);
-            return date >= dateRange.startDate && date <= dateRange.endDate;
-        });
-    };
+    // Filter developments within date range and with valid investment
+    const filteredData = data.filter((d): d is Development =>
+        typeof d.investment === 'number' &&
+        d.date != null &&
+        (() => {
+            const dt = new Date(d.date);
+            return dt >= dateRange.startDate && dt <= dateRange.endDate;
+        })()
+    );
 
-    const chartData = getFilteredData();
+    // Unique asset IDs (as strings)
+    const assetIds = Array.from(
+        new Set(filteredData.map(d => d.investment))
+    ).map(id => id.toString());
 
-    // Get unique asset IDs from the data
-    const assetIds = Array.from(new Set(data.flatMap(d => Object.keys(d).filter(key => key !== 'date' && key !== 'value'))));
-
-    // Create a map of ISIN to shortname
-    const isinToshortname = investments.reduce((acc, investment) => {
-        acc[investment.isin] = (investment as any).shortname || (investment as any).shortname;
+    // Map investment ID to shortname
+    const idToShortname = investments.reduce((acc, inv) => {
+        acc[inv.id.toString()] = inv.shortname;
         return acc;
     }, {} as Record<string, string>);
+
+    // Group by date and compute values per asset
+    const grouped: Record<string, any> = {};
+    filteredData.forEach(d => {
+        const dateKey = new Date(d.date).toISOString().split('T')[0];
+        if (!grouped[dateKey]) grouped[dateKey] = { date: dateKey };
+        grouped[dateKey][d.investment.toString()] = d.value;
+    });
+
+    const chartData = Object.values(grouped)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map(entry => ({
+            ...entry,
+            value: assetIds.reduce((sum, id) => sum + (entry[id] || 0), 0),
+        }));
 
     return (
         <ResponsiveContainer width="100%" height={400}>
@@ -137,7 +152,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
                         stroke={getAssetColor(index)}
                         strokeWidth={1}
                         dot={false}
-                        name={isinToshortname[assetId] || assetId}
+                        name={idToShortname[assetId] || assetId}
                     />
                 ))}
             </LineChart>
@@ -145,4 +160,4 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
     );
 };
 
-export default PerformanceChart; 
+export default PerformanceChart;

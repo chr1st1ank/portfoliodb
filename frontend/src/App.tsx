@@ -84,7 +84,6 @@ function App() {
             element={
               <PortfolioDashboard
                 portfolioData={portfolioData}
-                InvestmentPerformance={portfolioData.performance}
                 onDateChange={setSelectedDate}
                 investments={portfolioData.investments}
               />

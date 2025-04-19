@@ -33,7 +33,8 @@ task: Available tasks for this project:
 - Prefer iteration and modularization over code duplication.
 - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
 - Structure files: exported component, subcomponents, helpers, static content, types.
-- Follow Expo's official documentation for setting up and configuring projects.
+- Complex logic belongs in separate functions and they need a test. 
+- Only minimal logic should be in the component.
 
 ### Naming Conventions
 

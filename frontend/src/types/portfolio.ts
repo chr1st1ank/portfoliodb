@@ -1,4 +1,4 @@
-import { Movement } from './api';
+import { Movement, Development } from './api';
 
 export interface InvestmentData {
     id: number;
@@ -23,6 +23,7 @@ export interface PortfolioTotal {
 export interface PortfolioData {
     investments: InvestmentData[];
     performance: InvestmentPerformance[];
+    developments: Development[];
     movements: Movement[];
     latestDate: Date;
     currentDate: string;
