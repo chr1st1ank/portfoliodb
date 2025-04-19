@@ -185,7 +185,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                         </Box>
                         {showPerformanceChart ? (
                             <PerformanceChart
-                                data={portfolioData.developments}
+                                developments={portfolioData.developments}
                                 dateRange={dateRange}
                                 investments={investments}
                             />

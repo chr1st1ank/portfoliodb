@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateInvestmentData, calculateInvestmentPerformance, calculateTotals } from './portfolioTransformations';
-import { Investment, Development, Movement } from '../services/api';
+import { Investment, Development, Movement } from '../types/api';
 
 describe('portfolio transformations', () => {
     describe('calculateInvestmentData', () => {
@@ -38,14 +38,14 @@ describe('portfolio transformations', () => {
             const developments: Development[] = [
                 {
                     investment: 1,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     quantity: 100,
                     value: 1000,
                     price: 10,
                 },
                 {
                     investment: 1,
-                    date: '2023-01-02',
+                    date: new Date('2023-01-02'),
                     quantity: 150,
                     value: 1500,
                     price: 10,
@@ -56,7 +56,7 @@ describe('portfolio transformations', () => {
                 {
                     id: 1,
                     investment: 1,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     action: 1,
                     amount: 500,
                     fee: 10,
@@ -95,14 +95,14 @@ describe('portfolio transformations', () => {
             const developments: Development[] = [
                 {
                     investment: 1,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     quantity: 100,
                     value: 1000,
                     price: 10,
                 },
                 {
                     investment: 1,
-                    date: '2023-01-02',
+                    date: new Date('2023-01-02'),
                     quantity: 50,
                     value: 500,
                     price: 10,
@@ -113,7 +113,7 @@ describe('portfolio transformations', () => {
                 {
                     id: 1,
                     investment: 1,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     action: 1,
                     amount: 1000,
                     fee: 10,
@@ -122,7 +122,7 @@ describe('portfolio transformations', () => {
                 {
                     id: 2,
                     investment: 1,
-                    date: '2023-01-02',
+                    date: new Date('2023-01-02'),
                     action: 2,
                     amount: 500,
                     fee: 5,
@@ -161,14 +161,14 @@ describe('portfolio transformations', () => {
             const developments: Development[] = [
                 {
                     investment: 1,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     quantity: 100,
                     value: 1000,
                     price: 10,
                 },
                 {
                     investment: 1,
-                    date: '2023-01-02',
+                    date: new Date('2023-01-02'),
                     quantity: 100,
                     value: 1000,
                     price: 10,
@@ -179,7 +179,7 @@ describe('portfolio transformations', () => {
                 {
                     id: 1,
                     investment: 1,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     action: 1,
                     amount: 1000,
                     fee: 10,
@@ -188,7 +188,7 @@ describe('portfolio transformations', () => {
                 {
                     id: 2,
                     investment: 1,
-                    date: '2023-01-02',
+                    date: new Date('2023-01-02'),
                     action: 3,
                     amount: 50,
                     fee: 1,
@@ -237,21 +237,21 @@ describe('portfolio transformations', () => {
             const developments: Development[] = [
                 {
                     investment: 1,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     quantity: 100,
                     value: 1000,
                     price: 10,
                 },
                 {
                     investment: 2,
-                    date: '2023-01-01',
+                    date: new Date('2023-01-01'),
                     quantity: 200,
                     value: 2000,
                     price: 10,
                 },
                 {
                     investment: 1,
-                    date: '2023-01-02',
+                    date: new Date('2023-01-02'),
                     quantity: 150,
                     value: 1500,
                     price: 10,
@@ -308,3 +308,5 @@ describe('portfolio transformations', () => {
         });
     });
 }); 
+
+

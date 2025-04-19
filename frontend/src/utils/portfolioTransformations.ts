@@ -1,5 +1,5 @@
-import { Investment, Development, Movement } from '../services/api';
-import { PortfolioData, InvestmentPerformance } from '../types/portfolio';
+import { Investment, Development, Movement } from '../types/api';
+import { InvestmentPerformance } from '../types/portfolio';
 
 export function calculateInvestmentData(
     investment: Investment,

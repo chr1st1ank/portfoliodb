@@ -11,9 +11,11 @@ import {
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
 import { Development, Investment } from '../types/api';
+import { developmentsToChartPoints } from '../types/ui';
+import { formatCurrency, formatDate } from '../utils/formatting';
 
 interface PerformanceChartProps {
-    data: Development[];
+    developments: Development[];
     dateRange: {
         startDate: Date;
         endDate: Date;
@@ -21,7 +23,7 @@ interface PerformanceChartProps {
     investments: Investment[];
 }
 
-const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, investments }) => {
+const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateRange, investments }) => {
     const theme = useTheme();
 
     // Generate a color palette for up to 50 assets
@@ -68,20 +70,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
         return assetColors[index % 50];
     };
 
-    const formatDate = (date: Date) => {
-        return new Date(date).toLocaleDateString('de-DE', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        });
-    };
-
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
-    };
-
     // Filter developments within date range and with valid investment
-    const filteredData = data.filter((d): d is Development =>
+    const filteredData = developments.filter((d): d is Development =>
         typeof d.investment === 'number' &&
         d.date != null &&
         (() => {
@@ -91,30 +81,16 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
     );
 
     // Unique asset IDs (as strings)
-    const assetIds = Array.from(
-        new Set(filteredData.map(d => d.investment))
-    ).map(id => id.toString());
+    const assetIds = investments.map(inv => inv.id);
 
     // Map investment ID to shortname
-    const idToShortname = investments.reduce((acc, inv) => {
-        acc[inv.id.toString()] = inv.shortname;
-        return acc;
-    }, {} as Record<string, string>);
-
-    // Group by date and compute values per asset
-    const grouped: Record<string, any> = {};
-    filteredData.forEach(d => {
-        const dateKey = new Date(d.date).toISOString().split('T')[0];
-        if (!grouped[dateKey]) grouped[dateKey] = { date: dateKey };
-        grouped[dateKey][d.investment.toString()] = d.value;
-    });
-
-    const chartData = Object.values(grouped)
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        .map(entry => ({
-            ...entry,
-            value: assetIds.reduce((sum, id) => sum + (entry[id] || 0), 0),
-        }));
+    const idToShortname = Object.fromEntries(investments.map(inv => [inv.id, inv.shortname]));
+    const chartData = developmentsToChartPoints(developments);
+    const maxValue = Math.max(...chartData.map(data => Math.max(...assetIds.map(assetId => data[assetId] as number || 0))));
+    console.log("developments", developments);
+    console.log("chartData", chartData);
+    console.log("assetIds", assetIds);
+    console.log("idToShortname", idToShortname);
 
     return (
         <ResponsiveContainer width="100%" height={400}>
@@ -122,22 +98,23 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                     dataKey="date"
-                    tickFormatter={formatDate}
+                    tickFormatter={(value: Date) => formatDate(value)}
                     tick={{ fontSize: 12 }}
                 />
                 <YAxis
-                    tickFormatter={formatCurrency}
+                    tickFormatter={(value: number) => formatCurrency(value || 0)}
                     tick={{ fontSize: 12 }}
+                    domain={[0, maxValue + 1000]}
                 />
                 <Tooltip
                     formatter={(value: number) => formatCurrency(value)}
-                    labelFormatter={formatDate}
+                    labelFormatter={(value: Date) => formatDate(value)}
                 />
                 <Legend />
                 {/* Total portfolio line */}
                 <Line
                     type="monotone"
-                    dataKey="value"
+                    dataKey="sum"
                     stroke={theme.palette.primary.main}
                     strokeWidth={2}
                     dot={false}
@@ -152,7 +129,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data, dateRange, in
                         stroke={getAssetColor(index)}
                         strokeWidth={1}
                         dot={false}
-                        name={idToShortname[assetId] || assetId}
+                        name={idToShortname[assetId] || assetId.toString()}
                     />
                 ))}
             </LineChart>

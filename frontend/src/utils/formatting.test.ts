@@ -4,13 +4,13 @@ import { formatCurrency, formatPercentage, formatNumber, formatDate, formatTimeR
 describe('formatting utilities', () => {
     describe('formatCurrency', () => {
         it('formats USD currency correctly in German', () => {
-            expect(formatCurrency(1234.56)).toBe('1.234,56 $');
-            expect(formatCurrency(0)).toBe('0,00 $');
-            expect(formatCurrency(-1234.56)).toBe('-1.234,56 $');
+            expect(formatCurrency(1234.56)).toBe('1.234,56 €');
+            expect(formatCurrency(0)).toBe('0,00 €');
+            expect(formatCurrency(-1234.56)).toBe('-1.234,56 €');
         });
 
         it('formats different currencies correctly in German', () => {
-            expect(formatCurrency(1234.56, 'EUR')).toBe('1.234,56 €');
+            expect(formatCurrency(1234.56, 'USD')).toBe('1.234,56 $');
             expect(formatCurrency(1234.56, 'JPY')).toBe('1.234,56 ¥');
         });
 

@@ -1,21 +1,21 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { InvestmentData, TimeRange, InvestmentPerformance } from '../types/portfolio';
+import { InvestmentData, TimeRange } from '../types/portfolio';
 import { Movement, Development, Investment } from '../types/api';
 import PerformanceChart from './PerformanceChart';
 import { formatAction, formatDate } from '../utils/formatting';
 
 interface InvestmentDetailProps {
     investment: InvestmentData;
-    InvestmentPerformance: InvestmentPerformance[];
     movements: Movement[];
+    developments: Development[];
 }
 
-const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, InvestmentPerformance, movements }) => {
+const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, movements, developments }) => {
     const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
     const [endDate, setEndDate] = useState<Date | null>(null);
 
@@ -40,15 +40,6 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, Investm
     const totalPayments = movements.reduce((sum, m) => sum + Math.abs(m.amount), 0);
 
     // Prepare data for PerformanceChart
-    const developmentData = useMemo<Development[]>(() =>
-        InvestmentPerformance.map(p => ({
-            investment: p.investment,
-            date: p.date,
-            quantity: 0,
-            value: p.value,
-            price: 0,
-        })),
-    [InvestmentPerformance]);
     const perfInvestments: Investment[] = [{ id: investment.id, name: investment.name, isin: investment.isin, shortname: investment.shortname }];
 
     return (
@@ -139,7 +130,7 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, Investm
                     </Box>
                     <Box sx={{ height: 400 }}>
                         <PerformanceChart
-                            data={developmentData}
+                            developments={developments}
                             dateRange={{
                                 startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
                                 endDate: new Date()
