@@ -43,3 +43,9 @@ tasks:
     cmds:
       - cd frontend && npm run test
     silent: false
+
+  codex:
+    desc: "Run Codex"
+    cmds:
+      - start-codex --project-doc docs/architecture.md
+    silent: false
