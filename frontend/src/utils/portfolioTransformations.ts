@@ -104,3 +104,14 @@ export function calculateTotals(investments: any[]) {
         return: investments.reduce((sum, inv) => sum + inv.return, 0),
     };
 } 
+
+export function filterDevelopmentsByDate(
+    developments: Development[],
+    minDate: Date,
+    maxDate: Date
+  ): Development[] {
+    return developments.filter(dev =>
+      dev.date >= minDate && dev.date <= maxDate
+    );
+}
+  

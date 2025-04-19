@@ -13,6 +13,7 @@ import { useTheme } from '@mui/material/styles';
 import { Development, Investment } from '../types/api';
 import { developmentsToChartPoints } from '../types/ui';
 import { formatCurrency, formatDate } from '../utils/formatting';
+import { filterDevelopmentsByDate } from '../utils/portfolioTransformations';
 
 interface PerformanceChartProps {
     developments: Development[];
@@ -21,9 +22,10 @@ interface PerformanceChartProps {
         endDate: Date;
     };
     investments: Investment[];
+    totalsName: string;
 }
 
-const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateRange, investments }) => {
+const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateRange, investments, totalsName="" }) => {
     const theme = useTheme();
 
     // Generate a color palette for up to 50 assets
@@ -70,23 +72,12 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
         return assetColors[index % 50];
     };
 
-    // Filter developments within date range and with valid investment
-    const filteredData = developments.filter((d): d is Development =>
-        typeof d.investment === 'number' &&
-        d.date != null &&
-        (() => {
-            const dt = new Date(d.date);
-            return dt >= dateRange.startDate && dt <= dateRange.endDate;
-        })()
-    );
-
-    // Unique asset IDs (as strings)
     const assetIds = investments.map(inv => inv.id);
-
-    // Map investment ID to shortname
     const idToShortname = Object.fromEntries(investments.map(inv => [inv.id, inv.shortname]));
-    const chartData = developmentsToChartPoints(developments);
+    const filteredData =filterDevelopmentsByDate(developments, dateRange.startDate, dateRange.endDate);
+    const chartData = developmentsToChartPoints(filteredData);
     const maxValue = Math.max(...chartData.map(data => Math.max(...assetIds.map(assetId => data[assetId] as number || 0))));
+    console.log("dateRange", dateRange);
     console.log("developments", developments);
     console.log("chartData", chartData);
     console.log("assetIds", assetIds);
@@ -112,14 +103,16 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                 />
                 <Legend />
                 {/* Total portfolio line */}
-                <Line
-                    type="monotone"
-                    dataKey="sum"
-                    stroke={theme.palette.primary.main}
-                    strokeWidth={2}
-                    dot={false}
-                    name="Gesamtportfolio"
-                />
+                {totalsName !== "" && (
+                    <Line
+                        type="monotone"
+                        dataKey="sum"
+                        stroke={theme.palette.primary.main}
+                        strokeWidth={2}
+                        dot={false}
+                        name={totalsName}
+                    />
+                )}
                 {/* Individual asset lines */}
                 {assetIds.map((assetId, index) => (
                     <Line

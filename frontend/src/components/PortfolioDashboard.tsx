@@ -8,6 +8,7 @@ import { Investment } from '../types/api';
 import PortfolioTable from './PortfolioTable';
 import PerformanceChart from './PerformanceChart';
 import PortfolioComposition from './PortfolioComposition';
+import { getDateRange } from '../utils/dateRange';
 
 interface PortfolioDashboardProps {
     portfolioData: PortfolioData;
@@ -15,14 +16,9 @@ interface PortfolioDashboardProps {
     investments: Investment[];
 }
 
-interface DateRange {
-    startDate: Date;
-    endDate: Date;
-}
-
 const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, onDateChange, investments }) => {
     const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
-    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date>(new Date());
     const [, setAnchorEl] = useState<null | HTMLElement>(null);
     const [showPerformanceChart, setShowPerformanceChart] = useState(true);
 
@@ -32,31 +28,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
         return dates.length ? new Date(Math.max(...dates)) : new Date();
     }, [portfolioData.developments]);
 
-    const dateRange = useMemo<DateRange>(() => {
-        const endDateValue = endDate || lastDataDate;
-        let startDate = new Date(endDateValue);
-
-        switch (timeRange) {
-            case '1M':
-                startDate.setMonth(startDate.getMonth() - 1);
-                break;
-            case '3M':
-                startDate.setMonth(startDate.getMonth() - 3);
-                break;
-            case '6M':
-                startDate.setMonth(startDate.getMonth() - 6);
-                break;
-            case '1Y':
-                startDate.setFullYear(startDate.getFullYear() - 1);
-                break;
-            case 'ALL':
-                // Find the earliest date in the developments data
-                startDate = new Date(Math.min(...portfolioData.developments.map(d => new Date(d.date).getTime())));
-                break;
-        }
-
-        return { startDate, endDate: endDateValue };
-    }, [timeRange, portfolioData.developments, endDate, lastDataDate]);
+    const dateRange = getDateRange(portfolioData.developments.map(d => d.date), timeRange, endDate);
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
@@ -76,8 +48,8 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
     };
 
     const handleDateSelect = (date: Date | null) => {
-        setEndDate(date);
-        onDateChange(date);
+        setEndDate(date || new Date());
+        onDateChange(date || new Date());
         handleDateClose();
     };
 
@@ -188,6 +160,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                                 developments={portfolioData.developments}
                                 dateRange={dateRange}
                                 investments={investments}
+                                totalsName='Gesamtportfolio'
                             />
                         ) : (
                             <PortfolioComposition data={portfolioData} />

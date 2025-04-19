@@ -8,6 +8,7 @@ import { InvestmentData, TimeRange } from '../types/portfolio';
 import { Movement, Development, Investment } from '../types/api';
 import PerformanceChart from './PerformanceChart';
 import { formatAction, formatDate } from '../utils/formatting';
+import { getDateRange } from '../utils/dateRange';
 
 interface InvestmentDetailProps {
     investment: InvestmentData;
@@ -17,7 +18,7 @@ interface InvestmentDetailProps {
 
 const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, movements, developments }) => {
     const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
-    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date>(new Date());
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
@@ -33,7 +34,7 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, movemen
     };
 
     const handleDateSelect = (date: Date | null) => {
-        setEndDate(date);
+        date && setEndDate(date);
     };
 
     const totalFees = movements.reduce((sum, m) => sum + m.fee, 0);
@@ -41,6 +42,7 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, movemen
 
     // Prepare data for PerformanceChart
     const perfInvestments: Investment[] = [{ id: investment.id, name: investment.name, isin: investment.isin, shortname: investment.shortname }];
+    const dateRange = getDateRange(developments.map(d => d.date), timeRange, endDate);
 
     return (
         <Container maxWidth="xl" sx={{ mt: 2, mb: 4 }}>
@@ -131,11 +133,9 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({ investment, movemen
                     <Box sx={{ height: 400 }}>
                         <PerformanceChart
                             developments={developments}
-                            dateRange={{
-                                startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-                                endDate: new Date()
-                            }}
+                            dateRange={dateRange}
                             investments={perfInvestments}
+                            totalsName=''
                         />
                     </Box>
                 </Paper>
