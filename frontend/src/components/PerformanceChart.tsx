@@ -105,7 +105,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                 {/* Total portfolio line */}
                 {totalsName !== "" && (
                     <Line
-                        type="monotone"
+                        type="linear"
                         dataKey="sum"
                         stroke={theme.palette.primary.main}
                         strokeWidth={2}
@@ -117,7 +117,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                 {assetIds.map((assetId, index) => (
                     <Line
                         key={assetId}
-                        type="monotone"
+                        type="linear"
                         dataKey={assetId}
                         stroke={getAssetColor(index)}
                         strokeWidth={1}
