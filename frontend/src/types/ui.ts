@@ -1,4 +1,3 @@
-
 import { Development } from './api';
 
 export interface ChartPoint {
@@ -8,9 +7,12 @@ export interface ChartPoint {
 };
 
 export function developmentsToChartPoints(developments: Development[]): ChartPoint[] {
+  // Group developments by date and collect asset IDs
   const grouped = new Map<string, ChartPoint>();
+  const assetIdsSet = new Set<number>();
 
   for (const dev of developments) {
+    assetIdsSet.add(dev.investment);
     const dateStr = dev.date.toISOString().slice(0, 10);
     const assetId = dev.investment;
 
@@ -23,5 +25,27 @@ export function developmentsToChartPoints(developments: Development[]): ChartPoi
     point.sum = Number(point.sum ?? 0) + Number(dev.value);
   }
 
-  return Array.from(grouped.values()).sort((a, b) => a.date.localeCompare(b.date));
+  // Sort dates and asset IDs
+  const sortedDates = Array.from(grouped.keys()).sort();
+  const assetIds = Array.from(assetIdsSet).sort();
+
+  // Carry forward last known values per asset
+  const lastValues: Record<number, number> = {};
+  assetIds.forEach(id => { lastValues[id] = 0; });
+
+  // Build filled chart points
+  const filledPoints: ChartPoint[] = sortedDates.map(dateStr => {
+    const point = grouped.get(dateStr)!;
+    assetIds.forEach(id => {
+      if (point[id] !== undefined) {
+        lastValues[id] = point[id] as number;
+      } else {
+        point[id] = lastValues[id];
+      }
+    });
+    // Recalculate total sum
+    point.sum = assetIds.reduce((sum, id) => Number(sum) + Number(point[id]), 0);
+    return point;
+  });
+  return filledPoints;
 }

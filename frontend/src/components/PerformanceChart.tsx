@@ -26,7 +26,7 @@ interface PerformanceChartProps {
     totalsName: string;
 }
 
-const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateRange, investments, totalsName="" }) => {
+const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateRange, investments, totalsName = "" }) => {
     const theme = useTheme();
 
     // Track which series is focused (clicked)
@@ -83,7 +83,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
 
     const assetIds = investments.map(inv => inv.id);
     const idToShortname = Object.fromEntries(investments.map(inv => [inv.id, inv.shortname]));
-    const filteredData =filterDevelopmentsByDate(developments, dateRange.startDate, dateRange.endDate);
+    const filteredData = filterDevelopmentsByDate(developments, dateRange.startDate, dateRange.endDate);
     const chartData = developmentsToChartPoints(filteredData);
     const maxValue = Math.max(...chartData.map(data => Math.max(...assetIds.map(assetId => data[assetId] as number || 0))));
     console.log("dateRange", dateRange);
