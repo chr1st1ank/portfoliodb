@@ -7,6 +7,7 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
+    Brush,
     ResponsiveContainer,
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
@@ -104,6 +105,12 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                     tickFormatter={(value: number) => formatCurrency(value || 0)}
                     tick={{ fontSize: 12 }}
                     domain={[0, maxValue + 1000]}
+                />
+                <Brush
+                    dataKey="date"
+                    height={30}
+                    stroke={theme.palette.primary.main}
+                    tickFormatter={(value: Date) => formatDate(value)}
                 />
                 <Tooltip
                     formatter={(value: number) => formatCurrency(value)}
