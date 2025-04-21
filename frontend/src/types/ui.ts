@@ -21,7 +21,7 @@ export function developmentsToChartPoints(developments: Development[]): ChartPoi
     }
 
     const point = grouped.get(dateStr)!;
-    point[assetId] = dev.value as number;
+    point[assetId] = Number(dev.value);
     point.sum = Number(point.sum ?? 0) + Number(dev.value);
   }
 

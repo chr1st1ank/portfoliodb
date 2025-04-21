@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
-    LineChart,
+    AreaChart,
+    Area,
     Line,
     XAxis,
     YAxis,
@@ -94,7 +95,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
 
     return (
         <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <AreaChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                     dataKey="date"
@@ -119,30 +120,32 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                 <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer' }} />
                 {/* Total portfolio line */}
                 {totalsName !== "" && (
-                    <Line
+                    <Area
                         type="linear"
                         dataKey="sum"
                         hide={focusedKey !== null && focusedKey !== 'sum'}
                         stroke={theme.palette.primary.main}
                         strokeWidth={2}
-                        dot={false}
+                        dot={true}
                         name={totalsName}
                     />
                 )}
                 {/* Individual asset lines */}
                 {assetIds.map((assetId, index) => (
-                    <Line
+                    <Area
                         key={assetId}
                         type="linear"
                         dataKey={assetId}
                         hide={focusedKey !== null && String(assetId) !== focusedKey}
                         stroke={getAssetColor(index)}
+                        fill={getAssetColor(index)}
+                        stackId="1"
                         strokeWidth={1}
                         dot={false}
                         name={idToShortname[assetId] || assetId.toString()}
                     />
                 ))}
-            </LineChart>
+            </AreaChart>
         </ResponsiveContainer>
     );
 };
