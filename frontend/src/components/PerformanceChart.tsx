@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     LineChart,
     Line,
@@ -27,6 +27,9 @@ interface PerformanceChartProps {
 
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateRange, investments, totalsName="" }) => {
     const theme = useTheme();
+
+    // Track which series is focused (clicked)
+    const [focusedKey, setFocusedKey] = useState<string | null>(null);
 
     // Generate a color palette for up to 50 assets
     const generateAssetColors = (count: number) => {
@@ -72,6 +75,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
         return assetColors[index % 50];
     };
 
+    const handleLegendClick = (e: any) => {
+        const key = e.dataKey?.toString() ?? '';
+        setFocusedKey(prev => (prev === key ? null : key));
+    };
+
     const assetIds = investments.map(inv => inv.id);
     const idToShortname = Object.fromEntries(investments.map(inv => [inv.id, inv.shortname]));
     const filteredData =filterDevelopmentsByDate(developments, dateRange.startDate, dateRange.endDate);
@@ -101,12 +109,13 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                     formatter={(value: number) => formatCurrency(value)}
                     labelFormatter={(value: Date) => formatDate(value)}
                 />
-                <Legend />
+                <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer' }} />
                 {/* Total portfolio line */}
                 {totalsName !== "" && (
                     <Line
                         type="linear"
                         dataKey="sum"
+                        hide={focusedKey !== null && focusedKey !== 'sum'}
                         stroke={theme.palette.primary.main}
                         strokeWidth={2}
                         dot={false}
@@ -119,6 +128,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                         key={assetId}
                         type="linear"
                         dataKey={assetId}
+                        hide={focusedKey !== null && String(assetId) !== focusedKey}
                         stroke={getAssetColor(index)}
                         strokeWidth={1}
                         dot={false}
