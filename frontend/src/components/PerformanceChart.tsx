@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
     AreaChart,
     Area,
-    Line,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -33,50 +32,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
     // Track which series is focused (clicked)
     const [focusedKey, setFocusedKey] = useState<string | null>(null);
 
-    // Generate a color palette for up to 50 assets
-    const generateAssetColors = (count: number) => {
-        const colors = [];
-        const baseColors = [
-            theme.palette.primary.main,
-            theme.palette.success.main,
-            theme.palette.error.main,
-            theme.palette.warning.main,
-            theme.palette.info.main,
-        ];
-
-        // Generate variations of each base color
-        for (let i = 0; i < count; i++) {
-            const baseColor = baseColors[i % baseColors.length];
-            const variation = Math.floor(i / baseColors.length);
-            const lightness = 0.7 + (variation * 0.1); // Adjust lightness for each variation
-            colors.push(adjustColorLightness(baseColor, lightness));
-        }
-
-        return colors;
-    };
-
-    // Helper function to adjust color lightness
-    const adjustColorLightness = (hex: string, lightness: number) => {
-        // Convert hex to RGB
-        let r = parseInt(hex.slice(1, 3), 16);
-        let g = parseInt(hex.slice(3, 5), 16);
-        let b = parseInt(hex.slice(5, 7), 16);
-
-        // Adjust lightness
-        r = Math.min(255, Math.round(r * lightness));
-        g = Math.min(255, Math.round(g * lightness));
-        b = Math.min(255, Math.round(b * lightness));
-
-        // Convert back to hex
-        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-    };
-
-    // Get color for an asset based on its index
-    const getAssetColor = (index: number) => {
-        const assetColors = generateAssetColors(50);
-        return assetColors[index % 50];
-    };
-
     const handleLegendClick = (e: any) => {
         const key = e.dataKey?.toString() ?? '';
         setFocusedKey(prev => (prev === key ? null : key));
@@ -92,6 +47,12 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
     console.log("chartData", chartData);
     console.log("assetIds", assetIds);
     console.log("idToShortname", idToShortname);
+
+    const colorScale = [
+        '#1f77b4', '#ff7f0e', '#2ca02c',
+        '#d62728', '#9467bd', '#8c564b',
+        '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'
+    ];
 
     return (
         <ResponsiveContainer width="100%" height={400}>
@@ -137,8 +98,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ developments, dateR
                         type="linear"
                         dataKey={assetId}
                         hide={focusedKey !== null && String(assetId) !== focusedKey}
-                        stroke={getAssetColor(index)}
-                        fill={getAssetColor(index)}
+                        stroke={colorScale[index % 10]}
+                        fill={colorScale[index % 10]}
                         stackId="1"
                         strokeWidth={1}
                         dot={false}
