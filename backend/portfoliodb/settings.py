@@ -130,3 +130,4 @@ CORS_ALLOW_ALL_ORIGINS = True  # For development only
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React development server
 ]
+

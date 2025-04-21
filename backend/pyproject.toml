@@ -9,3 +9,33 @@ dependencies = [
     "django-cors-headers>=4.7.0",
     "djangorestframework>=3.16.0",
 ]
+
+[tool.ruff]
+# Ruff formatting settings
+# Derived from tool.black chapter and .flake8 file
+line-length = 120
+exclude = [
+    ".pytest_cache",
+    "**/__pycache__/",
+    "**/*.ipynb_checkpoints/",
+    "*.ipynb",
+]
+# Ruff linting settings
+# Derived from tool.isort, tool.pylint chapters and .flake8 file
+extend-select = [
+    "F",
+    "I",
+    "PL",
+    "N",
+] # enabling flake8, isort, pylint, pep8-naming
+extend-ignore = [
+    "D",
+    "E501",
+    "PLR0913",
+    "E402",
+    "C403",
+    "F405",
+    "E203",
+    "E731",
+    "E712",
+]

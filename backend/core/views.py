@@ -1,9 +1,11 @@
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from django.db.models import Sum, F, DecimalField
-from django.db.models.functions import Coalesce
+from dataclasses import dataclass
 from decimal import Decimal
+from typing import Any
+
+from rest_framework import viewsets
+from rest_framework.response import Response
+
+from . import table_calculations
 from .models import (
     ActionType,
     Investment,
@@ -12,10 +14,10 @@ from .models import (
 )
 from .serializers import (
     ActionTypeSerializer,
-    InvestmentSerializer,
-    InvestmentPriceSerializer,
-    MovementSerializer,
     DevelopmentSerializer,
+    InvestmentPriceSerializer,
+    InvestmentSerializer,
+    MovementSerializer,
 )
 
 
@@ -39,57 +41,17 @@ class MovementViewSet(viewsets.ModelViewSet):
     serializer_class = MovementSerializer
 
 
+@dataclass
+class Development:
+    investment: int
+    date: Any
+    price: Decimal
+    quantity: Decimal
+    value: Decimal
+
+
 class DevelopmentViewSet(viewsets.ViewSet):
     def list(self, request):
-        # Get all unique dates from movements
-        dates = (
-            Movement.objects.values_list("date", flat=True).distinct().order_by("date")
-        )
-
-        developments = []
-
-        for date in dates:
-            # Get all movements up to this date
-            movements = Movement.objects.filter(date__lte=date)
-
-            # Group by investment and calculate quantities
-            investment_quantities = movements.values("investment").annotate(
-                total_quantity=Coalesce(
-                    Sum(
-                        "quantity",
-                        output_field=DecimalField(max_digits=37, decimal_places=8),
-                    ),
-                    Decimal("0"),
-                )
-            )
-
-            # For each investment, get the latest price and calculate value
-            for investment_data in investment_quantities:
-                investment_id = investment_data["investment"]
-                quantity = investment_data["total_quantity"]
-
-                # Get the latest price for this investment up to this date
-                latest_price = (
-                    InvestmentPrice.objects.filter(
-                        investment=investment_id, date__lte=date
-                    )
-                    .order_by("-date")
-                    .first()
-                )
-
-                if latest_price:
-                    price = latest_price.price
-                    value = price * quantity
-
-                    developments.append(
-                        {
-                            "investment": investment_id,
-                            "date": date,
-                            "price": price,
-                            "quantity": quantity,
-                            "value": value,
-                        }
-                    )
-
+        developments = table_calculations.developments()
         serializer = DevelopmentSerializer(developments, many=True)
         return Response(serializer.data)

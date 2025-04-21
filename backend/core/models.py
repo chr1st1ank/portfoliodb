@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.db import models
 
 
@@ -27,9 +29,7 @@ class InvestmentPrice(models.Model):
         db_column="InvestmentID",
         null=True,
     )
-    price = models.DecimalField(
-        max_digits=10, decimal_places=4, null=True, db_column="Price"
-    )
+    price = models.DecimalField(max_digits=10, decimal_places=4, null=True, db_column="Price")
     source = models.CharField(max_length=20, null=True, db_column="Source")
 
     class Meta:
@@ -51,15 +51,9 @@ class Movement(models.Model):
         db_column="InvestmentID",
         null=True,
     )
-    quantity = models.DecimalField(
-        max_digits=10, decimal_places=4, null=True, db_column="Quantity"
-    )
-    amount = models.DecimalField(
-        max_digits=10, decimal_places=4, null=True, db_column="Amount"
-    )
-    fee = models.DecimalField(
-        max_digits=10, decimal_places=4, null=True, db_column="Fee"
-    )
+    quantity = models.DecimalField(max_digits=10, decimal_places=4, null=True, db_column="Quantity")
+    amount = models.DecimalField(max_digits=10, decimal_places=4, null=True, db_column="Amount")
+    fee = models.DecimalField(max_digits=10, decimal_places=4, null=True, db_column="Fee")
 
     class Meta:
         db_table = "Movement"
