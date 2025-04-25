@@ -3,8 +3,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { usePortfolioData } from './hooks/usePortfolioData';
 import PortfolioDashboard from './components/PortfolioDashboard';
-import { CircularProgress, Box, Typography, Alert } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import { CircularProgress, Box, Typography, Alert, AppBar, Toolbar, Container, Tabs, Tab, Paper, Divider, Link } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, useParams, useLocation } from 'react-router-dom';
 import InvestmentDetail from './components/InvestmentDetail';
 import { ThemeToggle } from './components/ThemeToggle';
 import { theme } from './theme';
@@ -15,7 +15,7 @@ function App() {
   const [mode, setMode] = useState<'light' | 'dark' | 'system'>('system');
 
   useEffect(() => {
-    document.title = "Portfolio";
+    document.title = "Portfolio Assistant";
   }, []);
 
   const currentTheme = React.useMemo(
@@ -76,25 +76,96 @@ function App() {
   return (
     <ThemeProvider theme={currentTheme}>
       <CssBaseline />
-      <ThemeToggle mode={mode} setMode={setMode} />
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <PortfolioDashboard
-                portfolioData={portfolioData}
-                onDateChange={setSelectedDate}
-                investments={portfolioData.investments}
+      <Box sx={{ margin: 'auto' }}>
+        <Router>
+          <AppLayout mode={mode} setMode={setMode}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <PortfolioDashboard
+                    portfolioData={portfolioData}
+                    onDateChange={setSelectedDate}
+                    investments={portfolioData.investments}
+                  />
+                }
               />
-            }
-          />
-          <Route path="/investment/:id" element={<InvestmentDetailWrapper />} />
-        </Routes>
-      </Router>
+              <Route path="/investment/:id" element={<InvestmentDetailWrapper />} />
+            </Routes>
+          </AppLayout>
+        </Router>
+      </Box>
     </ThemeProvider>
   );
 }
+
+interface AppLayoutProps {
+  children: React.ReactNode;
+  mode: 'light' | 'dark' | 'system';
+  setMode: (mode: 'light' | 'dark' | 'system') => void;
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* Header */}
+      <AppBar position="static" color="primary">
+        <Toolbar>
+          <Container maxWidth="xl" sx={{ px: 2, display: 'flex' }}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Portfolio Assistant
+            </Typography>
+          </Container>
+        </Toolbar>
+      </AppBar>
+
+      {/* Navigation Tabs */}
+      <Paper sx={{ borderRadius: 0 }}>
+        <Container maxWidth="xl" sx={{ px: 2 }}>
+          <Tabs 
+            value={currentPath === '/' ? 0 : currentPath.startsWith('/investment/') ? 1 : false} 
+            aria-label="navigation tabs"
+          >
+            <Tab label="Dashboard" component={Link} to="/" />
+            {/* Additional tabs can be added here */}
+          </Tabs>
+        </Container>
+      </Paper>
+      <Divider />
+
+      {/* Main Content */}
+      <Container 
+        maxWidth="xl" 
+        sx={{ 
+          flexGrow: 1, 
+          py: 3,
+          px: 2,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {children}
+      </Container>
+
+      {/* Footer */}
+      <Box 
+        component="footer" 
+        sx={{ 
+          py: 2, 
+          mt: 'auto',
+          backgroundColor: (theme) => theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[800]
+        }}
+      >
+        <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'center' }}>
+          <ThemeToggle mode={mode} setMode={setMode} />
+        </Container>
+      </Box>
+    </Box>
+  );
+};
 
 const InvestmentDetailWrapper: React.FC = () => {
   const { id } = useParams<{ id: string }>();

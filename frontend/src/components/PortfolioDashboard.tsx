@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Container, Typography, Paper, ToggleButtonGroup, ToggleButton, Grid } from '@mui/material';
+import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Grid } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -54,7 +54,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
     };
 
     return (
-        <Container maxWidth="xl" sx={{ mt: 2, mb: 4 }}>
+        <>
             <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
                     <Typography variant="h5" component="h1">
@@ -93,7 +93,7 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12 }}>
                     <Paper sx={{ p: 1 }}>
-                        <Grid container spacing={1}>
+                        <Grid container>
                             <Grid size={{ xs: 6, sm: 3 }}>
                                 <Box sx={{ p: 1 }}>
                                     <Typography variant="subtitle2" color="text.secondary">
@@ -169,15 +169,15 @@ const PortfolioDashboard: React.FC<PortfolioDashboardProps> = ({ portfolioData, 
                 </Grid>
 
                 <Grid size={{ xs: 12 }}>
-                    <Paper sx={{ p: 2, height: '400px', overflow: 'auto' }}>
-                        <Typography variant="h6" gutterBottom>
-                            Detaillierte Bestände
-                        </Typography>
-                        <PortfolioTable data={portfolioData} />
-                    </Paper>
-                </Grid>
+                    <Paper sx={{ p: 2, maxHeight: '100vh', overflow: 'auto' }}>
+                    <Typography variant="h6" gutterBottom>
+                        Detaillierte Bestände
+                    </Typography>
+                    <PortfolioTable data={portfolioData} />
+                </Paper>
             </Grid>
-        </Container>
+        </Grid >
+        </>
     );
 };
 

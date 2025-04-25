@@ -1,5 +1,4 @@
-import React from 'react';
-import { Box, RadioGroup, Radio, FormControl, FormControlLabel } from '@mui/material';
+import { Box, RadioGroup, Radio, FormControl, FormControlLabel, Typography } from '@mui/material';
 
 interface ThemeToggleProps {
     mode: 'light' | 'dark' | 'system';
@@ -20,6 +19,9 @@ export function ThemeToggle({ mode, setMode }: ThemeToggleProps) {
                 boxShadow: 1,
             }}
         >
+            <Typography variant="body2" color="text.secondary">
+                Theme:
+            </Typography>
             <FormControl size="small">
                 <RadioGroup
                     row
@@ -33,4 +35,4 @@ export function ThemeToggle({ mode, setMode }: ThemeToggleProps) {
             </FormControl>
         </Box>
     );
-} 
+}
