@@ -3,11 +3,12 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { usePortfolioData } from './hooks/usePortfolioData';
 import PortfolioDashboard from './components/PortfolioDashboard';
-import { CircularProgress, Box, Typography, Alert, AppBar, Toolbar, Container, Tabs, Tab, Paper, Divider, Link } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, useParams, useLocation } from 'react-router-dom';
+import { CircularProgress, Box, Typography, Alert, AppBar, Toolbar, Container, Tabs, Tab, Paper, Divider } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, useParams, useLocation, Link as RouterLink } from 'react-router-dom';
 import InvestmentDetail from './components/InvestmentDetail';
 import { ThemeToggle } from './components/ThemeToggle';
 import { theme } from './theme';
+import MovementsWrapper from './components/MovementsWrapper';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -91,6 +92,7 @@ function App() {
                 }
               />
               <Route path="/investment/:id" element={<InvestmentDetailWrapper />} />
+              <Route path="/movements" element={<MovementsWrapper />} />
             </Routes>
           </AppLayout>
         </Router>
@@ -104,6 +106,21 @@ interface AppLayoutProps {
   mode: 'light' | 'dark' | 'system';
   setMode: (mode: 'light' | 'dark' | 'system') => void;
 }
+
+// Custom LinkTab component to properly handle routing with MUI Tab
+interface LinkTabProps {
+  label: string;
+  to: string;
+}
+
+const LinkTab: React.FC<LinkTabProps> = (props) => {
+  return (
+    <Tab
+      component={RouterLink}
+      {...props}
+    />
+  );
+};
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
   const location = useLocation();
@@ -126,10 +143,15 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
       <Paper sx={{ borderRadius: 0 }}>
         <Container maxWidth="xl" sx={{ px: 2 }}>
           <Tabs 
-            value={currentPath === '/' ? 0 : currentPath.startsWith('/investment/') ? 1 : false} 
+            value={
+              currentPath === '/' ? 0 : 
+              currentPath === '/movements' ? 1 :
+              currentPath.startsWith('/investment/') ? false : false
+            } 
             aria-label="navigation tabs"
           >
-            <Tab label="Dashboard" component={Link} to="/" />
+            <LinkTab label="Dashboard" to="/" />
+            <LinkTab label="Movements" to="/movements" />
             {/* Additional tabs can be added here */}
           </Tabs>
         </Container>
