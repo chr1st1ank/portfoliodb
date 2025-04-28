@@ -2,7 +2,7 @@
 
 ## Architecture
 
-Check out docs/architecture.md for a high-level overview of the architecture.
+Check out <docs/architecture.md> for a high-level overview of the architecture!
 
 ## Backend
 
@@ -17,12 +17,15 @@ The project uses taskfile.dev for tasks:
 ```shell
 ❯ task
 task: Available tasks for this project:
+* backend-test:         Run backend tests
+* codex:                Run Codex
+* frontend-test:        Run frontend tests with Vitest
 * makemigrations:       Make Django DB migrations
 * real-data:            Load real data into DB
 * sample-data:          Load sample data into DB
 * start-backend:        Start Django backend server
 * start-frontend:       Start Vite frontend development server
-* test:                 Run frontend tests with Vitest
+* test:                 Run all tests
 ```
 
 ## Frontend
@@ -33,7 +36,7 @@ task: Available tasks for this project:
 - Prefer iteration and modularization over code duplication.
 - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
 - Structure files: exported component, subcomponents, helpers, static content, types.
-- Complex logic belongs in separate functions and they need a test. 
+- Complex logic belongs in separate functions and they need a test.
 - Only minimal logic should be in the component.
 
 ### Naming Conventions
