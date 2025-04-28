@@ -1,9 +1,18 @@
 import { getDateRange } from './dateRange';
-import { describe, it, expect } from 'vitest';
-
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 describe('getDateRange', () => {
     const baseDates = ['2021-01-15', '2021-03-15', '2021-06-15'];
+    const fixedLatestDate = new Date('2021-06-15');
+    
+    beforeEach(() => {
+        vi.useFakeTimers();
+        vi.setSystemTime(fixedLatestDate);
+    });
+    
+    afterEach(() => {
+        vi.useRealTimers();
+    });
 
     it('should default endDate to latest date in array', () => {
         const { startDate, endDate } = getDateRange(baseDates, '1M');
@@ -60,11 +69,10 @@ describe('getDateRange', () => {
 
     it('should handle empty dates array', () => {
         const { startDate, endDate } = getDateRange([], '1M');
-        // both start and end fallback to now-based: difficult to test exact dates
-        const expectedStart = new Date();
+        const expectedStart = new Date(fixedLatestDate);
         expectedStart.setMonth(expectedStart.getMonth() - 1);
         expect(startDate).toEqual(expectedStart);
-        expect(endDate).toEqual(new Date());
+        expect(endDate).toEqual(fixedLatestDate);
     });
 
     it('should throw error on unsupported range', () => {

@@ -39,9 +39,25 @@ tasks:
     silent: false
 
   test:
+    desc: "Run all tests"
+    deps:
+      - frontend-test
+      - backend-test
+    silent: false
+
+  backend-test:
+    desc: "Run backend tests"
+    cmds:
+      - cd backend && uv run ruff format
+      - cd backend && uv run ruff check --fix
+      - cd backend && uv run python manage.py check
+      - cd backend && uv run python manage.py test
+    silent: false
+
+  frontend-test:
     desc: "Run frontend tests with Vitest"
     cmds:
-      - cd frontend && npm run test
+      - cd frontend && npx vitest --run
     silent: false
 
   codex:
