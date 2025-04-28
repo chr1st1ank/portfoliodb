@@ -34,6 +34,9 @@ export const api = {
             const response = await axios.get(`${API_BASE_URL}/movements/`);
             return convertDates(response.data);
         },
+        delete: async (id: number): Promise<void> => {
+            await axios.delete(`${API_BASE_URL}/movements/${id}/`);
+        },
     },
     developments: {
         getAll: async (): Promise<Development[]> => {

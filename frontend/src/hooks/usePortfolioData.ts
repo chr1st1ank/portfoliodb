@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { api } from '../services/api';
 import { PortfolioData } from '../types/portfolio';
 import { calculateInvestmentData, calculateInvestmentPerformance, calculateTotals } from '../utils/portfolioTransformations';
@@ -11,34 +11,40 @@ export const usePortfolioData = (selectedDate?: Date) => {
         developments: any[];
         movements: any[];
     } | null>(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-    // Fetch raw data only once
+    const fetchData = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const [investmentsData, developmentsData, movementsData] = await Promise.all([
+                api.investments.getAll(),
+                api.developments.getAll(),
+                api.movements.getAll(),
+            ]);
+
+            setRawData({
+                investments: investmentsData,
+                developments: developmentsData,
+                movements: movementsData,
+            });
+        } catch (err) {
+            console.error('Error in usePortfolioData:', err);
+            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Fetch raw data when component mounts or when refresh is triggered
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                const [investmentsData, developmentsData, movementsData] = await Promise.all([
-                    api.investments.getAll(),
-                    api.developments.getAll(),
-                    api.movements.getAll(),
-                ]);
-
-                setRawData({
-                    investments: investmentsData,
-                    developments: developmentsData,
-                    movements: movementsData,
-                });
-            } catch (err) {
-                console.error('Error in usePortfolioData:', err);
-                setError(err instanceof Error ? err.message : 'An unknown error occurred');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchData();
+    }, [fetchData, refreshTrigger]);
+
+    // Function to trigger a data refresh
+    const refetch = useCallback(() => {
+        setRefreshTrigger(prev => prev + 1);
     }, []);
 
     // Calculate portfolio data based on raw data and selected date
@@ -81,5 +87,5 @@ export const usePortfolioData = (selectedDate?: Date) => {
         };
     }, [rawData, selectedDate]);
 
-    return { portfolioData, loading, error };
-}; 
+    return { portfolioData, loading, error, refetch };
+};

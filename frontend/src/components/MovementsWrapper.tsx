@@ -1,33 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box, CircularProgress, Typography, Alert } from '@mui/material';
 import { usePortfolioData } from '../hooks/usePortfolioData';
-import Movements from './Movements';
+import { Movements } from './Movements';
 import { api } from '../services/api';
 import { ActionType } from '../types/api';
 
 const MovementsWrapper: React.FC = () => {
   const [selectedDate] = useState<Date | null>(null);
-  const { portfolioData, loading, error } = usePortfolioData(selectedDate || undefined);
+  const { portfolioData, loading, error, refetch } = usePortfolioData(selectedDate || undefined);
   const [actionTypes, setActionTypes] = useState<ActionType[]>([]);
   const [loadingActionTypes, setLoadingActionTypes] = useState(true);
   const [actionTypesError, setActionTypesError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchActionTypes = async () => {
-      try {
-        setLoadingActionTypes(true);
-        const data = await api.actionTypes.getAll();
-        setActionTypes(data);
-      } catch (err) {
-        console.error('Error fetching action types:', err);
-        setActionTypesError(err instanceof Error ? err.message : 'An unknown error occurred');
-      } finally {
-        setLoadingActionTypes(false);
-      }
-    };
-
-    fetchActionTypes();
+  const fetchActionTypes = useCallback(async () => {
+    try {
+      setLoadingActionTypes(true);
+      const data = await api.actionTypes.getAll();
+      setActionTypes(data);
+    } catch (err) {
+      console.error('Error fetching action types:', err);
+      setActionTypesError(err instanceof Error ? err.message : 'An unknown error occurred');
+    } finally {
+      setLoadingActionTypes(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchActionTypes();
+  }, [fetchActionTypes]);
+  
+  const handleMovementDeleted = useCallback(() => {
+    // Refresh the data when a movement is deleted
+    refetch();
+  }, [refetch]);
 
   if (loading || loadingActionTypes) {
     return (
@@ -83,6 +88,7 @@ const MovementsWrapper: React.FC = () => {
         name: inv.name,
         shortname: inv.shortname
       }))}
+      onMovementDeleted={handleMovementDeleted}
     />
   );
 };
