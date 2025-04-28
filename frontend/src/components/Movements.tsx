@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Box, 
   Typography, 
@@ -11,8 +11,21 @@ import {
   TableRow,
   TablePagination,
   Chip,
-  Grid
+  Grid,
+  TextField,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  IconButton,
+  Stack,
+  Tooltip
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import ClearIcon from '@mui/icons-material/Clear';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { Movement, ActionType } from '../types/api';
 import { formatCurrency, formatDate } from '../utils/formatting';
 
@@ -25,6 +38,12 @@ interface MovementsProps {
 export function Movements({ movements, actionTypes, investments }: MovementsProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Filter states
+  const [dateFilter, setDateFilter] = useState<Date | null>(null);
+  const [investmentFilter, setInvestmentFilter] = useState<number | ''>('');
+  const [actionFilter, setActionFilter] = useState<number | ''>('');
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -35,10 +54,51 @@ export function Movements({ movements, actionTypes, investments }: MovementsProp
     setPage(0);
   };
 
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
+  const clearFilters = () => {
+    setDateFilter(null);
+    setInvestmentFilter('');
+    setActionFilter('');
+  };
+
   // Sort movements by date (newest first)
   const sortedMovements = [...movements].sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
+
+  // Apply filters
+  const filteredMovements = useMemo(() => {
+    return sortedMovements.filter(movement => {
+      // Date filter
+      if (dateFilter) {
+        const movementDate = new Date(movement.date);
+        const filterDate = new Date(dateFilter);
+        
+        if (
+          movementDate.getFullYear() !== filterDate.getFullYear() ||
+          movementDate.getMonth() !== filterDate.getMonth() ||
+          movementDate.getDate() !== filterDate.getDate()
+        ) {
+          return false;
+        }
+      }
+      
+      // Investment filter
+      if (investmentFilter !== '' && movement.investment !== investmentFilter) {
+        return false;
+      }
+      
+      // Action filter
+      if (actionFilter !== '' && movement.action !== actionFilter) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [sortedMovements, dateFilter, investmentFilter, actionFilter]);
 
   // Get action name from action id
   const getActionName = (actionId: number) => {
@@ -80,6 +140,75 @@ export function Movements({ movements, actionTypes, investments }: MovementsProp
         
         <Grid size={{ xs: 12 }}>
           <Paper sx={{ width: '100%', mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+              <Tooltip title={showFilters ? "Hide filters" : "Show filters"}>
+                <IconButton onClick={toggleFilters} color={showFilters ? "primary" : "default"}>
+                  <FilterListIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            
+            {showFilters && (
+              <Box sx={{ p: 2, borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="Filter by date"
+                      value={dateFilter}
+                      onChange={(newValue) => setDateFilter(newValue)}
+                      slotProps={{ textField: { size: 'small', fullWidth: true } }}
+                    />
+                  </LocalizationProvider>
+                  
+                  <FormControl size="small" fullWidth>
+                    <InputLabel id="investment-filter-label">Investment</InputLabel>
+                    <Select
+                      labelId="investment-filter-label"
+                      id="investment-filter"
+                      value={investmentFilter}
+                      label="Investment"
+                      onChange={(e) => setInvestmentFilter(e.target.value as number | '')}
+                    >
+                      <MenuItem value="">
+                        <em>All</em>
+                      </MenuItem>
+                      {investments.map((investment) => (
+                        <MenuItem key={investment.id} value={investment.id}>
+                          {investment.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  
+                  <FormControl size="small" fullWidth>
+                    <InputLabel id="action-filter-label">Action</InputLabel>
+                    <Select
+                      labelId="action-filter-label"
+                      id="action-filter"
+                      value={actionFilter}
+                      label="Action"
+                      onChange={(e) => setActionFilter(e.target.value as number | '')}
+                    >
+                      <MenuItem value="">
+                        <em>All</em>
+                      </MenuItem>
+                      {actionTypes.map((action) => (
+                        <MenuItem key={action.id} value={action.id}>
+                          {action.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  
+                  <Tooltip title="Clear filters">
+                    <IconButton onClick={clearFilters} size="small">
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              </Box>
+            )}
+            
             <TableContainer>
               <Table sx={{ minWidth: 650 }} aria-label="movements table">
                 <TableHead>
@@ -93,7 +222,7 @@ export function Movements({ movements, actionTypes, investments }: MovementsProp
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {sortedMovements
+                  {filteredMovements
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((movement) => (
                       <TableRow key={movement.id}>
@@ -119,7 +248,7 @@ export function Movements({ movements, actionTypes, investments }: MovementsProp
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, 50]}
               component="div"
-              count={movements.length}
+              count={filteredMovements.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
