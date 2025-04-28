@@ -14,19 +14,40 @@ function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { portfolioData, loading, error } = usePortfolioData(selectedDate || undefined);
   const [mode, setMode] = useState<'light' | 'dark' | 'system'>('system');
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     document.title = "Portfolio Assistant";
+  }, []);
+
+  // Detect system theme preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Set initial theme based on system preference
+    setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
+    
+    // Add listener for theme changes
+    const handleChange = (e: MediaQueryListEvent) => {
+      setSystemTheme(e.matches ? 'dark' : 'light');
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    
+    // Clean up listener
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
   }, []);
 
   const currentTheme = React.useMemo(
     () => createTheme({
       ...theme,
       palette: {
-        mode: mode === 'system' ? 'light' : mode,
+        mode: mode === 'system' ? systemTheme : mode,
       },
     }),
-    [mode]
+    [mode, systemTheme]
   );
 
   if (loading) {
