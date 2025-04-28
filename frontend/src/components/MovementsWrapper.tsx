@@ -33,6 +33,11 @@ const MovementsWrapper: React.FC = () => {
     // Refresh the data when a movement is deleted
     refetch();
   }, [refetch]);
+  
+  const handleMovementAdded = useCallback(() => {
+    // Refresh the data when a movement is added
+    refetch();
+  }, [refetch]);
 
   if (loading || loadingActionTypes) {
     return (
@@ -89,6 +94,7 @@ const MovementsWrapper: React.FC = () => {
         shortname: inv.shortname
       }))}
       onMovementDeleted={handleMovementDeleted}
+      onMovementAdded={handleMovementAdded}
     />
   );
 };

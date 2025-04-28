@@ -24,7 +24,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Button
+  Button,
+  TextField,
+  Fab,
+  InputAdornment
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -32,6 +35,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import ClearIcon from '@mui/icons-material/Clear';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import { Movement, ActionType } from '../types/api';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { api } from '../services/api';
@@ -41,9 +45,19 @@ interface MovementsProps {
   actionTypes: ActionType[];
   investments: { id: number; name: string; shortname: string }[];
   onMovementDeleted?: () => void;
+  onMovementAdded?: () => void;
 }
 
-export function Movements({ movements, actionTypes, investments, onMovementDeleted }: MovementsProps) {
+interface NewMovementFormData {
+  date: Date | null;
+  investment: number | '';
+  action: number | '';
+  quantity: string;
+  amount: string;
+  fee: string;
+}
+
+export function Movements({ movements, actionTypes, investments, onMovementDeleted, onMovementAdded }: MovementsProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
@@ -57,6 +71,19 @@ export function Movements({ movements, actionTypes, investments, onMovementDelet
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [movementToDelete, setMovementToDelete] = useState<Movement | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Add movement dialog
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof NewMovementFormData, string>>>({});
+  const [newMovement, setNewMovement] = useState<NewMovementFormData>({
+    date: new Date(),
+    investment: '',
+    action: '',
+    quantity: '',
+    amount: '',
+    fee: '0'
+  });
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -108,6 +135,110 @@ export function Movements({ movements, actionTypes, investments, onMovementDelet
       // You could add error handling UI here
     } finally {
       setIsDeleting(false);
+    }
+  };
+  
+  // Add movement handlers
+  const handleAddClick = () => {
+    setAddDialogOpen(true);
+  };
+  
+  const handleAddCancel = () => {
+    setAddDialogOpen(false);
+    resetNewMovementForm();
+  };
+  
+  const resetNewMovementForm = () => {
+    setNewMovement({
+      date: new Date(),
+      investment: '',
+      action: '',
+      quantity: '',
+      amount: '',
+      fee: '0'
+    });
+    setFormErrors({});
+  };
+  
+  const validateForm = (): boolean => {
+    const errors: Partial<Record<keyof NewMovementFormData, string>> = {};
+    
+    if (!newMovement.date) {
+      errors.date = 'Date is required';
+    }
+    
+    if (newMovement.investment === '') {
+      errors.investment = 'Investment is required';
+    }
+    
+    if (newMovement.action === '') {
+      errors.action = 'Action is required';
+    }
+    
+    const quantity = parseFloat(newMovement.quantity);
+    if (isNaN(quantity) || quantity <= 0) {
+      errors.quantity = 'Quantity must be a positive number';
+    }
+    
+    const amount = parseFloat(newMovement.amount);
+    if (isNaN(amount)) {
+      errors.amount = 'Amount must be a valid number';
+    }
+    
+    const fee = parseFloat(newMovement.fee);
+    if (isNaN(fee) || fee < 0) {
+      errors.fee = 'Fee must be a non-negative number';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  const handleAddConfirm = async () => {
+    if (!validateForm()) return;
+    
+    try {
+      setIsAdding(true);
+      
+      const movementData = {
+        date: newMovement.date as Date,
+        investment: newMovement.investment as number,
+        action: newMovement.action as number,
+        quantity: parseFloat(newMovement.quantity),
+        amount: parseFloat(newMovement.amount),
+        fee: parseFloat(newMovement.fee || '0')
+      };
+      
+      await api.movements.create(movementData);
+      
+      // Close dialog and reset form
+      setAddDialogOpen(false);
+      resetNewMovementForm();
+      
+      // Notify parent component to refresh data
+      if (onMovementAdded) {
+        onMovementAdded();
+      }
+    } catch (error) {
+      console.error('Error adding movement:', error);
+      // You could add error handling UI here
+    } finally {
+      setIsAdding(false);
+    }
+  };
+  
+  const handleFormChange = (field: keyof NewMovementFormData, value: any) => {
+    setNewMovement(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Clear the error for this field if it exists
+    if (formErrors[field]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
     }
   };
 
@@ -317,6 +448,16 @@ export function Movements({ movements, actionTypes, investments, onMovementDelet
         </Grid>
       </Grid>
       
+      {/* Floating Add Button */}
+      <Fab 
+        color="primary" 
+        aria-label="add" 
+        sx={{ position: 'fixed', bottom: 16, right: 16 }}
+        onClick={handleAddClick}
+      >
+        <AddIcon />
+      </Fab>
+      
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={deleteDialogOpen}
@@ -354,8 +495,135 @@ export function Movements({ movements, actionTypes, investments, onMovementDelet
           </Button>
         </DialogActions>
       </Dialog>
+      
+      {/* Add Movement Dialog */}
+      <Dialog
+        open={addDialogOpen}
+        onClose={handleAddCancel}
+        aria-labelledby="add-dialog-title"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle id="add-dialog-title">
+          Add New Movement
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={3} sx={{ mt: 1 }}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Date"
+                value={newMovement.date}
+                onChange={(newValue) => handleFormChange('date', newValue)}
+                slotProps={{ 
+                  textField: { 
+                    fullWidth: true,
+                    error: !!formErrors.date,
+                    helperText: formErrors.date
+                  } 
+                }}
+              />
+            </LocalizationProvider>
+            
+            <FormControl fullWidth error={!!formErrors.investment}>
+              <InputLabel id="new-investment-label">Investment</InputLabel>
+              <Select
+                labelId="new-investment-label"
+                id="new-investment"
+                value={newMovement.investment}
+                label="Investment"
+                onChange={(e) => handleFormChange('investment', e.target.value)}
+              >
+                {investments.map((investment) => (
+                  <MenuItem key={investment.id} value={investment.id}>
+                    {investment.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {formErrors.investment && (
+                <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                  {formErrors.investment}
+                </Typography>
+              )}
+            </FormControl>
+            
+            <FormControl fullWidth error={!!formErrors.action}>
+              <InputLabel id="new-action-label">Action</InputLabel>
+              <Select
+                labelId="new-action-label"
+                id="new-action"
+                value={newMovement.action}
+                label="Action"
+                onChange={(e) => handleFormChange('action', e.target.value)}
+              >
+                {actionTypes.map((action) => (
+                  <MenuItem key={action.id} value={action.id}>
+                    {action.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {formErrors.action && (
+                <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                  {formErrors.action}
+                </Typography>
+              )}
+            </FormControl>
+            
+            <TextField
+              label="Quantity"
+              type="number"
+              value={newMovement.quantity}
+              onChange={(e) => handleFormChange('quantity', e.target.value)}
+              fullWidth
+              InputProps={{
+                inputProps: { min: 0, step: "0.0001" }
+              }}
+              error={!!formErrors.quantity}
+              helperText={formErrors.quantity}
+            />
+            
+            <TextField
+              label="Amount"
+              type="number"
+              value={newMovement.amount}
+              onChange={(e) => handleFormChange('amount', e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                inputProps: { step: "0.01" }
+              }}
+              error={!!formErrors.amount}
+              helperText={formErrors.amount}
+            />
+            
+            <TextField
+              label="Fee"
+              type="number"
+              value={newMovement.fee}
+              onChange={(e) => handleFormChange('fee', e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                inputProps: { min: 0, step: "0.01" }
+              }}
+              error={!!formErrors.fee}
+              helperText={formErrors.fee}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAddCancel} disabled={isAdding}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleAddConfirm} 
+            color="primary" 
+            variant="contained"
+            disabled={isAdding}
+          >
+            {isAdding ? 'Adding...' : 'Add Movement'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
-
-export default Movements;
