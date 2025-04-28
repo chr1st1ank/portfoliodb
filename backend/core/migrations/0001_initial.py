@@ -77,9 +77,7 @@ class Migration(migrations.Migration):
                 ("date", models.DateField(db_column="Date", null=True)),
                 (
                     "price",
-                    models.DecimalField(
-                        db_column="Price", decimal_places=4, max_digits=10, null=True
-                    ),
+                    models.DecimalField(db_column="Price", decimal_places=4, max_digits=10, null=True),
                 ),
                 (
                     "source",
@@ -109,21 +107,15 @@ class Migration(migrations.Migration):
                 ("date", models.DateField(db_column="Date", null=True)),
                 (
                     "quantity",
-                    models.DecimalField(
-                        db_column="Quantity", decimal_places=4, max_digits=10, null=True
-                    ),
+                    models.DecimalField(db_column="Quantity", decimal_places=4, max_digits=10, null=True),
                 ),
                 (
                     "amount",
-                    models.DecimalField(
-                        db_column="Amount", decimal_places=4, max_digits=10, null=True
-                    ),
+                    models.DecimalField(db_column="Amount", decimal_places=4, max_digits=10, null=True),
                 ),
                 (
                     "fee",
-                    models.DecimalField(
-                        db_column="Fee", decimal_places=4, max_digits=10, null=True
-                    ),
+                    models.DecimalField(db_column="Fee", decimal_places=4, max_digits=10, null=True),
                 ),
                 (
                     "action",

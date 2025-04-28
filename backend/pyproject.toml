@@ -20,8 +20,8 @@ exclude = [
     "**/*.ipynb_checkpoints/",
     "*.ipynb",
 ]
-# Ruff linting settings
-# Derived from tool.isort, tool.pylint chapters and .flake8 file
+
+[tool.ruff.lint]
 extend-select = [
     "F",
     "I",
