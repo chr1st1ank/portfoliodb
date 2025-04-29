@@ -26,7 +26,7 @@
     "fields": {
       "name": "Acme Corp",
       "isin": "US000001",
-      "short_name": "ACME"
+      "shortname": "ACME"
     }
   },
   {
@@ -35,7 +35,7 @@
     "fields": {
       "name": "Beta Inc",
       "isin": "US000002",
-      "short_name": "BETA"
+      "shortname": "BETA"
     }
   },
   {
@@ -44,7 +44,7 @@
     "fields": {
       "name": "Gamma Ltd",
       "isin": "US000003",
-      "short_name": "GAM"
+      "shortname": "GAM"
     }
   },
   {
@@ -53,7 +53,7 @@
     "fields": {
       "name": "Delta AG",
       "isin": "US000004",
-      "short_name": "DEL"
+      "shortname": "DEL"
     }
   },
   {
@@ -62,7 +62,7 @@
     "fields": {
       "name": "Epsilon SE",
       "isin": "US000005",
-      "short_name": "EPS"
+      "shortname": "EPS"
     }
   },
   {
