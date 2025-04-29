@@ -39,6 +39,11 @@ const MovementsWrapper: React.FC = () => {
     refetch();
   }, [refetch]);
 
+  const handleMovementUpdated = useCallback(() => {
+    // Refresh the data when a movement is updated
+    refetch();
+  }, [refetch]);
+
   if (loading || loadingActionTypes) {
     return (
       <Box
@@ -95,6 +100,7 @@ const MovementsWrapper: React.FC = () => {
       }))}
       onMovementDeleted={handleMovementDeleted}
       onMovementAdded={handleMovementAdded}
+      onMovementUpdated={handleMovementUpdated}
     />
   );
 };

@@ -58,6 +58,22 @@ export const api = {
                 date: new Date(response.data.date)
             };
         },
+        update: async (id: number, movement: Omit<Movement, 'id'>): Promise<Movement> => {
+            // Format the date and ensure decimal fields are properly formatted
+            const formattedMovement = {
+                ...movement,
+                date: formatDateForBackend(movement.date),
+                quantity: Number(movement.quantity),
+                amount: Number(movement.amount),
+                fee: Number(movement.fee)
+            };
+            
+            const response = await axios.put(`${API_BASE_URL}/movements/${id}/`, formattedMovement);
+            return {
+                ...response.data,
+                date: new Date(response.data.date)
+            };
+        },
     },
     developments: {
         getAll: async (): Promise<Development[]> => {
