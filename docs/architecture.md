@@ -87,6 +87,8 @@ A web-based tool for managing and analyzing a private securities portfolio. It e
 ├── src/                   # Source code
 │   ├── components/        # React components
 │   │   ├── InvestmentDetail.tsx    # Individual investment details
+│   │   ├── Investments.tsx         # Investment management
+│   │   ├── InvestmentsWrapper.tsx  # Container for investments
 │   │   ├── Movements.tsx           # Portfolio movements
 │   │   ├── MovementsWrapper.tsx    # Container for movements
 │   │   ├── PerformanceChart.tsx    # Performance visualization

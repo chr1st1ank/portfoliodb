@@ -27,6 +27,17 @@ export const api = {
             const response = await axios.get(`${API_BASE_URL}/investments/`);
             return response.data;
         },
+        delete: async (id: number): Promise<void> => {
+            await axios.delete(`${API_BASE_URL}/investments/${id}/`);
+        },
+        create: async (investment: Omit<Investment, 'id'>): Promise<Investment> => {
+            const response = await axios.post(`${API_BASE_URL}/investments/`, investment);
+            return response.data;
+        },
+        update: async (id: number, investment: Omit<Investment, 'id'>): Promise<Investment> => {
+            const response = await axios.put(`${API_BASE_URL}/investments/${id}/`, investment);
+            return response.data;
+        },
     },
     investmentPrices: {
         getAll: async (): Promise<InvestmentPrice[]> => {
