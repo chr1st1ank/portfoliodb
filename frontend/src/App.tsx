@@ -10,6 +10,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { theme } from './theme';
 import MovementsWrapper from './components/MovementsWrapper';
 import InvestmentsWrapper from './components/InvestmentsWrapper';
+import DatenimportWrapper from './components/DatenimportWrapper';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -116,6 +117,7 @@ function App() {
               <Route path="/investment/:id" element={<InvestmentDetailWrapper />} />
               <Route path="/movements" element={<MovementsWrapper />} />
               <Route path="/investments" element={<InvestmentsWrapper />} />
+              <Route path="/datenimport" element={<DatenimportWrapper />} />
             </Routes>
           </AppLayout>
         </Router>
@@ -170,6 +172,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
               currentPath === '/' ? 0 : 
               currentPath === '/movements' ? 1 :
               currentPath === '/investments' ? 2 :
+              currentPath === '/datenimport' ? 3 :
               currentPath.startsWith('/investment/') ? false : false
             } 
             aria-label="navigation tabs"
@@ -177,6 +180,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
             <LinkTab label="Dashboard" to="/" />
             <LinkTab label="Movements" to="/movements" />
             <LinkTab label="Investments" to="/investments" />
+            <LinkTab label="Datenimport" to="/datenimport" />
             {/* Additional tabs can be added here */}
           </Tabs>
         </Container>
