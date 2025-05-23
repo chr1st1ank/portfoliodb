@@ -59,8 +59,24 @@ export const usePortfolioData = (selectedDate?: Date) => {
             .map((d: any) => d.date)
             .filter((date: string) => date && !isNaN(new Date(date).getTime()));
 
+        // Handle empty developments data gracefully
         if (validDates.length === 0) {
-            throw new Error('No valid dates found in developments data');
+            // Return a minimal portfolio data structure when no data is available
+            return {
+                investments: [],
+                performance: [],
+                developments: [],
+                movements: [],
+                latestDate: new Date(),
+                currentDate: targetDate.toLocaleDateString('de-DE'),
+                total: {
+                    previousValue: 0,
+                    paymentSum: 0,
+                    valueAfter: 0,
+                    balance: 0,
+                    return: 0
+                },
+            };
         }
 
         const latestDate = new Date(Math.max(...validDates.map((date: string) => new Date(date).getTime())));
