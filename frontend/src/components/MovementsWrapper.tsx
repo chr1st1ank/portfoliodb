@@ -5,7 +5,11 @@ import { Movements } from './Movements';
 import { api } from '../services/api';
 import { ActionType } from '../types/api';
 
-const MovementsWrapper: React.FC = () => {
+interface MovementsWrapperProps {
+  onDataChanged?: () => void;
+}
+
+const MovementsWrapper: React.FC<MovementsWrapperProps> = ({ onDataChanged }) => {
   const [selectedDate] = useState<Date | null>(null);
   const { portfolioData, loading, error, refetch } = usePortfolioData(selectedDate || undefined);
   const [actionTypes, setActionTypes] = useState<ActionType[]>([]);
@@ -32,17 +36,32 @@ const MovementsWrapper: React.FC = () => {
   const handleMovementDeleted = useCallback(() => {
     // Refresh the data when a movement is deleted
     refetch();
-  }, [refetch]);
+    
+    // Notify parent component that data has changed
+    if (onDataChanged) {
+      onDataChanged();
+    }
+  }, [refetch, onDataChanged]);
   
   const handleMovementAdded = useCallback(() => {
     // Refresh the data when a movement is added
     refetch();
-  }, [refetch]);
+    
+    // Notify parent component that data has changed
+    if (onDataChanged) {
+      onDataChanged();
+    }
+  }, [refetch, onDataChanged]);
 
   const handleMovementUpdated = useCallback(() => {
     // Refresh the data when a movement is updated
     refetch();
-  }, [refetch]);
+    
+    // Notify parent component that data has changed
+    if (onDataChanged) {
+      onDataChanged();
+    }
+  }, [refetch, onDataChanged]);
 
   if (loading || loadingActionTypes) {
     return (

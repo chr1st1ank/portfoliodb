@@ -116,7 +116,11 @@ function App() {
                 }
               />
               <Route path="/investment/:id" element={<InvestmentDetailWrapper />} />
-              <Route path="/movements" element={<MovementsWrapper />} />
+              <Route path="/movements" element={<MovementsWrapper onDataChanged={() => {
+                // Force refresh of portfolio data when returning to dashboard
+                refetch();
+                setRefreshTrigger(prev => prev + 1);
+              }} />} />
               <Route path="/investments" element={<InvestmentsWrapper />} />
               <Route path="/datenimport" element={<DatenimportWrapper onDataImported={() => {
                 // Force refresh of portfolio data when returning to dashboard
