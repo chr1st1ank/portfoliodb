@@ -174,20 +174,33 @@ export class FlatexParser extends BaseDataParser {
       return; // Skip this row if we can't determine the action type
     }
 
-    // Calculate amount (price * quantity)
-    const amount = Math.abs(price * Math.abs(quantity));
+    // Calculate amount (price * quantity) with proper decimal handling
+    // Backend uses DecimalField with max_digits=10, decimal_places=4
+    let amount = Math.abs(price * Math.abs(quantity));
+  
+    // First, ensure we have no more than 4 decimal places to match backend DecimalField
+    amount = parseFloat(amount.toFixed(4));
+  
+    // Then check if total digits still exceed 10 (backend max_digits=10)
+    if (amount.toString().replace('.', '').length > 10) {
+      // Determine how many decimal places we can keep (up to 4)
+      const integerDigits = Math.floor(amount).toString().length;
+      const maxDecimalPlaces = Math.min(4, Math.max(0, 10 - integerDigits - 1)); // -1 for decimal point
+      amount = parseFloat(amount.toFixed(maxDecimalPlaces));
+    }
 
     // Find the investment ID
     const investmentIndex = result.investments.findIndex(inv => inv.isin === row.isin);
     const investmentId = investmentIndex !== -1 ? result.investments[investmentIndex].id || -1 : -1;
 
-    // Create the movement
+    // Create the movement with proper decimal handling for numeric fields
+    // Ensure all numeric values match backend DecimalField(max_digits=10, decimal_places=4)
     result.movements.push({
       date: dateObj,
       action: actionType,
       investment: investmentId,
-      quantity: Math.abs(quantity), // Always store positive quantity
-      amount: amount,
+      quantity: parseFloat(Math.abs(quantity).toFixed(4)), // Always store positive quantity with 4 decimal places
+      amount: amount, // Already formatted with proper decimal places
       fee: 0 // Flatex CSV doesn't include fee information directly
     });
   }
@@ -278,7 +291,8 @@ export class FlatexParser extends BaseDataParser {
   private parseGermanNumber(numStr: string): number {
     // Replace comma with dot for decimal separator
     const normalizedStr = numStr.replace(',', '.');
-    return parseFloat(normalizedStr);
+    // Parse as float but ensure we don't exceed the precision supported by the backend
+    return parseFloat(parseFloat(normalizedStr).toFixed(4));
   }
 
   /**
