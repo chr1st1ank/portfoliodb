@@ -14,7 +14,8 @@ import DatenimportWrapper from './components/DatenimportWrapper';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const { portfolioData, loading, error } = usePortfolioData(selectedDate || undefined);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { portfolioData, loading, error, refetch } = usePortfolioData(selectedDate || undefined);
   const [mode, setMode] = useState<'light' | 'dark' | 'system'>('system');
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
 
@@ -117,7 +118,11 @@ function App() {
               <Route path="/investment/:id" element={<InvestmentDetailWrapper />} />
               <Route path="/movements" element={<MovementsWrapper />} />
               <Route path="/investments" element={<InvestmentsWrapper />} />
-              <Route path="/datenimport" element={<DatenimportWrapper />} />
+              <Route path="/datenimport" element={<DatenimportWrapper onDataImported={() => {
+                // Force refresh of portfolio data when returning to dashboard
+                refetch();
+                setRefreshTrigger(prev => prev + 1);
+              }} />} />
             </Routes>
           </AppLayout>
         </Router>

@@ -50,6 +50,9 @@ export const usePortfolioData = (selectedDate?: Date) => {
     // Calculate portfolio data based on raw data and selected date
     const portfolioData = useMemo<PortfolioData | null>(() => {
         if (!rawData) return null;
+        
+        // Add a console log to help with debugging
+        console.log('Recalculating portfolio data', { refreshTrigger, selectedDate });
 
         const { investments, developments, movements } = rawData;
         const targetDate = selectedDate || new Date();
@@ -101,7 +104,7 @@ export const usePortfolioData = (selectedDate?: Date) => {
             currentDate: targetDate.toLocaleDateString('de-DE'),
             total,
         };
-    }, [rawData, selectedDate]);
+    }, [rawData, selectedDate, refreshTrigger]);
 
     return { portfolioData, loading, error, refetch };
 };

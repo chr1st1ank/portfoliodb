@@ -30,6 +30,11 @@ import '../parsing/flatexParser';
 // We're using the same properties as DataImportResult
 type ImportPreview = DataImportResult;
 
+// Props interface for the Datenimport component
+interface DatenimportProps {
+  onImportSuccess?: () => void;
+}
+
 // Map action types to readable German names
 const actionTypeNames: Record<number, string> = {
   1: 'Kauf',
@@ -38,7 +43,7 @@ const actionTypeNames: Record<number, string> = {
   0: 'Unbekannt'
 };
 
-const Datenimport: React.FC = () => {
+const Datenimport: React.FC<DatenimportProps> = ({ onImportSuccess }) => {
   // State for file input and import process
   const [fileType, setFileType] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
@@ -208,6 +213,11 @@ const Datenimport: React.FC = () => {
       // Reset file input
       const fileInput = document.getElementById('file-upload') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
+      
+      // Trigger data refresh in parent components
+      if (onImportSuccess) {
+        onImportSuccess();
+      }
       
     } catch (err) {
       setError(`Fehler beim Import: ${err}`);

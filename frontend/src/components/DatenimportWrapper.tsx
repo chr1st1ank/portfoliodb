@@ -3,8 +3,12 @@ import { Box, CircularProgress, Alert, Typography } from '@mui/material';
 import { usePortfolioData } from '../hooks/usePortfolioData';
 import Datenimport from './Datenimport';
 
-const DatenimportWrapper: React.FC = () => {
-  const { portfolioData, loading, error } = usePortfolioData();
+interface DatenimportWrapperProps {
+  onDataImported?: () => void;
+}
+
+const DatenimportWrapper: React.FC<DatenimportWrapperProps> = ({ onDataImported }) => {
+  const { portfolioData, loading, error, refetch } = usePortfolioData();
 
   if (loading) {
     return (
@@ -51,7 +55,15 @@ const DatenimportWrapper: React.FC = () => {
     );
   }
 
-  return <Datenimport />;
+  return <Datenimport onImportSuccess={() => {
+    // First refresh the local data
+    refetch();
+    
+    // Then notify the parent component that data was imported
+    if (onDataImported) {
+      onDataImported();
+    }
+  }} />;
 };
 
 export default DatenimportWrapper;
