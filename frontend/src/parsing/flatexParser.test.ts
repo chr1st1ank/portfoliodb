@@ -123,5 +123,73 @@ describe('flatexParser', () => {
       expect(result.errors.length).toBe(1);
       expect(result.errors[0]).toContain('Nicht genügend Felder');
     });
+
+    it('should handle fusion transactions correctly', () => {
+      const csvContent = `Nummer;Buchtag;Valuta;ISIN;Bezeichnung;Nominal;Einheit;Buchungsinformationen;TA-Nr.;Kurs;Währung;Depot
+1046585148;15.11.2023;14.11.2023;LU1737653045;AIS-M.NA ESG B.CTB UETFED;-148,478825;Stk.;Fusion in LU1737653045;3488243994;88,063;EUR;***148 Depot
+1046585148;15.11.2023;14.11.2023;IE000MJIXFE0;AMUNDI MSCI NA ESG CLMT NT ZR AMBTCTBETF;148,478825;Stk.;Fusion in LU1737653045;3488244009;88,063;EUR;***148 Depot`;
+
+      const result: DataImportResult = parseFlatexCsv(csvContent);
+
+      // Check that we have the expected investments
+      expect(result.investments.length).toBe(2);
+      expect(result.investments[0].isin).toBe('LU1737653045');
+      expect(result.investments[1].isin).toBe('IE000MJIXFE0');
+      
+      // Check that we have the expected movements
+      expect(result.movements.length).toBe(2);
+      expect(result.movements[0].action).toBe(2); // Sell (negative quantity)
+      expect(result.movements[0].quantity).toBeCloseTo(148.478825);
+      expect(result.movements[0].investment).toBe(1); // First investment ID
+      
+      expect(result.movements[1].action).toBe(1); // Buy (positive quantity)
+      expect(result.movements[1].quantity).toBeCloseTo(148.478825);
+      expect(result.movements[1].investment).toBe(2); // Second investment ID
+      
+      // Check that we don't have errors
+      expect(result.errors.length).toBe(0);
+    });
+
+    it('should skip Lagerstellenwechsel transactions', () => {
+      const csvContent = `Nummer;Buchtag;Valuta;ISIN;Bezeichnung;Nominal;Einheit;Buchungsinformationen;TA-Nr.;Kurs;Währung;Depot
+1046585148;17.11.2023;17.11.2023;IE000MJIXFE0;AMUNDI MSCI NA ESG CLMT NT ZR AMBTCTBETF;-148,478825;Stk.;Lagerstellenwechsel in IE000MJIXFE0;3491474014;88,063;EUR;***148 Depot
+1046585148;17.11.2023;17.11.2023;IE000MJIXFE0;AMUNDI MSCI NA ESG CLMT NT ZR AMBTCTBETF;148,478825;Stk.;Lagerstellenwechsel in IE000MJIXFE0;3491474015;88,063;EUR;***148 Depot`;
+
+      const result: DataImportResult = parseFlatexCsv(csvContent);
+
+      // Check that we have the expected investment
+      expect(result.investments.length).toBe(1);
+      expect(result.investments[0].isin).toBe('IE000MJIXFE0');
+      
+      // Check that we have no movements (both should be skipped)
+      expect(result.movements.length).toBe(0);
+      
+      // Check that we have warnings about skipped transactions
+      expect(result.warnings.length).toBe(2);
+      expect(result.warnings[0]).toContain('Transaktion übersprungen');
+      expect(result.warnings[1]).toContain('Transaktion übersprungen');
+    });
+
+    it('should correctly link investments to movements', () => {
+      const csvContent = `Nummer;Buchtag;Valuta;ISIN;Bezeichnung;Nominal;Einheit;Buchungsinformationen;TA-Nr.;Kurs;Währung;Depot
+1046585148;24.05.2023;22.05.2023;IE00B3VTML14;ISHARES GOVT BOND 3-7YR ETF;2,208;Stk.;WP-Eingang IE00B3VTML14;3292980473;139,452;EUR;***148 Depot
+1046585148;30.05.2023;01.06.2023;IE00B3VTML14;ISHARES GOVT BOND 3-7YR ETF;-23,000;Stk.;Ausführung ORDER Verkauf IE00B3VTML14 202825836;3298493673;122,905;EUR;***148 Depot
+1046585148;01.11.2023;03.11.2023;LU1737653045;AIS-M.NA ESG B.CTB UETFED;0,289003;Stk.;Ausführung ORDER Kauf LU1737653045 206043492;3474651931;86,504;EUR;***148 Depot`;
+
+      const result: DataImportResult = parseFlatexCsv(csvContent);
+
+      // Check that we have the expected investments
+      expect(result.investments.length).toBe(2);
+      
+      // Check that movements are linked to the correct investments
+      expect(result.movements.length).toBe(3);
+      
+      // First two movements should be linked to the first investment
+      expect(result.movements[0].investment).toBe(1);
+      expect(result.movements[1].investment).toBe(1);
+      
+      // Third movement should be linked to the second investment
+      expect(result.movements[2].investment).toBe(2);
+    });
   });
 });

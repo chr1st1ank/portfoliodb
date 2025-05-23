@@ -8,6 +8,12 @@ tasks:
     cmds:
       - uv run --directory=backend python manage.py makemigrations
 
+  clear-data:
+    desc: "Clear DB"
+    cmds:
+      - rm backend/db.sqlite3
+      - uv run --directory=backend python manage.py migrate --noinput
+
   sample-data:
     desc: "Load sample data into DB"
     cmds:

@@ -133,6 +133,7 @@ export class FlatexParser extends BaseDataParser {
       // Create a new investment
       const shortname = this.extractShortname(row.bezeichnung);
       result.investments.push({
+        id: result.investments.length + 1, // Temporary ID for linking movements
         name: row.bezeichnung,
         isin: row.isin,
         shortname: shortname
@@ -160,6 +161,12 @@ export class FlatexParser extends BaseDataParser {
       return;
     }
 
+    // Check if this is a transaction that should be skipped
+    if (this.shouldSkipTransaction(row.buchungsinformationen)) {
+      result.warnings.push(`Zeile ${lineNumber}: Transaktion übersprungen: ${row.buchungsinformationen}`);
+      return;
+    }
+
     // Determine action type based on buchungsinformationen and nominal
     const actionType = this.determineActionType(row.buchungsinformationen, quantity);
     if (actionType === 0) {
@@ -170,15 +177,35 @@ export class FlatexParser extends BaseDataParser {
     // Calculate amount (price * quantity)
     const amount = Math.abs(price * Math.abs(quantity));
 
+    // Find the investment ID
+    const investmentIndex = result.investments.findIndex(inv => inv.isin === row.isin);
+    const investmentId = investmentIndex !== -1 ? result.investments[investmentIndex].id || -1 : -1;
+
     // Create the movement
     result.movements.push({
       date: dateObj,
       action: actionType,
-      investment: -1, // Will be updated after investments are created
+      investment: investmentId,
       quantity: Math.abs(quantity), // Always store positive quantity
       amount: amount,
       fee: 0 // Flatex CSV doesn't include fee information directly
     });
+  }
+
+  /**
+   * Determines if a transaction should be skipped based on its type
+   * @param buchungsinformationen - The booking information text
+   * @returns True if the transaction should be skipped, false otherwise
+   */
+  private shouldSkipTransaction(buchungsinformationen: string): boolean {
+    const info = buchungsinformationen.toLowerCase();
+    
+    // Skip Lagerstellenwechsel (depository change) transactions
+    if (info.includes('lagerstellenwechsel')) {
+      return true;
+    }
+    
+    return false;
   }
 
   /**
@@ -262,6 +289,11 @@ export class FlatexParser extends BaseDataParser {
    */
   private determineActionType(buchungsinformationen: string, quantity: number): number {
     const info = buchungsinformationen.toLowerCase();
+    
+    // Check for fusion (treat as buy for positive quantity, sell for negative)
+    if (info.includes('fusion')) {
+      return quantity > 0 ? 1 : 2;
+    }
     
     // Check for sell
     if (info.includes('verkauf') || (info.includes('ausführung') && quantity < 0)) {
