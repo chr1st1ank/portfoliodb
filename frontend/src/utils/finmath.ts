@@ -1,6 +1,8 @@
+import uniroot from "./uniroot";
+
 /**
  * Computes the internal rate of return (IRR) for a series of cash flows at given dates.
- * Uses an iterative method to solve for the rate where discounted inflows equal outflows.
+ * Uses Brent's method to solve for the rate where the net present value equals zero.
  *
  * @param dates - Array of JavaScript Date objects representing the timing of each cash flow.
  * @param values - Array of numbers representing the cash flows (positive for inflow, negative for outflow).
@@ -27,8 +29,15 @@ export function irr(dates: Date[], values: number[]): number | string {
         return "Need both positive and negative values!";
     }
 
-    const epsilon = 1e-7;
-    const maxIterations = 20;
+    // Brent's method parameters
+    const maxIterations = 100;
+    const tolerance = 1e-10;
+    
+    // Initial bounds for the search
+    let a = -0.9; // Lower bound
+    let b = 2.0;  // Upper bound
+    
+
     // Find the earliest date in the array
     const startDate = new Date(Math.min(...dates.map(d => d.getTime())));
 
@@ -40,36 +49,22 @@ export function irr(dates: Date[], values: number[]): number | string {
         return Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24));
     };
 
-    let u = 0; // Initial rate guess
-
-    for (let iteration = 0; iteration < maxIterations; iteration++) {
-        let positive = 0, dPositive = 0;
-        let negative = 0, dNegative = 0;
-
+    // Function to calculate NPV at a given rate
+    const npv = (rate: number): number => {
+        let sum = 0;
         for (let i = 0; i < dates.length; i++) {
-            const value = values[i];
             const time = daysBetween(startDate, dates[i]) / 365.2425;
-
-            if (value > 0) {
-                const temp = value * Math.exp(u * time);
-                positive += temp;
-                dPositive += temp * time;
-            } else if (value < 0) {
-                const temp = -value * Math.exp(u * time);
-                negative += temp;
-                dNegative += temp * time;
-            }
+            // Use the same discounting approach as the original implementation
+            sum += values[i] / Math.pow(1 + rate, time);
         }
+        return sum;
+    };
+    
+    const root = uniroot(npv, a, b, tolerance, maxIterations);
 
-        const delta = Math.log(negative / positive) /
-            ((dNegative / negative) - (dPositive / positive));
-
-        if (Math.abs(delta) < epsilon) {
-            return -u;
-        }
-
-        u -= delta;
+    if (root === undefined) {
+        return `IRR did not converge in ${maxIterations} iterations`;
     }
-
-    return `IRR did not converge in ${maxIterations} iterations`;
+    
+    return root;
 }

@@ -19,10 +19,10 @@ describe('irr', () => {
         new Date('2021-01-01'),
         new Date('2022-01-01')
       ],
-      [-100000, 5000, 105000]
+      [-100, 5, 105]
     );
     expect(typeof result).toBe('number');
-    expect(result as number).toBeCloseTo(0.0271981262791505);
+    expect(result as number).toBeCloseTo(0.05);
   });
 
   it('calculates correct IRR for multiple payments over consecutive years with 5.47% return', () => {
