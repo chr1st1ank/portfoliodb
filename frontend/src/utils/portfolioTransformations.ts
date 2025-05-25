@@ -1,5 +1,6 @@
 import { Investment, Development, Movement } from '../types/api';
 import { InvestmentPerformance } from '../types/portfolio';
+import { irr } from '../utils/finmath';
 
 export function calculateInvestmentData(
     investment: Investment,
@@ -37,9 +38,30 @@ export function calculateInvestmentData(
             return sum;
         }, 0);
 
-    // Calculate balance and return
+    // Calculate balance
     const balance = value - paymentSum;
-    const returnValue = paymentSum > 0 ? Number(((value - paymentSum) / paymentSum * 100).toFixed(2)) : 0;
+
+    // Calculate IRR
+    var payments = movements
+        .filter(m => m.investment === investment.id && new Date(m.date) <= targetDate)
+        .map(m => {
+            // For buys (1), reduce by amount and fee
+            // For sells (2) and dividends (3), add amount minus fee
+            if (m.action === 1) {
+                return -m.amount - m.fee;
+            } else if (m.action === 2 || m.action === 3) {
+                return m.amount - m.fee;
+            }
+            return 0;
+        });
+    payments.push(value);
+    var payment_dates = movements
+        .filter(m => m.investment === investment.id && new Date(m.date) <= targetDate)
+        .map(m => m.date);
+    payment_dates.push(targetDate);
+    // Handle potential string return from irr function (error case)
+    const irrResult = irr(payment_dates, payments);
+    const irrValue = typeof irrResult === 'number' ? irrResult : 0;
 
     return {
         id: investment.id,
@@ -50,7 +72,7 @@ export function calculateInvestmentData(
         quantityAfter: quantity,
         valueAfter: value,
         balance,
-        return: returnValue,
+        return: irrValue,
     };
 }
 
@@ -103,15 +125,14 @@ export function calculateTotals(investments: any[]) {
         balance: investments.reduce((sum, inv) => sum + (inv.valueAfter - inv.paymentSum), 0),
         return: investments.reduce((sum, inv) => sum + inv.return, 0),
     };
-} 
+}
 
 export function filterDevelopmentsByDate(
     developments: Development[],
     minDate: Date,
     maxDate: Date
-  ): Development[] {
+): Development[] {
     return developments.filter(dev =>
-      dev.date >= minDate && dev.date <= maxDate
+        dev.date >= minDate && dev.date <= maxDate
     );
 }
-  
