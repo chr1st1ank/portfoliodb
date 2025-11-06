@@ -1,6 +1,14 @@
 from django.db import models
 
 
+class Settings(models.Model):
+    id = models.AutoField(primary_key=True, db_column="ID")
+    base_currency = models.CharField(max_length=3, db_column="BaseCurrency", default="EUR")
+
+    class Meta:
+        db_table = "Settings"
+
+
 class ActionType(models.Model):
     id = models.AutoField(primary_key=True, db_column="ID")
     name = models.CharField(max_length=10, db_column="Name")
@@ -14,6 +22,8 @@ class Investment(models.Model):
     name = models.TextField(null=True, db_column="Name")
     isin = models.CharField(max_length=20, null=True, db_column="ISIN")
     shortname = models.CharField(max_length=30, null=True, db_column="ShortName")
+    ticker_symbol = models.CharField(max_length=20, null=True, db_column="TickerSymbol")
+    quote_provider = models.CharField(max_length=20, null=True, db_column="QuoteProvider")
 
     class Meta:
         db_table = "Investment"
