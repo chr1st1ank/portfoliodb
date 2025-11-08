@@ -35,6 +35,18 @@ class QuoteFetcherService:
             "openbb_yahoo": OpenBBYahooProvider(),
         }
 
+    def get_available_providers(self) -> List[Dict[str, str]]:
+        """
+        Get list of available providers with their display names.
+        
+        Returns:
+            List of dicts with 'id' and 'name' keys
+        """
+        return [
+            {"id": provider_id, "name": provider_id}
+            for provider_id in self.providers.keys()
+        ]
+
     def _get_base_currency(self) -> str:
         """Get the base currency from settings."""
         try:

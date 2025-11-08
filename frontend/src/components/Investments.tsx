@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -21,7 +21,11 @@ import {
   DialogTitle,
   Button,
   TextField,
-  Fab
+  Fab,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -40,6 +44,8 @@ interface InvestmentFormData {
   name: string;
   isin: string;
   shortname: string;
+  ticker_symbol: string;
+  quote_provider: string;
 }
 
 interface InvestmentDialogProps {
@@ -53,6 +59,7 @@ interface InvestmentDialogProps {
   onFormChange: (field: keyof InvestmentFormData, value: any) => void;
   confirmButtonText: string;
   processingButtonText: string;
+  providers: Array<{id: string, name: string}>;
 }
 
 // Investment dialog component for both add and edit operations
@@ -66,7 +73,8 @@ function InvestmentDialog({
   onConfirm,
   onFormChange,
   confirmButtonText,
-  processingButtonText
+  processingButtonText,
+  providers
 }: InvestmentDialogProps) {
   return (
     <Dialog
@@ -107,6 +115,31 @@ function InvestmentDialog({
             error={!!formErrors.shortname}
             helperText={formErrors.shortname}
           />
+          
+          <TextField
+            label="Ticker Symbol"
+            value={formData.ticker_symbol}
+            onChange={(e) => onFormChange('ticker_symbol', e.target.value)}
+            fullWidth
+            helperText="Optional: Symbol for quote fetching (e.g., AAPL, MSFT)"
+          />
+          
+          <FormControl fullWidth>
+            <InputLabel id="quote-provider-label">Quote Provider</InputLabel>
+            <Select
+              labelId="quote-provider-label"
+              label="Quote Provider"
+              value={formData.quote_provider}
+              onChange={(e) => onFormChange('quote_provider', e.target.value)}
+            >
+              <MenuItem value="">Not configured</MenuItem>
+              {providers.map((provider) => (
+                <MenuItem key={provider.id} value={provider.id}>
+                  {provider.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -128,7 +161,8 @@ function InvestmentDialog({
 
 function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onInvestmentUpdated }: InvestmentsProps) {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [providers, setProviders] = useState<Array<{id: string, name: string}>>([]);
   
   // Delete confirmation dialog
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -142,7 +176,9 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
   const [newInvestment, setNewInvestment] = useState<InvestmentFormData>({
     name: '',
     isin: '',
-    shortname: ''
+    shortname: '',
+    ticker_symbol: '',
+    quote_provider: ''
   });
 
   // Edit investment dialog
@@ -152,15 +188,30 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
   const [editFormData, setEditFormData] = useState<InvestmentFormData>({
     name: '',
     isin: '',
-    shortname: ''
+    shortname: '',
+    ticker_symbol: '',
+    quote_provider: ''
   });
+
+  // Load providers on mount
+  useEffect(() => {
+    const loadProviders = async () => {
+      try {
+        const data = await api.quotes.getProviders();
+        setProviders(data);
+      } catch (error) {
+        console.error('Error loading providers:', error);
+      }
+    };
+    loadProviders();
+  }, []);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(event.target.value, 25));
     setPage(0);
   };
 
@@ -216,7 +267,9 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
     setNewInvestment({
       name: '',
       isin: '',
-      shortname: ''
+      shortname: '',
+      ticker_symbol: '',
+      quote_provider: ''
     });
     setFormErrors({});
   };
@@ -254,7 +307,9 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
       const investment = {
         name: newInvestment.name,
         isin: newInvestment.isin,
-        shortname: newInvestment.shortname
+        shortname: newInvestment.shortname,
+        ticker_symbol: newInvestment.ticker_symbol || undefined,
+        quote_provider: newInvestment.quote_provider || undefined
       };
       
       console.log('Creating investment:', investment);
@@ -301,7 +356,9 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
     setEditFormData({
       name: investment.name || '',
       isin: investment.isin || '',
-      shortname: investment.shortname || ''
+      shortname: investment.shortname || '',
+      ticker_symbol: investment.ticker_symbol || '',
+      quote_provider: investment.quote_provider || ''
     });
     setFormErrors({});
     setEditDialogOpen(true);
@@ -326,7 +383,9 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
       const updatedInvestment = {
         name: editFormData.name,
         isin: editFormData.isin,
-        shortname: editFormData.shortname
+        shortname: editFormData.shortname,
+        ticker_symbol: editFormData.ticker_symbol || undefined,
+        quote_provider: editFormData.quote_provider || undefined
       };
       
       console.log('Updating investment:', investmentToEdit.id, updatedInvestment);
@@ -513,6 +572,7 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
         onFormChange={handleFormChange}
         confirmButtonText="Add Investment"
         processingButtonText="Adding..."
+        providers={providers}
       />
       
       {/* Edit Investment Dialog */}
@@ -527,6 +587,7 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
         onFormChange={handleEditFormChange}
         confirmButtonText="Save Changes"
         processingButtonText="Saving..."
+        providers={providers}
       />
     </Box>
   );

@@ -62,6 +62,19 @@ class DevelopmentViewSet(viewsets.ViewSet):
 class QuoteViewSet(viewsets.ViewSet):
     """ViewSet for quote fetching operations."""
 
+    @action(detail=False, methods=["get"])
+    def providers(self, request):
+        """
+        Get list of available quote providers.
+
+        GET /api/quotes/providers/
+        Returns: [{"id": "openbb_yahoo", "name": "Yahoo Finance"}, ...]
+        """
+        service = QuoteFetcherService()
+        providers = service.get_available_providers()
+        
+        return Response(providers, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=["post"])
     def fetch(self, request):
         """

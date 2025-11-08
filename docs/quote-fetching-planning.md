@@ -1,7 +1,7 @@
 # Quote Fetching Feature - Planning Document
 
-**Status:** Planning Phase  
-**Last Updated:** 2025-11-06
+**Status:** Phase 2 - Frontend UI (In Progress)  
+**Last Updated:** 2025-11-08
 
 ## Overview
 
@@ -103,21 +103,21 @@ Feature to automatically fetch daily stock/fund quotes from online sources and s
    - `GET /api/quotes/status/` - Get current fetch operation status (deferred to Phase 6)
 
 ### Phase 2: Frontend UI (Priority for Testing)
-1. Edit investment configuration UI:
-   - Add option to edit the ticker symbol per investment
-   - Select provider from dropdown (e.g., "OpenBB Yahoo", "OpenBB EODHD", "Not configured")
-   - Use the existing dialog
-2. Create Quotes page/view in frontend
-3. Display investments list with latest prices:
-   - Investment name, ISIN, ticker symbol
-   - Provider used
-   - Latest price and date
-   - Last update timestamp
-   - Configuration status indicator
-4. Add manual fetch trigger button
-5. Show fetch status/progress indicators
-6. Add price history view/modal for individual investments
-7. Display error messages for failed fetches or missing configuration
+1. ✅ Edit investment configuration UI:
+   - ✅ Add option to edit the ticker symbol per investment
+   - ✅ Select provider from dropdown (e.g., "Yahoo Finance", "EODHD", "Not configured")
+   - ✅ Use the existing dialog
+2. ✅ Create Quotes page/view in frontend
+3. ✅ Display investments list with latest prices:
+   - ✅ Investment name, ISIN, ticker symbol
+   - ✅ Provider used
+   - ✅ Latest price and date
+   - ⏭️ Last update timestamp (using price date for now)
+   - ✅ Configuration status indicator
+4. ✅ Add manual fetch trigger button
+5. ✅ Show fetch status/progress indicators
+6. ⏭️ Add price history view/modal for individual investments (deferred)
+7. ✅ Display error messages for failed fetches or missing configuration
 
 ### Phase 3: Management Command
 1. Create Django management command

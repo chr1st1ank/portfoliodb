@@ -11,6 +11,7 @@ import { theme } from './theme';
 import MovementsWrapper from './components/MovementsWrapper';
 import InvestmentsWrapper from './components/InvestmentsWrapper';
 import DatenimportWrapper from './components/DatenimportWrapper';
+import QuotesWrapper from './components/QuotesWrapper';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -122,6 +123,7 @@ function App() {
                 setRefreshTrigger(prev => prev + 1);
               }} />} />
               <Route path="/investments" element={<InvestmentsWrapper />} />
+              <Route path="/quotes" element={<QuotesWrapper />} />
               <Route path="/datenimport" element={<DatenimportWrapper onDataImported={() => {
                 // Force refresh of portfolio data when returning to dashboard
                 refetch();
@@ -181,7 +183,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
               currentPath === '/' ? 0 : 
               currentPath === '/movements' ? 1 :
               currentPath === '/investments' ? 2 :
-              currentPath === '/datenimport' ? 3 :
+              currentPath === '/quotes' ? 3 :
+              currentPath === '/datenimport' ? 4 :
               currentPath.startsWith('/investment/') ? false : false
             } 
             aria-label="navigation tabs"
@@ -189,6 +192,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
             <LinkTab label="Dashboard" to="/" />
             <LinkTab label="Movements" to="/movements" />
             <LinkTab label="Investments" to="/investments" />
+            <LinkTab label="Quotes" to="/quotes" />
             <LinkTab label="Datenimport" to="/datenimport" />
             {/* Additional tabs can be added here */}
           </Tabs>

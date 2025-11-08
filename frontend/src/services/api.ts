@@ -92,4 +92,10 @@ export const api = {
             return convertDates(response.data);
         },
     },
+    quotes: {
+        getProviders: async (): Promise<Array<{id: string, name: string}>> => {
+            const response = await axios.get(`${API_BASE_URL}/quotes/providers/`);
+            return response.data;
+        },
+    },
 }; 
