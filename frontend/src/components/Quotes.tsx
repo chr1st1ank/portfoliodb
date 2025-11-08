@@ -41,6 +41,7 @@ import PriceHistoryDialog from './PriceHistoryDialog';
 interface QuotesProps {
   investments: Investment[];
   onInvestmentUpdated?: () => void;
+  onQuotesFetched?: () => void;
 }
 
 interface InvestmentFormData {
@@ -69,7 +70,7 @@ interface FetchResponse {
   results: FetchResult[];
 }
 
-function Quotes({ investments, onInvestmentUpdated }: QuotesProps) {
+function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [investmentPrices, setInvestmentPrices] = useState<InvestmentPrice[]>([]);
@@ -188,6 +189,11 @@ function Quotes({ investments, onInvestmentUpdated }: QuotesProps) {
 
       // Reload prices after fetch
       await loadInvestmentPrices();
+      
+      // Trigger portfolio data refresh
+      if (onQuotesFetched) {
+        onQuotesFetched();
+      }
     } catch (err) {
       console.error('Error fetching quotes:', err);
       setError('Failed to fetch quotes. Please try again.');

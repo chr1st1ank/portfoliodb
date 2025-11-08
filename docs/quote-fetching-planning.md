@@ -130,13 +130,16 @@ Feature to automatically fetch daily stock/fund quotes from online sources and s
 2. Configure daily execution
 3. Add monitoring/alerting for failures
 
-### Phase 5: Integration with Portfolio Features
-1. Update portfolio valuation logic to use `InvestmentPrice` data
-2. Modify portfolio development/performance calculations:
-   - Calculate daily portfolio values using fetched quotes
-   - Fill gaps between transactions with quote-based valuations
-   - Maintain backward compatibility with existing Movement-only logic
-3. Update relevant frontend components to display continuous portfolio development
+### Phase 5: Integration with Portfolio Features ✅ COMPLETED
+1. ✅ Update portfolio valuation logic to use `InvestmentPrice` data
+2. ✅ Modify portfolio development/performance calculations:
+   - ✅ Calculate daily portfolio values using fetched quotes
+   - ✅ Fill gaps between transactions with quote-based valuations
+   - ✅ Maintain backward compatibility with existing Movement-only logic
+   - ✅ Price priority: InvestmentPrice → transaction price → last known price
+3. ✅ Update relevant frontend components to display continuous portfolio development
+   - ✅ Dashboard now shows market prices when available
+   - ✅ Investment detail view uses latest market prices
 
 ### Phase 6: Enhancement
 1. Backfill capability for historical data

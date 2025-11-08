@@ -123,7 +123,11 @@ function App() {
                 setRefreshTrigger(prev => prev + 1);
               }} />} />
               <Route path="/investments" element={<InvestmentsWrapper />} />
-              <Route path="/quotes" element={<QuotesWrapper />} />
+              <Route path="/quotes" element={<QuotesWrapper onQuotesFetched={() => {
+                // Force refresh of portfolio data after fetching quotes
+                refetch();
+                setRefreshTrigger(prev => prev + 1);
+              }} />} />
               <Route path="/datenimport" element={<DatenimportWrapper onDataImported={() => {
                 // Force refresh of portfolio data when returning to dashboard
                 refetch();

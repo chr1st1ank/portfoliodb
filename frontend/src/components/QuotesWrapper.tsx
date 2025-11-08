@@ -4,7 +4,11 @@ import Quotes from './Quotes';
 import { api } from '../services/api';
 import { Investment } from '../types/api';
 
-function QuotesWrapper() {
+interface QuotesWrapperProps {
+  onQuotesFetched?: () => void;
+}
+
+function QuotesWrapper({ onQuotesFetched }: QuotesWrapperProps) {
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +54,7 @@ function QuotesWrapper() {
     );
   }
 
-  return <Quotes investments={investments} onInvestmentUpdated={handleInvestmentUpdated} />;
+  return <Quotes investments={investments} onInvestmentUpdated={handleInvestmentUpdated} onQuotesFetched={onQuotesFetched} />;
 }
 
 export default QuotesWrapper;
