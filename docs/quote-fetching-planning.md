@@ -1,6 +1,6 @@
 # Quote Fetching Feature - Planning Document
 
-**Status:** Phase 2 - Frontend UI (In Progress)  
+**Status:** Phase 2 - Frontend UI (Completed) → Ready for Phase 3  
 **Last Updated:** 2025-11-08
 
 ## Overview
@@ -102,7 +102,7 @@ Feature to automatically fetch daily stock/fund quotes from online sources and s
 8. ⏭️ (Optional) Add fetch status endpoint:
    - `GET /api/quotes/status/` - Get current fetch operation status (deferred to Phase 6)
 
-### Phase 2: Frontend UI (Priority for Testing)
+### Phase 2: Frontend UI ✅ COMPLETED
 1. ✅ Edit investment configuration UI:
    - ✅ Add option to edit the ticker symbol per investment
    - ✅ Select provider from dropdown (e.g., "Yahoo Finance", "EODHD", "Not configured")
@@ -116,7 +116,7 @@ Feature to automatically fetch daily stock/fund quotes from online sources and s
    - ✅ Configuration status indicator
 4. ✅ Add manual fetch trigger button
 5. ✅ Show fetch status/progress indicators
-6. ⏭️ Add price history view/modal for individual investments (deferred)
+6. ✅ Add price history view/modal for individual investments
 7. ✅ Display error messages for failed fetches or missing configuration
 
 ### Phase 3: Management Command

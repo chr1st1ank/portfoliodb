@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "django_filters",
     "core",
 ]
 
@@ -130,3 +131,10 @@ CORS_ALLOW_ALL_ORIGINS = True  # For development only
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React development server
 ]
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
+}

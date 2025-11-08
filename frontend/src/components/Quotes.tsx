@@ -33,8 +33,10 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import EditIcon from '@mui/icons-material/Edit';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import { Investment, InvestmentPrice } from '../types/api';
 import { api } from '../services/api';
+import PriceHistoryDialog from './PriceHistoryDialog';
 
 interface QuotesProps {
   investments: Investment[];
@@ -89,6 +91,10 @@ function Quotes({ investments, onInvestmentUpdated }: QuotesProps) {
     quote_provider: ''
   });
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof InvestmentFormData, string>>>({});
+
+  // Price history dialog
+  const [priceHistoryDialogOpen, setPriceHistoryDialogOpen] = useState(false);
+  const [investmentForHistory, setInvestmentForHistory] = useState<Investment | null>(null);
 
   // Load investment prices and providers on mount
   useEffect(() => {
@@ -309,6 +315,17 @@ function Quotes({ investments, onInvestmentUpdated }: QuotesProps) {
     }
   };
 
+  // Price history handlers
+  const handlePriceHistoryClick = (investment: Investment) => {
+    setInvestmentForHistory(investment);
+    setPriceHistoryDialogOpen(true);
+  };
+
+  const handlePriceHistoryClose = () => {
+    setPriceHistoryDialogOpen(false);
+    setInvestmentForHistory(null);
+  };
+
   // Pagination
   const paginatedInvestments = investmentsWithPrices.slice(
     page * rowsPerPage,
@@ -422,15 +439,27 @@ function Quotes({ investments, onInvestmentUpdated }: QuotesProps) {
                         {getConfigurationStatusChip(investment.configurationStatus)}
                       </TableCell>
                       <TableCell align="right">
-                        <Tooltip title="Edit">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleEditClick(investment)}
-                            aria-label="edit"
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                        <Stack direction="row" spacing={1} justifyContent="flex-end">
+                          <Tooltip title="View Price History">
+                            <IconButton
+                              size="small"
+                              onClick={() => handlePriceHistoryClick(investment)}
+                              aria-label="price history"
+                              disabled={!investment.latestPrice}
+                            >
+                              <TimelineIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleEditClick(investment)}
+                              aria-label="edit"
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -456,6 +485,13 @@ function Quotes({ investments, onInvestmentUpdated }: QuotesProps) {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Price History Dialog */}
+      <PriceHistoryDialog
+        open={priceHistoryDialogOpen}
+        investment={investmentForHistory}
+        onClose={handlePriceHistoryClose}
+      />
 
       {/* Edit Investment Dialog */}
       <Dialog

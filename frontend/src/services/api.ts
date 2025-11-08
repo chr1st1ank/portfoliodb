@@ -50,6 +50,10 @@ export const api = {
             const response = await axios.get(`${API_BASE_URL}/investmentprices/`);
             return convertDates(response.data);
         },
+        getByInvestment: async (investmentId: number): Promise<InvestmentPrice[]> => {
+            const response = await axios.get(`${API_BASE_URL}/investmentprices/?investment=${investmentId}`);
+            return convertDates(response.data);
+        },
     },
     movements: {
         getAll: async (): Promise<Movement[]> => {

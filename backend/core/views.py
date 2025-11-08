@@ -36,6 +36,7 @@ class InvestmentViewSet(viewsets.ModelViewSet):
 class InvestmentPriceViewSet(viewsets.ModelViewSet):
     queryset = InvestmentPrice.objects.all()
     serializer_class = InvestmentPriceSerializer
+    filterset_fields = ['investment']
 
 
 class MovementViewSet(viewsets.ModelViewSet):
