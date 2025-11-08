@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
+import {
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   TablePagination,
   Grid,
@@ -59,7 +59,7 @@ interface InvestmentDialogProps {
   onFormChange: (field: keyof InvestmentFormData, value: any) => void;
   confirmButtonText: string;
   processingButtonText: string;
-  providers: Array<{id: string, name: string}>;
+  providers: Array<{ id: string, name: string }>;
 }
 
 // Investment dialog component for both add and edit operations
@@ -97,7 +97,7 @@ function InvestmentDialog({
             error={!!formErrors.name}
             helperText={formErrors.name}
           />
-          
+
           <TextField
             label="ISIN"
             value={formData.isin}
@@ -106,7 +106,7 @@ function InvestmentDialog({
             error={!!formErrors.isin}
             helperText={formErrors.isin}
           />
-          
+
           <TextField
             label="Short Name"
             value={formData.shortname}
@@ -115,7 +115,7 @@ function InvestmentDialog({
             error={!!formErrors.shortname}
             helperText={formErrors.shortname}
           />
-          
+
           <TextField
             label="Ticker Symbol"
             value={formData.ticker_symbol}
@@ -123,7 +123,7 @@ function InvestmentDialog({
             fullWidth
             helperText="Optional: Symbol for quote fetching (e.g., AAPL, MSFT)"
           />
-          
+
           <FormControl fullWidth>
             <InputLabel id="quote-provider-label">Quote Provider</InputLabel>
             <Select
@@ -146,9 +146,9 @@ function InvestmentDialog({
         <Button onClick={onCancel} disabled={isProcessing}>
           Cancel
         </Button>
-        <Button 
-          onClick={onConfirm} 
-          color="primary" 
+        <Button
+          onClick={onConfirm}
+          color="primary"
           variant="contained"
           disabled={isProcessing}
         >
@@ -162,13 +162,13 @@ function InvestmentDialog({
 function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onInvestmentUpdated }: InvestmentsProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [providers, setProviders] = useState<Array<{id: string, name: string}>>([]);
-  
+  const [providers, setProviders] = useState<Array<{ id: string, name: string }>>([]);
+
   // Delete confirmation dialog
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [investmentToDelete, setInvestmentToDelete] = useState<Investment | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   // Add investment dialog
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -220,24 +220,24 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
     setInvestmentToDelete(investment);
     setDeleteDialogOpen(true);
   };
-  
+
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
     setInvestmentToDelete(null);
   };
-  
+
   const handleDeleteConfirm = async () => {
     if (!investmentToDelete) return;
-    
+
     try {
       setIsDeleting(true);
       console.log('Deleting investment:', investmentToDelete.id);
       await api.investments.delete(investmentToDelete.id);
-      
+
       // Close dialog and reset state
       setDeleteDialogOpen(false);
       setInvestmentToDelete(null);
-      
+
       // Notify parent component to refresh data
       if (onInvestmentDeleted) {
         console.log('Calling onInvestmentDeleted callback');
@@ -252,17 +252,17 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
       setIsDeleting(false);
     }
   };
-  
+
   // Add investment handlers
   const handleAddClick = () => {
     setAddDialogOpen(true);
   };
-  
+
   const handleAddCancel = () => {
     setAddDialogOpen(false);
     resetNewInvestmentForm();
   };
-  
+
   const resetNewInvestmentForm = () => {
     setNewInvestment({
       name: '',
@@ -273,24 +273,24 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
     });
     setFormErrors({});
   };
-  
+
   const validateForm = (formData: InvestmentFormData): boolean => {
     const errors: Partial<Record<keyof InvestmentFormData, string>> = {};
-    
+
     if (!formData.name.trim()) {
       errors.name = 'Name is required';
     }
-    
+
     if (!formData.isin.trim()) {
       errors.isin = 'ISIN is required';
     } else if (!/^[A-Z0-9]{12}$/.test(formData.isin)) {
       errors.isin = 'ISIN must be 12 alphanumeric characters';
     }
-    
+
     if (!formData.shortname.trim()) {
       errors.shortname = 'Short name is required';
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -299,27 +299,27 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
     if (!validateForm(newInvestment)) {
       return;
     }
-    
+
     try {
       setIsAdding(true);
-      
+
       // Convert form data to Investment format
       const investment = {
         name: newInvestment.name,
         isin: newInvestment.isin,
         shortname: newInvestment.shortname,
-        ticker_symbol: newInvestment.ticker_symbol || undefined,
-        quote_provider: newInvestment.quote_provider || undefined
+        ticker_symbol: newInvestment.ticker_symbol.trim() || null,
+        quote_provider: newInvestment.quote_provider || null
       };
-      
+
       console.log('Creating investment:', investment);
       const result = await api.investments.create(investment);
       console.log('Create response:', result);
-      
+
       // Close dialog and reset state
       setAddDialogOpen(false);
       resetNewInvestmentForm();
-      
+
       // Notify parent component to refresh data
       if (onInvestmentAdded) {
         console.log('Calling onInvestmentAdded callback');
@@ -334,13 +334,13 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
       setIsAdding(false);
     }
   };
-  
+
   const handleFormChange = (field: keyof InvestmentFormData, value: any) => {
     setNewInvestment(prev => ({
       ...prev,
       [field]: value || ''
     }));
-    
+
     // Clear error for this field if it exists
     if (formErrors[field]) {
       setFormErrors(prev => ({
@@ -363,39 +363,39 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
     setFormErrors({});
     setEditDialogOpen(true);
   };
-  
+
   const handleEditCancel = () => {
     setEditDialogOpen(false);
     setInvestmentToEdit(null);
   };
-  
+
   const handleEditConfirm = async () => {
     if (!investmentToEdit) return;
-    
+
     if (!validateForm(editFormData)) {
       return;
     }
-    
+
     try {
       setIsEditing(true);
-      
+
       // Convert form data to Investment format
       const updatedInvestment = {
         name: editFormData.name,
         isin: editFormData.isin,
         shortname: editFormData.shortname,
-        ticker_symbol: editFormData.ticker_symbol || undefined,
-        quote_provider: editFormData.quote_provider || undefined
+        ticker_symbol: editFormData.ticker_symbol.trim() || null,
+        quote_provider: editFormData.quote_provider || null
       };
-      
+
       console.log('Updating investment:', investmentToEdit.id, updatedInvestment);
       const result = await api.investments.update(investmentToEdit.id, updatedInvestment);
       console.log('Update response:', result);
-      
+
       // Close dialog and reset state
       setEditDialogOpen(false);
       setInvestmentToEdit(null);
-      
+
       // Notify parent component to refresh data
       if (onInvestmentUpdated) {
         console.log('Calling onInvestmentUpdated callback');
@@ -410,13 +410,13 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
       setIsEditing(false);
     }
   };
-  
+
   const handleEditFormChange = (field: keyof InvestmentFormData, value: any) => {
     setEditFormData(prev => ({
       ...prev,
       [field]: value || ''
     }));
-    
+
     // Clear error for this field if it exists
     if (formErrors[field]) {
       setFormErrors(prev => ({
@@ -443,7 +443,7 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
             Manage your investment instruments
           </Typography>
         </Grid>
-        
+
         <Grid size={{ xs: 12 }}>
           <Paper sx={{ width: '100%', mb: 2 }}>
             <TableContainer>
@@ -465,8 +465,8 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
                       <TableCell align="right">
                         <Stack direction="row" spacing={1} justifyContent="flex-end">
                           <Tooltip title="Edit">
-                            <IconButton 
-                              size="small" 
+                            <IconButton
+                              size="small"
                               onClick={() => handleEditClick(investment)}
                               aria-label="edit"
                             >
@@ -474,8 +474,8 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Delete">
-                            <IconButton 
-                              size="small" 
+                            <IconButton
+                              size="small"
                               onClick={() => handleDeleteClick(investment)}
                               aria-label="delete"
                             >
@@ -508,17 +508,17 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
           </Paper>
         </Grid>
       </Grid>
-      
+
       {/* Floating Add Button */}
-      <Fab 
-        color="primary" 
-        aria-label="add" 
+      <Fab
+        color="primary"
+        aria-label="add"
         sx={{ position: 'fixed', bottom: 16, right: 16 }}
         onClick={handleAddClick}
       >
         <AddIcon />
       </Fab>
-      
+
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={deleteDialogOpen}
@@ -533,7 +533,7 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
           <DialogContentText id="delete-dialog-description">
             Are you sure you want to delete this investment? This action cannot be undone.
           </DialogContentText>
-          
+
           {investmentToDelete && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2" gutterBottom>Investment details:</Typography>
@@ -549,9 +549,9 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
           <Button onClick={handleDeleteCancel} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
             disabled={isDeleting}
             autoFocus
           >
@@ -559,7 +559,7 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       {/* Add Investment Dialog */}
       <InvestmentDialog
         open={addDialogOpen}
@@ -574,7 +574,7 @@ function Investments({ investments, onInvestmentDeleted, onInvestmentAdded, onIn
         processingButtonText="Adding..."
         providers={providers}
       />
-      
+
       {/* Edit Investment Dialog */}
       <InvestmentDialog
         open={editDialogOpen}

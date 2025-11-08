@@ -274,8 +274,8 @@ function Quotes({ investments, onInvestmentUpdated }: QuotesProps) {
         name: editFormData.name,
         isin: editFormData.isin,
         shortname: editFormData.shortname,
-        ticker_symbol: editFormData.ticker_symbol || undefined,
-        quote_provider: editFormData.quote_provider || undefined
+        ticker_symbol: editFormData.ticker_symbol.trim() || null,
+        quote_provider: editFormData.quote_provider || null
       };
       
       await api.investments.update(investmentToEdit.id, updatedInvestment);

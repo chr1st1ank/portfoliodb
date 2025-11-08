@@ -34,7 +34,13 @@ export const api = {
             const response = await axios.post(`${API_BASE_URL}/investments/`, investment);
             return response.data;
         },
-        update: async (id: number, investment: Omit<Investment, 'id'>): Promise<Investment> => {
+        update: async (id: number, investment: {
+            name: string;
+            isin: string;
+            shortname: string;
+            ticker_symbol?: string | null;
+            quote_provider?: string | null;
+        }): Promise<Investment> => {
             const response = await axios.put(`${API_BASE_URL}/investments/${id}/`, investment);
             return response.data;
         },

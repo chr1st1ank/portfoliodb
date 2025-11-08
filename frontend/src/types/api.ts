@@ -13,8 +13,8 @@ export interface Investment {
     name: string;
     isin: string;
     shortname: string;
-    ticker_symbol?: string;
-    quote_provider?: string;
+    ticker_symbol?: string | null;
+    quote_provider?: string | null;
 }
 
 export interface InvestmentPrice {
