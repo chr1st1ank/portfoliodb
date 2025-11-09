@@ -140,6 +140,7 @@ Feature to automatically fetch daily stock/fund quotes from online sources and s
 3. ✅ Update relevant frontend components to display continuous portfolio development
    - ✅ Dashboard now shows market prices when available
    - ✅ Investment detail view uses latest market prices
+   - ✅ Automatic cache invalidation after fetching quotes
 
 ### Phase 6: Enhancement
 1. Backfill capability for historical data

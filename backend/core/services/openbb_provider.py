@@ -19,6 +19,39 @@ class OpenBBYahooProvider(QuoteProvider):
 
     def __init__(self):
         self.provider_name = "openbb_yahoo"
+        self._currency_cache = {}  # Cache currency lookups to avoid repeated API calls
+
+    def _get_ticker_currency(self, ticker: str) -> str:
+        """
+        Get the currency for a ticker by fetching its profile/info.
+
+        Args:
+            ticker: The ticker symbol
+
+        Returns:
+            Currency code (e.g., "GBP", "USD", "EUR")
+        """
+        # Check cache first
+        if ticker in self._currency_cache:
+            return self._currency_cache[ticker]
+
+        try:
+            # Try to get equity profile which includes currency
+            profile = obb.equity.profile(symbol=ticker, provider="yfinance")
+
+            if profile and hasattr(profile, "results") and profile.results:
+                currency = getattr(profile.results[0], "currency", None)
+                if currency:
+                    self._currency_cache[ticker] = currency
+                    logger.info(f"Detected currency for {ticker}: {currency}")
+                    return currency
+
+            logger.warning(f"Could not detect currency for {ticker}, defaulting to USD")
+            return "USD"
+
+        except Exception as e:
+            logger.warning(f"Error fetching currency for {ticker}: {str(e)}, defaulting to USD")
+            return "USD"
 
     def get_quote(self, ticker: str, quote_date: Optional[date] = None) -> Optional[QuoteData]:
         """
@@ -40,11 +73,13 @@ class OpenBBYahooProvider(QuoteProvider):
                 if result and hasattr(result, "results") and result.results:
                     # Get the most recent entry
                     latest = result.results[-1]
+                    # Get currency from ticker profile/info
+                    currency = self._get_ticker_currency(ticker)
                     return QuoteData(
                         ticker=ticker,
                         date=latest.date.date() if hasattr(latest.date, "date") else latest.date,
                         price=Decimal(str(latest.close)),
-                        currency=getattr(latest, "currency", "USD"),  # Default to USD if not available
+                        currency=currency,
                         source=self.provider_name,
                     )
             else:
@@ -55,11 +90,13 @@ class OpenBBYahooProvider(QuoteProvider):
 
                 if result and hasattr(result, "results") and result.results:
                     data = result.results[0]
+                    # Get currency from ticker profile/info
+                    currency = self._get_ticker_currency(ticker)
                     return QuoteData(
                         ticker=ticker,
                         date=data.date.date() if hasattr(data.date, "date") else data.date,
                         price=Decimal(str(data.close)),
-                        currency=getattr(data, "currency", "USD"),
+                        currency=currency,
                         source=self.provider_name,
                     )
 
