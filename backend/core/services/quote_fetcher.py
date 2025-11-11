@@ -3,7 +3,6 @@ Main quote fetching service that orchestrates providers and currency conversion.
 """
 
 import logging
-from datetime import date
 from typing import Dict, List, Optional
 
 from django.db import transaction
@@ -64,13 +63,12 @@ class QuoteFetcherService:
         """Get a provider instance by name."""
         return self.providers.get(provider_name)
 
-    def fetch_quote_for_investment(self, investment: Investment, quote_date: Optional[date] = None) -> QuoteFetchResult:
+    def fetch_quotes_for_investment(self, investment: Investment) -> QuoteFetchResult:
         """
-        Fetch and store a quote for a single investment.
+        Fetch and store all available historical quotes for a single investment.
 
         Args:
-            investment: The Investment object to fetch quote for
-            quote_date: The date to fetch (None for latest)
+            investment: The Investment object to fetch quotes for
 
         Returns:
             QuoteFetchResult indicating success or failure
@@ -92,9 +90,9 @@ class QuoteFetcherService:
             return QuoteFetchResult(investment_id=investment.id, success=False, error=error)
 
         try:
-            # Fetch quote from provider
-            quote_data = provider.get_quote(investment.ticker_symbol, quote_date)
-            if not quote_data:
+            # Fetch all historical quotes from provider
+            quotes_data = provider.get_quotes(investment.ticker_symbol or investment.isin)
+            if not quotes_data:
                 return QuoteFetchResult(
                     investment_id=investment.id, success=False, error="No quote data returned from provider"
                 )
@@ -102,53 +100,54 @@ class QuoteFetcherService:
             # Get base currency
             base_currency = self._get_base_currency()
 
-            # Convert to base currency if needed
-            price_in_base_currency = quote_data.price
-            if quote_data.currency != base_currency:
-                converted_price = self.currency_converter.convert(
-                    amount=quote_data.price,
-                    from_currency=quote_data.currency,
-                    to_currency=base_currency,
-                    conversion_date=quote_data.date,
-                )
-
-                if converted_price is None:
-                    return QuoteFetchResult(
-                        investment_id=investment.id,
-                        success=False,
-                        error=f"Currency conversion failed: {quote_data.currency} to {base_currency}",
-                    )
-
-                price_in_base_currency = converted_price
-
-            # Store in database (update if exists, create if not)
+            # Process and store all quotes
+            stored_count = 0
             with transaction.atomic():
-                InvestmentPrice.objects.update_or_create(
-                    investment=investment,
-                    date=quote_data.date,
-                    defaults={"price": price_in_base_currency, "source": quote_data.source},
-                )
+                for quote_data in quotes_data:
+                    # Convert to base currency if needed
+                    price_in_base_currency = quote_data.price
+                    if quote_data.currency != base_currency:
+                        converted_price = self.currency_converter.convert(
+                            amount=quote_data.price,
+                            from_currency=quote_data.currency,
+                            to_currency=base_currency,
+                            conversion_date=quote_data.date,
+                        )
+
+                        if converted_price is None:
+                            logger.warning(
+                                f"Currency conversion failed for {investment.ticker_symbol} "
+                                f"on {quote_data.date}: {quote_data.currency} to {base_currency}"
+                            )
+                            continue
+
+                        price_in_base_currency = converted_price
+
+                    # Store in database (update if exists, create if not)
+                    InvestmentPrice.objects.update_or_create(
+                        investment=investment,
+                        date=quote_data.date,
+                        defaults={"price": price_in_base_currency, "source": quote_data.source},
+                    )
+                    stored_count += 1
 
             logger.info(
-                f"Successfully fetched quote for {investment.name} ({investment.ticker_symbol}): "
-                f"{price_in_base_currency} {base_currency} on {quote_data.date}"
+                f"Successfully fetched {stored_count} historical quotes for {investment.name} "
+                f"({investment.ticker_symbol})"
             )
 
             return QuoteFetchResult(investment_id=investment.id, success=True)
 
         except Exception as e:
-            logger.error(f"Error fetching quote for investment {investment.id}: {str(e)}")
+            logger.error(f"Error fetching historical quotes for investment {investment.id}: {str(e)}")
             return QuoteFetchResult(investment_id=investment.id, success=False, error=str(e))
 
-    def fetch_quotes(
-        self, investment_ids: Optional[List[int]] = None, quote_date: Optional[date] = None
-    ) -> List[QuoteFetchResult]:
+    def fetch_quotes(self, investment_ids: Optional[List[int]] = None) -> List[QuoteFetchResult]:
         """
-        Fetch quotes for multiple investments.
+        Fetch all available historical quotes for multiple investments.
 
         Args:
             investment_ids: List of investment IDs to fetch (None for all configured)
-            quote_date: The date to fetch (None for latest)
 
         Returns:
             List of QuoteFetchResult objects
@@ -159,14 +158,13 @@ class QuoteFetcherService:
         else:
             # Only fetch for investments with ticker and provider configured
             investments = (
-                Investment.objects.filter(ticker_symbol__isnull=False, quote_provider__isnull=False)
-                .exclude(ticker_symbol="")
+                Investment.objects.filter(quote_provider__isnull=False)
                 .exclude(quote_provider="")
             )
 
         results = []
         for investment in investments:
-            result = self.fetch_quote_for_investment(investment, quote_date)
+            result = self.fetch_quotes_for_investment(investment)
             results.append(result)
 
         # Log summary

@@ -4,4 +4,5 @@
 local/
 **/__pycache__
 backend/*.sqlite3
+backend/*.sqlite3-journal
 backend/core/fixtures/real_data.json
