@@ -37,6 +37,19 @@ class QuoteProvider(ABC):
         pass
 
     @abstractmethod
+    def get_quotes(self, ticker_symbol: str) -> list[QuoteData]:
+        """
+        Fetch available prices for the given ticker.
+
+        Args:
+            ticker: The ticker symbol to fetch
+
+        Returns:
+            List of QuoteData objects
+        """
+        pass
+
+    @abstractmethod
     def get_provider_name(self) -> str:
         """
         Get the name of this provider.

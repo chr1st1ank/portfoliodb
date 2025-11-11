@@ -11,6 +11,7 @@ from django.db import transaction
 from core.models import Investment, InvestmentPrice, Settings
 
 from .currency_converter import CurrencyConverter
+from .justetf_provider import JustETFProvider
 from .openbb_provider import OpenBBYahooProvider
 from .quote_provider import QuoteProvider
 
@@ -33,6 +34,7 @@ class QuoteFetcherService:
         self.currency_converter = CurrencyConverter()
         self.providers: Dict[str, QuoteProvider] = {
             "openbb_yahoo": OpenBBYahooProvider(),
+            "justetf": JustETFProvider(),
         }
 
     def get_available_providers(self) -> List[Dict[str, str]]:

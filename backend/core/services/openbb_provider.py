@@ -107,6 +107,46 @@ class OpenBBYahooProvider(QuoteProvider):
             logger.error(f"Error fetching quote for {ticker}: {str(e)}")
             return None
 
+    def get_quotes(self, ticker_symbol: str) -> list[QuoteData]:
+        """
+        Fetch all available historical quotes for the given ticker.
+
+        Args:
+            ticker_symbol: The ticker symbol to fetch
+
+        Returns:
+            List of QuoteData objects
+        """
+        try:
+            # Fetch all available historical data (OpenBB defaults to max available)
+            result = obb.equity.price.historical(symbol=ticker_symbol, provider="yfinance", interval="1d")
+
+            if not result or not hasattr(result, "results") or not result.results:
+                logger.warning(f"No historical data found for ticker {ticker_symbol}")
+                return []
+
+            # Get currency once for all quotes
+            currency = self._get_ticker_currency(ticker_symbol)
+
+            quotes = []
+            for data_point in result.results:
+                quotes.append(
+                    QuoteData(
+                        ticker=ticker_symbol,
+                        date=data_point.date.date() if hasattr(data_point.date, "date") else data_point.date,
+                        price=Decimal(str(data_point.close)),
+                        currency=currency,
+                        source=self.provider_name,
+                    )
+                )
+
+            logger.info(f"Fetched {len(quotes)} historical quotes for {ticker_symbol} from OpenBB Yahoo")
+            return quotes
+
+        except Exception as e:
+            logger.error(f"Error fetching historical quotes for {ticker_symbol}: {str(e)}")
+            return []
+
     def get_provider_name(self) -> str:
         """Get the name of this provider."""
         return self.provider_name
