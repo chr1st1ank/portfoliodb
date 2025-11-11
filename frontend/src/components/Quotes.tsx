@@ -54,7 +54,7 @@ interface InvestmentFormData {
 
 interface InvestmentWithPrice extends Investment {
   latestPrice?: InvestmentPrice;
-  configurationStatus: 'configured' | 'partial' | 'not_configured';
+  configurationStatus: 'configured' | 'not_configured';
 }
 
 interface FetchResult {
@@ -139,12 +139,10 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
     
     const latestPrice = prices.length > 0 ? prices[0] : undefined;
 
-    // Determine configuration status
-    let configurationStatus: 'configured' | 'partial' | 'not_configured';
-    if (investment.ticker_symbol && investment.quote_provider) {
+    // Determine configuration status - only provider is required
+    let configurationStatus: 'configured' | 'not_configured';
+    if (investment.quote_provider) {
       configurationStatus = 'configured';
-    } else if (investment.ticker_symbol || investment.quote_provider) {
-      configurationStatus = 'partial';
     } else {
       configurationStatus = 'not_configured';
     }
@@ -202,12 +200,10 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
     }
   };
 
-  const getConfigurationStatusChip = (status: 'configured' | 'partial' | 'not_configured') => {
+  const getConfigurationStatusChip = (status: 'configured' | 'not_configured') => {
     switch (status) {
       case 'configured':
         return <Chip icon={<CheckCircleIcon />} label="Configured" color="success" size="small" />;
-      case 'partial':
-        return <Chip icon={<WarningIcon />} label="Partial" color="warning" size="small" />;
       case 'not_configured':
         return <Chip icon={<ErrorIcon />} label="Not Configured" color="error" size="small" />;
     }

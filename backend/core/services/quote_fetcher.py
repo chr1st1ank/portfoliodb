@@ -74,9 +74,7 @@ class QuoteFetcherService:
             QuoteFetchResult indicating success or failure
         """
         # Validate investment has required configuration
-        if not investment.ticker_symbol:
-            error = "No ticker symbol configured"
-        elif not investment.quote_provider:
+        if not investment.quote_provider:
             error = "No quote provider configured"
         else:
             # Get provider
