@@ -46,12 +46,12 @@ export const api = {
         },
     },
     investmentPrices: {
-        getAll: async (): Promise<InvestmentPrice[]> => {
-            const response = await axios.get(`${API_BASE_URL}/investmentprices/`);
+        getAll: async (params?: { start_date?: string; end_date?: string; investment?: number }): Promise<InvestmentPrice[]> => {
+            const response = await axios.get(`${API_BASE_URL}/investmentprices/`, { params });
             return convertDates(response.data);
         },
-        getByInvestment: async (investmentId: number): Promise<InvestmentPrice[]> => {
-            const response = await axios.get(`${API_BASE_URL}/investmentprices/?investment=${investmentId}`);
+        getByInvestment: async (investmentId: number, params?: { start_date?: string; end_date?: string }): Promise<InvestmentPrice[]> => {
+            const response = await axios.get(`${API_BASE_URL}/investmentprices/?investment=${investmentId}`, { params });
             return convertDates(response.data);
         },
     },
@@ -97,8 +97,8 @@ export const api = {
         },
     },
     developments: {
-        getAll: async (): Promise<Development[]> => {
-            const response = await axios.get(`${API_BASE_URL}/developments/`);
+        getAll: async (params?: { start_date?: string; end_date?: string }): Promise<Development[]> => {
+            const response = await axios.get(`${API_BASE_URL}/developments/`, { params });
             return convertDates(response.data);
         },
     },

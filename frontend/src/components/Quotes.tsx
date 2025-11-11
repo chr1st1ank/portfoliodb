@@ -31,7 +31,6 @@ import {
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
-import WarningIcon from '@mui/icons-material/Warning';
 import EditIcon from '@mui/icons-material/Edit';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { Investment, InvestmentPrice } from '../types/api';
@@ -107,7 +106,16 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
     try {
       setLoading(true);
       setError(null);
-      const prices = await api.investmentPrices.getAll();
+      
+      // Fetch last 2 years of prices - enough to show latest price
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setFullYear(startDate.getFullYear() - 2);
+      
+      const prices = await api.investmentPrices.getAll({
+        start_date: startDate.toISOString().split('T')[0],
+        end_date: endDate.toISOString().split('T')[0]
+      });
       setInvestmentPrices(prices);
     } catch (err) {
       console.error('Error loading investment prices:', err);

@@ -18,10 +18,30 @@ export const usePortfolioData = (selectedDate?: Date) => {
             setLoading(true);
             setError(null);
 
-            const [investmentsData, developmentsData, movementsData] = await Promise.all([
+            // First, fetch movements to determine the earliest date we need
+            const movementsData = await api.movements.getAll();
+            
+            // Find the earliest movement date
+            let startDate: Date;
+            if (movementsData.length > 0) {
+                const movementDates = movementsData.map(m => new Date(m.date));
+                const earliestMovement = new Date(Math.min(...movementDates.map(d => d.getTime())));
+                startDate = earliestMovement;
+            } else {
+                // No movements yet, just fetch last year as fallback
+                startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 1);
+            }
+            
+            const endDate = new Date();
+            const dateParams = {
+                start_date: startDate.toISOString().split('T')[0],
+                end_date: endDate.toISOString().split('T')[0]
+            };
+
+            const [investmentsData, developmentsData] = await Promise.all([
                 api.investments.getAll(),
-                api.developments.getAll(),
-                api.movements.getAll(),
+                api.developments.getAll(dateParams),
             ]);
 
             setRawData({
