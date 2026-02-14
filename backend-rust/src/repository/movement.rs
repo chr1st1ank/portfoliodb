@@ -13,14 +13,18 @@ impl MovementRepository {
     }
 
     pub async fn find_all(&self) -> Result<Vec<Movement>> {
-        let movements = sqlx::query_as::<_, Movement>("SELECT * FROM Movement")
-            .fetch_all(&self.pool)
-            .await?;
+        let movements = sqlx::query_as::<_, Movement>(
+            "SELECT ID, Date, ActionID, InvestmentID, CAST(Quantity AS REAL) as Quantity, CAST(Amount AS REAL) as Amount, CAST(Fee AS REAL) as Fee FROM Movement",
+        )
+        .fetch_all(&self.pool)
+        .await?;
         Ok(movements)
     }
 
     pub async fn find_by_id(&self, id: i64) -> Result<Option<Movement>> {
-        let movement = sqlx::query_as::<_, Movement>("SELECT * FROM Movement WHERE ID = ?")
+        let movement = sqlx::query_as::<_, Movement>(
+            "SELECT ID, Date, ActionID, InvestmentID, CAST(Quantity AS REAL) as Quantity, CAST(Amount AS REAL) as Amount, CAST(Fee AS REAL) as Fee FROM Movement WHERE ID = ?"
+        )
             .bind(id)
             .fetch_optional(&self.pool)
             .await?;

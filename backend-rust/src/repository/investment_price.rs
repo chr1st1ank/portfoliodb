@@ -19,7 +19,7 @@ impl InvestmentPriceRepository {
         start_date: Option<NaiveDate>,
         end_date: Option<NaiveDate>,
     ) -> Result<Vec<InvestmentPrice>> {
-        let mut query = String::from("SELECT * FROM InvestmentPrice WHERE 1=1");
+        let mut query = String::from("SELECT Date, InvestmentID, CAST(Price AS REAL) as Price, Source FROM InvestmentPrice WHERE 1=1");
 
         if investment_id.is_some() {
             query.push_str(" AND InvestmentID = ?");
