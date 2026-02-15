@@ -57,17 +57,17 @@ pub fn create_router(
         .with_state(movement_repo)
         // Investment Prices
         .route(
-            "/api/investment-prices",
+            "/api/investmentprices",
             get(handlers::list_investment_prices).post(handlers::create_investment_price),
         )
         .route(
-            "/api/investment-prices/upsert",
+            "/api/investmentprices/upsert",
             post(handlers::upsert_investment_price),
         )
         .with_state(investment_price_repo)
         // Action Types
-        .route("/api/action-types", get(handlers::list_action_types))
-        .route("/api/action-types/:id", get(handlers::get_action_type))
+        .route("/api/actiontypes", get(handlers::list_action_types))
+        .route("/api/actiontypes/:id", get(handlers::get_action_type))
         .with_state(action_type_repo)
         // Settings
         .route(

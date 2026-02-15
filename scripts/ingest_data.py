@@ -82,28 +82,42 @@ class DataIngester:
     def ingest_actiontypes(self, csv_path: Path) -> dict[int, int]:
         """
         Ingest action types and return mapping of old ID to new ID.
+        Action types are seeded in the backend, so we fetch existing ones and map by name.
         Returns: {old_id: new_id}
         """
-        self.log("\n📥 Ingesting action types...")
+        self.log("\n📥 Mapping action types...")
         records = self.read_csv(csv_path)
         id_mapping = {}
 
+        # Fetch existing action types from the API
+        try:
+            response = requests.get(f"{self.api_base_url}/api/actiontypes")
+            response.raise_for_status()
+            existing_action_types = {
+                at["name"].lower(): at["id"] for at in response.json()
+            }
+        except Exception as e:
+            self.log(f"  ✗ Failed to fetch action types: {e}")
+            return id_mapping
+
         for record in records:
             old_id = int(record["id"]) if record.get("id") else None
-            payload = {"name": record["name"]}
+            name = record["name"]
 
             try:
-                response = requests.post(
-                    f"{self.api_base_url}/api/actiontypes/", json=payload
-                )
-                response.raise_for_status()
-                new_id = response.json()["id"]
+                # Find the existing action type by name (case-insensitive)
+                new_id = existing_action_types.get(name.lower())
+                if new_id is None:
+                    raise ValueError(f"Action type '{name}' not found in backend")
+
                 id_mapping[old_id] = new_id
                 self.stats["actiontypes"]["created"] += 1
-                self.log(f"  ✓ Created action type: {record['name']} (ID: {new_id})")
+                self.log(
+                    f"  ✓ Mapped action type: {name} (CSV ID: {old_id} -> DB ID: {new_id})"
+                )
             except Exception as e:
                 self.stats["actiontypes"]["failed"] += 1
-                self.log(f"  ✗ Failed to create action type {record['name']}: {e}")
+                self.log(f"  ✗ Failed to map action type {name}: {e}")
 
         return id_mapping
 
@@ -126,7 +140,7 @@ class DataIngester:
 
             try:
                 response = requests.post(
-                    f"{self.api_base_url}/api/investments/", json=payload
+                    f"{self.api_base_url}/api/investments", json=payload
                 )
                 response.raise_for_status()
                 new_id = response.json()["id"]
@@ -159,14 +173,14 @@ class DataIngester:
 
             payload = {
                 "date": record["date"],
-                "investment": new_investment_id,
-                "price": record["price"],
+                "investment_id": new_investment_id,
+                "price": float(record["price"]),
                 "source": record.get("source"),
             }
 
             try:
                 response = requests.post(
-                    f"{self.api_base_url}/api/investmentprices/", json=payload
+                    f"{self.api_base_url}/api/investmentprices", json=payload
                 )
                 response.raise_for_status()
                 self.stats["investmentprices"]["created"] += 1
@@ -208,16 +222,16 @@ class DataIngester:
 
             payload = {
                 "date": record["date"],
-                "action": new_action_id,
-                "investment": new_investment_id,
-                "quantity": record["quantity"],
-                "amount": record["amount"],
-                "fee": record["fee"],
+                "action_id": new_action_id,
+                "investment_id": new_investment_id,
+                "quantity": float(record["quantity"]),
+                "amount": float(record["amount"]),
+                "fee": float(record["fee"]),
             }
 
             try:
                 response = requests.post(
-                    f"{self.api_base_url}/api/movements/", json=payload
+                    f"{self.api_base_url}/api/movements", json=payload
                 )
                 response.raise_for_status()
                 self.stats["movements"]["created"] += 1
