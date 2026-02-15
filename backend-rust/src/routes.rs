@@ -3,7 +3,7 @@ use crate::repository::traits::{
     ActionTypeRepository, InvestmentPriceRepository, InvestmentRepository, MovementRepository,
     SettingsRepository,
 };
-use crate::services::PortfolioCalculator;
+use crate::services::{PortfolioCalculator, QuoteFetcherService};
 use axum::{
     routing::{get, post},
     Router,
@@ -22,6 +22,13 @@ pub fn create_router(
     let portfolio_calculator = Arc::new(PortfolioCalculator::new(
         movement_repo.clone(),
         investment_price_repo.clone(),
+    ));
+
+    // Create quote fetcher service
+    let quote_fetcher = Arc::new(QuoteFetcherService::new(
+        investment_repo.clone(),
+        investment_price_repo.clone(),
+        settings_repo.clone(),
     ));
     Router::new()
         // Investments
@@ -71,5 +78,9 @@ pub fn create_router(
         // Developments (Portfolio Calculations)
         .route("/api/developments", get(handlers::list_developments))
         .with_state(portfolio_calculator)
+        // Quotes
+        .route("/api/quotes/providers", get(handlers::list_providers))
+        .route("/api/quotes/fetch", post(handlers::fetch_quotes))
+        .with_state(quote_fetcher)
         .layer(CorsLayer::permissive())
 }
