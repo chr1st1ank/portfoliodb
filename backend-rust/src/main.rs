@@ -1,4 +1,5 @@
 mod config;
+mod db;
 mod error;
 mod handlers;
 mod models;
@@ -32,6 +33,10 @@ async fn main() -> anyhow::Result<()> {
     // Setup database connection
     tracing::info!("Connecting to database: {}", config.database_url);
     let pool = SqlitePool::connect(&config.database_url).await?;
+
+    // Run database migrations
+    db::run_migrations(&pool).await?;
+
     tracing::info!("Database connection established");
 
     // Create repository implementations
