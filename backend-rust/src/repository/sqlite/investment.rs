@@ -1,25 +1,30 @@
 use crate::error::Result;
 use crate::models::Investment;
+use crate::repository::traits;
+use async_trait::async_trait;
 use sqlx::SqlitePool;
 
 #[derive(Clone)]
-pub struct InvestmentRepository {
+pub struct SqliteInvestmentRepository {
     pool: SqlitePool,
 }
 
-impl InvestmentRepository {
+impl SqliteInvestmentRepository {
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
     }
+}
 
-    pub async fn find_all(&self) -> Result<Vec<Investment>> {
+#[async_trait]
+impl traits::InvestmentRepository for SqliteInvestmentRepository {
+    async fn find_all(&self) -> Result<Vec<Investment>> {
         let investments = sqlx::query_as::<_, Investment>("SELECT * FROM Investment")
             .fetch_all(&self.pool)
             .await?;
         Ok(investments)
     }
 
-    pub async fn find_by_id(&self, id: i64) -> Result<Option<Investment>> {
+    async fn find_by_id(&self, id: i64) -> Result<Option<Investment>> {
         let investment = sqlx::query_as::<_, Investment>("SELECT * FROM Investment WHERE ID = ?")
             .bind(id)
             .fetch_optional(&self.pool)
@@ -27,7 +32,7 @@ impl InvestmentRepository {
         Ok(investment)
     }
 
-    pub async fn create(&self, investment: &Investment) -> Result<i64> {
+    async fn create(&self, investment: &Investment) -> Result<i64> {
         let result = sqlx::query(
             "INSERT INTO Investment (Name, ISIN, ShortName, TickerSymbol, QuoteProvider) VALUES (?, ?, ?, ?, ?)"
         )
@@ -42,7 +47,7 @@ impl InvestmentRepository {
         Ok(result.last_insert_rowid())
     }
 
-    pub async fn update(&self, id: i64, investment: &Investment) -> Result<()> {
+    async fn update(&self, id: i64, investment: &Investment) -> Result<()> {
         sqlx::query(
             "UPDATE Investment SET Name = ?, ISIN = ?, ShortName = ?, TickerSymbol = ?, QuoteProvider = ? WHERE ID = ?"
         )
@@ -58,7 +63,7 @@ impl InvestmentRepository {
         Ok(())
     }
 
-    pub async fn delete(&self, id: i64) -> Result<()> {
+    async fn delete(&self, id: i64) -> Result<()> {
         sqlx::query("DELETE FROM Investment WHERE ID = ?")
             .bind(id)
             .execute(&self.pool)

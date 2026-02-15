@@ -1,6 +1,6 @@
 use crate::error::{AppError, Result};
 use crate::models::Movement;
-use crate::repository::MovementRepository;
+use crate::repository::traits::MovementRepository;
 use axum::{
     extract::{Path, State},
     Json,
@@ -45,7 +45,7 @@ pub struct CreateMovementRequest {
 }
 
 pub async fn list_movements(
-    State(repo): State<Arc<MovementRepository>>,
+    State(repo): State<Arc<dyn MovementRepository>>,
 ) -> Result<Json<Vec<MovementResponse>>> {
     let movements = repo.find_all().await?;
     let response: Vec<MovementResponse> = movements.into_iter().map(Into::into).collect();
@@ -53,7 +53,7 @@ pub async fn list_movements(
 }
 
 pub async fn get_movement(
-    State(repo): State<Arc<MovementRepository>>,
+    State(repo): State<Arc<dyn MovementRepository>>,
     Path(id): Path<i64>,
 ) -> Result<Json<MovementResponse>> {
     let movement = repo.find_by_id(id).await?.ok_or(AppError::NotFound)?;
@@ -61,7 +61,7 @@ pub async fn get_movement(
 }
 
 pub async fn create_movement(
-    State(repo): State<Arc<MovementRepository>>,
+    State(repo): State<Arc<dyn MovementRepository>>,
     Json(req): Json<CreateMovementRequest>,
 ) -> Result<Json<MovementResponse>> {
     let movement = Movement {
@@ -80,7 +80,7 @@ pub async fn create_movement(
 }
 
 pub async fn update_movement(
-    State(repo): State<Arc<MovementRepository>>,
+    State(repo): State<Arc<dyn MovementRepository>>,
     Path(id): Path<i64>,
     Json(req): Json<CreateMovementRequest>,
 ) -> Result<Json<MovementResponse>> {
@@ -100,7 +100,7 @@ pub async fn update_movement(
 }
 
 pub async fn delete_movement(
-    State(repo): State<Arc<MovementRepository>>,
+    State(repo): State<Arc<dyn MovementRepository>>,
     Path(id): Path<i64>,
 ) -> Result<Json<()>> {
     repo.delete(id).await?;

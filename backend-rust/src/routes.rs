@@ -1,23 +1,22 @@
 use crate::handlers;
-use crate::repository::{
+use crate::repository::traits::{
     ActionTypeRepository, InvestmentPriceRepository, InvestmentRepository, MovementRepository,
     SettingsRepository,
 };
 use axum::{
-    routing::{delete, get, post, put},
+    routing::{get, post},
     Router,
 };
-use sqlx::SqlitePool;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 
-pub fn create_router(pool: SqlitePool) -> Router {
-    let investment_repo = Arc::new(InvestmentRepository::new(pool.clone()));
-    let movement_repo = Arc::new(MovementRepository::new(pool.clone()));
-    let investment_price_repo = Arc::new(InvestmentPriceRepository::new(pool.clone()));
-    let action_type_repo = Arc::new(ActionTypeRepository::new(pool.clone()));
-    let settings_repo = Arc::new(SettingsRepository::new(pool.clone()));
-
+pub fn create_router(
+    investment_repo: Arc<dyn InvestmentRepository>,
+    movement_repo: Arc<dyn MovementRepository>,
+    investment_price_repo: Arc<dyn InvestmentPriceRepository>,
+    action_type_repo: Arc<dyn ActionTypeRepository>,
+    settings_repo: Arc<dyn SettingsRepository>,
+) -> Router {
     Router::new()
         // Investments
         .route(

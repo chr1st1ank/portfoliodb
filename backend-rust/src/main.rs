@@ -6,8 +6,12 @@ mod repository;
 mod routes;
 
 use config::Config;
+use repository::{
+    SqliteActionTypeRepository, SqliteInvestmentPriceRepository, SqliteInvestmentRepository,
+    SqliteMovementRepository, SqliteSettingsRepository,
+};
 use sqlx::sqlite::SqlitePool;
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -29,8 +33,21 @@ async fn main() -> anyhow::Result<()> {
     let pool = SqlitePool::connect(&config.database_url).await?;
     tracing::info!("Database connection established");
 
-    // Create router
-    let app = routes::create_router(pool);
+    // Create repository implementations
+    let investment_repo = Arc::new(SqliteInvestmentRepository::new(pool.clone()));
+    let movement_repo = Arc::new(SqliteMovementRepository::new(pool.clone()));
+    let investment_price_repo = Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
+    let action_type_repo = Arc::new(SqliteActionTypeRepository::new(pool.clone()));
+    let settings_repo = Arc::new(SqliteSettingsRepository::new(pool.clone()));
+
+    // Create router with injected dependencies
+    let app = routes::create_router(
+        investment_repo,
+        movement_repo,
+        investment_price_repo,
+        action_type_repo,
+        settings_repo,
+    );
 
     // Start server
     let addr: SocketAddr = format!("{}:{}", config.host, config.port).parse()?;

@@ -1,6 +1,6 @@
 use crate::error::{AppError, Result};
 use crate::models::Settings;
-use crate::repository::SettingsRepository;
+use crate::repository::traits::SettingsRepository;
 use axum::{extract::State, Json};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -26,17 +26,21 @@ pub struct UpdateSettingsRequest {
 }
 
 pub async fn get_settings(
-    State(repo): State<Arc<SettingsRepository>>,
+    State(repo): State<Arc<dyn SettingsRepository>>,
 ) -> Result<Json<SettingsResponse>> {
     let settings = repo.get().await?.ok_or(AppError::NotFound)?;
     Ok(Json(settings.into()))
 }
 
 pub async fn update_settings(
-    State(repo): State<Arc<SettingsRepository>>,
+    State(repo): State<Arc<dyn SettingsRepository>>,
     Json(req): Json<UpdateSettingsRequest>,
 ) -> Result<Json<SettingsResponse>> {
-    repo.update(&req.base_currency).await?;
+    let settings = Settings {
+        id: 1,
+        base_currency: req.base_currency,
+    };
+    repo.update(&settings).await?;
     let updated = repo.get().await?.ok_or(AppError::NotFound)?;
     Ok(Json(updated.into()))
 }

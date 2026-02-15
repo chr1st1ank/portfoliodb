@@ -1,18 +1,23 @@
 use crate::error::Result;
 use crate::models::Movement;
+use crate::repository::traits;
+use async_trait::async_trait;
 use sqlx::SqlitePool;
 
 #[derive(Clone)]
-pub struct MovementRepository {
+pub struct SqliteMovementRepository {
     pool: SqlitePool,
 }
 
-impl MovementRepository {
+impl SqliteMovementRepository {
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
     }
+}
 
-    pub async fn find_all(&self) -> Result<Vec<Movement>> {
+#[async_trait]
+impl traits::MovementRepository for SqliteMovementRepository {
+    async fn find_all(&self) -> Result<Vec<Movement>> {
         let movements = sqlx::query_as::<_, Movement>(
             "SELECT ID, Date, ActionID, InvestmentID, CAST(Quantity AS REAL) as Quantity, CAST(Amount AS REAL) as Amount, CAST(Fee AS REAL) as Fee FROM Movement",
         )
@@ -21,7 +26,7 @@ impl MovementRepository {
         Ok(movements)
     }
 
-    pub async fn find_by_id(&self, id: i64) -> Result<Option<Movement>> {
+    async fn find_by_id(&self, id: i64) -> Result<Option<Movement>> {
         let movement = sqlx::query_as::<_, Movement>(
             "SELECT ID, Date, ActionID, InvestmentID, CAST(Quantity AS REAL) as Quantity, CAST(Amount AS REAL) as Amount, CAST(Fee AS REAL) as Fee FROM Movement WHERE ID = ?"
         )
@@ -31,7 +36,7 @@ impl MovementRepository {
         Ok(movement)
     }
 
-    pub async fn create(&self, movement: &Movement) -> Result<i64> {
+    async fn create(&self, movement: &Movement) -> Result<i64> {
         let result = sqlx::query(
             "INSERT INTO Movement (Date, ActionID, InvestmentID, Quantity, Amount, Fee) VALUES (?, ?, ?, ?, ?, ?)"
         )
@@ -47,7 +52,7 @@ impl MovementRepository {
         Ok(result.last_insert_rowid())
     }
 
-    pub async fn update(&self, id: i64, movement: &Movement) -> Result<()> {
+    async fn update(&self, id: i64, movement: &Movement) -> Result<()> {
         sqlx::query(
             "UPDATE Movement SET Date = ?, ActionID = ?, InvestmentID = ?, Quantity = ?, Amount = ?, Fee = ? WHERE ID = ?"
         )
@@ -64,7 +69,7 @@ impl MovementRepository {
         Ok(())
     }
 
-    pub async fn delete(&self, id: i64) -> Result<()> {
+    async fn delete(&self, id: i64) -> Result<()> {
         sqlx::query("DELETE FROM Movement WHERE ID = ?")
             .bind(id)
             .execute(&self.pool)

@@ -1,6 +1,6 @@
 use crate::error::{AppError, Result};
 use crate::models::Investment;
-use crate::repository::InvestmentRepository;
+use crate::repository::traits::InvestmentRepository;
 use axum::{
     extract::{Path, State},
     Json,
@@ -41,7 +41,7 @@ pub struct CreateInvestmentRequest {
 }
 
 pub async fn list_investments(
-    State(repo): State<Arc<InvestmentRepository>>,
+    State(repo): State<Arc<dyn InvestmentRepository>>,
 ) -> Result<Json<Vec<InvestmentResponse>>> {
     let investments = repo.find_all().await?;
     let response: Vec<InvestmentResponse> = investments.into_iter().map(Into::into).collect();
@@ -49,7 +49,7 @@ pub async fn list_investments(
 }
 
 pub async fn get_investment(
-    State(repo): State<Arc<InvestmentRepository>>,
+    State(repo): State<Arc<dyn InvestmentRepository>>,
     Path(id): Path<i64>,
 ) -> Result<Json<InvestmentResponse>> {
     let investment = repo.find_by_id(id).await?.ok_or(AppError::NotFound)?;
@@ -57,7 +57,7 @@ pub async fn get_investment(
 }
 
 pub async fn create_investment(
-    State(repo): State<Arc<InvestmentRepository>>,
+    State(repo): State<Arc<dyn InvestmentRepository>>,
     Json(req): Json<CreateInvestmentRequest>,
 ) -> Result<Json<InvestmentResponse>> {
     let investment = Investment {
@@ -75,7 +75,7 @@ pub async fn create_investment(
 }
 
 pub async fn update_investment(
-    State(repo): State<Arc<InvestmentRepository>>,
+    State(repo): State<Arc<dyn InvestmentRepository>>,
     Path(id): Path<i64>,
     Json(req): Json<CreateInvestmentRequest>,
 ) -> Result<Json<InvestmentResponse>> {
@@ -94,7 +94,7 @@ pub async fn update_investment(
 }
 
 pub async fn delete_investment(
-    State(repo): State<Arc<InvestmentRepository>>,
+    State(repo): State<Arc<dyn InvestmentRepository>>,
     Path(id): Path<i64>,
 ) -> Result<Json<()>> {
     repo.delete(id).await?;

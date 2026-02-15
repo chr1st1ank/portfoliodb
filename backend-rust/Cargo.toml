@@ -48,6 +48,7 @@ dotenvy = "0.15"
 
 # Async utilities
 futures = "0.3"
+async-trait = "0.1"
 
 [dev-dependencies]
 tokio-test = "0.4"

@@ -1,6 +1,6 @@
 use crate::error::Result;
 use crate::models::InvestmentPrice;
-use crate::repository::InvestmentPriceRepository;
+use crate::repository::traits::InvestmentPriceRepository;
 use axum::{
     extract::{Query, State},
     Json,
@@ -44,7 +44,7 @@ pub struct CreateInvestmentPriceRequest {
 }
 
 pub async fn list_investment_prices(
-    State(repo): State<Arc<InvestmentPriceRepository>>,
+    State(repo): State<Arc<dyn InvestmentPriceRepository>>,
     Query(params): Query<InvestmentPriceQuery>,
 ) -> Result<Json<Vec<InvestmentPriceResponse>>> {
     let mut start_date = params.start_date;
@@ -64,7 +64,7 @@ pub async fn list_investment_prices(
 }
 
 pub async fn create_investment_price(
-    State(repo): State<Arc<InvestmentPriceRepository>>,
+    State(repo): State<Arc<dyn InvestmentPriceRepository>>,
     Json(req): Json<CreateInvestmentPriceRequest>,
 ) -> Result<Json<InvestmentPriceResponse>> {
     let price = InvestmentPrice {
@@ -79,7 +79,7 @@ pub async fn create_investment_price(
 }
 
 pub async fn upsert_investment_price(
-    State(repo): State<Arc<InvestmentPriceRepository>>,
+    State(repo): State<Arc<dyn InvestmentPriceRepository>>,
     Json(req): Json<CreateInvestmentPriceRequest>,
 ) -> Result<Json<InvestmentPriceResponse>> {
     let price = InvestmentPrice {

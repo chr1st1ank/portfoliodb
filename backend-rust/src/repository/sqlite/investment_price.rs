@@ -1,19 +1,24 @@
 use crate::error::Result;
 use crate::models::InvestmentPrice;
+use crate::repository::traits;
+use async_trait::async_trait;
 use chrono::NaiveDate;
 use sqlx::SqlitePool;
 
 #[derive(Clone)]
-pub struct InvestmentPriceRepository {
+pub struct SqliteInvestmentPriceRepository {
     pool: SqlitePool,
 }
 
-impl InvestmentPriceRepository {
+impl SqliteInvestmentPriceRepository {
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
     }
+}
 
-    pub async fn find_all(
+#[async_trait]
+impl traits::InvestmentPriceRepository for SqliteInvestmentPriceRepository {
+    async fn find_all(
         &self,
         investment_id: Option<i64>,
         start_date: Option<NaiveDate>,
@@ -48,7 +53,7 @@ impl InvestmentPriceRepository {
         Ok(prices)
     }
 
-    pub async fn create(&self, price: &InvestmentPrice) -> Result<()> {
+    async fn create(&self, price: &InvestmentPrice) -> Result<()> {
         sqlx::query(
             "INSERT INTO InvestmentPrice (Date, InvestmentID, Price, Source) VALUES (?, ?, ?, ?)",
         )
@@ -62,7 +67,7 @@ impl InvestmentPriceRepository {
         Ok(())
     }
 
-    pub async fn upsert(&self, price: &InvestmentPrice) -> Result<()> {
+    async fn upsert(&self, price: &InvestmentPrice) -> Result<()> {
         sqlx::query(
             "INSERT INTO InvestmentPrice (Date, InvestmentID, Price, Source) 
              VALUES (?, ?, ?, ?)

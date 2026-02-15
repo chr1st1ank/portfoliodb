@@ -1,6 +1,6 @@
 use crate::error::{AppError, Result};
 use crate::models::ActionType;
-use crate::repository::ActionTypeRepository;
+use crate::repository::traits::ActionTypeRepository;
 use axum::{
     extract::{Path, State},
     Json,
@@ -24,7 +24,7 @@ impl From<ActionType> for ActionTypeResponse {
 }
 
 pub async fn list_action_types(
-    State(repo): State<Arc<ActionTypeRepository>>,
+    State(repo): State<Arc<dyn ActionTypeRepository>>,
 ) -> Result<Json<Vec<ActionTypeResponse>>> {
     let action_types = repo.find_all().await?;
     let response: Vec<ActionTypeResponse> = action_types.into_iter().map(Into::into).collect();
@@ -32,7 +32,7 @@ pub async fn list_action_types(
 }
 
 pub async fn get_action_type(
-    State(repo): State<Arc<ActionTypeRepository>>,
+    State(repo): State<Arc<dyn ActionTypeRepository>>,
     Path(id): Path<i64>,
 ) -> Result<Json<ActionTypeResponse>> {
     let action_type = repo.find_by_id(id).await?.ok_or(AppError::NotFound)?;

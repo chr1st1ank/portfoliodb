@@ -1,11 +1,8 @@
-pub mod action_type;
-pub mod investment;
-pub mod investment_price;
-pub mod movement;
-pub mod settings;
+pub mod sqlite;
+pub mod traits;
 
-pub use action_type::ActionTypeRepository;
-pub use investment::InvestmentRepository;
-pub use investment_price::InvestmentPriceRepository;
-pub use movement::MovementRepository;
-pub use settings::SettingsRepository;
+// Re-export concrete implementations for convenience
+pub use sqlite::{
+    SqliteActionTypeRepository, SqliteInvestmentPriceRepository, SqliteInvestmentRepository,
+    SqliteMovementRepository, SqliteSettingsRepository,
+};
