@@ -119,11 +119,11 @@
     "quote_providers": [
         {
             "id": "yahoo",
-            "name": "yahoo"
+            "name": "Yahoo Finance"
         },
         {
             "id": "justetf",
-            "name": "justetf"
+            "name": "JustETF"
         }
     ]
 }

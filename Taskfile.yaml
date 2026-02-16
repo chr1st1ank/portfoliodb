@@ -107,27 +107,45 @@ tasks:
       - cargo test --test repository_action_type_tests
       - cargo test --test repository_settings_tests
 
-  rust-run:
-    desc: "Run Rust backend server"
-    dir: backend-rust
-    cmds:
-      - cargo run
-
   rust-clean:
     desc: "Clean Rust build artifacts"
     dir: backend-rust
     cmds:
       - cargo clean
 
-  api-test:
-    desc: "Run API integration tests against Rust backend"
+  api-run:
+    desc: "Run Rust backend server"
+    dir: backend-rust
+    cmds:
+      - cargo run
+
+  api-run-minimal-data:
+    desc: "Load minimal sample data into DB"
+    dir: backend-rust
     cmds:
       - pkill -f portfoliodb-rust || true
-      - cd backend-rust && cargo run > /dev/null 2>&1 &
-      - sleep 3
-      - python scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
-      - python scripts/api_test.py --dataset minimal --api-url http://localhost:8001
-      - pkill -f portfoliodb-rust
+      - cargo build
+      - cargo run > /dev/null 2>&1 &
+      - sleep 1
+      - python ../scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
+
+  api-test:
+    desc: "Run API integration tests against Rust backend"
+    dir: backend-rust
+    cmds:
+      - pkill -f portfoliodb-rust || true
+      - cargo build
+      - cargo run > /dev/null 2>&1 &
+      - defer: pkill -f portfoliodb-rust
+      - sleep 1
+      - python ../scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
+      - python ../scripts/api_test.py --dataset minimal --api-url http://localhost:8001
+
+  x:
+    desc: "Run API integration tests against Rust backend"
+    cmds:
+      - cd backend-rust && sleep 30 > log.txt 2>&1 &
+      - sleep 1
 
   codex:
     desc: "Run Codex"

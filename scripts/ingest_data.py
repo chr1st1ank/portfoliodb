@@ -320,7 +320,7 @@ def main():
     args = parser.parse_args()
 
     # Determine dataset directory
-    dataset_dir = Path("testdata") / args.dataset
+    dataset_dir = Path(__file__).parent.parent / "testdata" / args.dataset
     if not dataset_dir.exists():
         print(f"❌ Error: Dataset directory not found: {dataset_dir}")
         return 1

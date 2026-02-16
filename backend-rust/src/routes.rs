@@ -11,6 +11,13 @@ use axum::{
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 
+#[derive(Clone)]
+pub struct QuoteFetchState {
+    pub investment_repo: Arc<dyn InvestmentRepository>,
+    pub price_repo: Arc<dyn InvestmentPriceRepository>,
+    pub settings_repo: Arc<dyn SettingsRepository>,
+}
+
 pub fn create_router(
     investment_repo: Arc<dyn InvestmentRepository>,
     movement_repo: Arc<dyn MovementRepository>,
@@ -24,12 +31,33 @@ pub fn create_router(
         investment_price_repo.clone(),
     ));
 
+    // Get base currency from settings (blocking call at startup)
+    let base_currency = tokio::task::block_in_place(|| {
+        tokio::runtime::Handle::current().block_on(async {
+            settings_repo
+                .get()
+                .await
+                .ok()
+                .flatten()
+                .map(|s| s.base_currency)
+                .unwrap_or_else(|| "EUR".to_string())
+        })
+    });
+
     // Create quote fetcher service
     let quote_fetcher = Arc::new(QuoteFetcherService::new(
         investment_repo.clone(),
         investment_price_repo.clone(),
-        settings_repo.clone(),
+        base_currency,
     ));
+
+    // Create state for quote fetch endpoint
+    let quote_fetch_state = QuoteFetchState {
+        investment_repo: investment_repo.clone(),
+        price_repo: investment_price_repo.clone(),
+        settings_repo: settings_repo.clone(),
+    };
+
     Router::new()
         // Investments
         .route(
@@ -82,5 +110,12 @@ pub fn create_router(
         .route("/api/quotes/providers", get(handlers::list_providers))
         .route("/api/quotes/fetch", post(handlers::fetch_quotes))
         .with_state(quote_fetcher)
+        // Quote fetch for specific investment
+        .route(
+            "/api/quotes/:investment_id/fetch",
+            post(handlers::fetch_latest_quotes),
+        )
+        .route("/api/quotes/:investment_id", get(handlers::get_quotes))
+        .with_state(quote_fetch_state)
         .layer(CorsLayer::permissive())
 }

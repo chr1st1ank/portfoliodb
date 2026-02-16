@@ -1,12 +1,9 @@
 use crate::error::Result;
 use crate::models::{Investment, InvestmentPrice};
-use crate::repository::traits::{
-    InvestmentPriceRepository, InvestmentRepository, SettingsRepository,
-};
+use crate::repository::traits::{InvestmentPriceRepository, InvestmentRepository};
 use crate::services::currency_converter::CurrencyConverter;
-use crate::services::providers::{JustETFProvider, QuoteProvider, YahooFinanceProvider};
+use crate::services::quotes::{JustETFProvider, QuoteProvider, YahooFinanceProvider};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -26,46 +23,44 @@ pub struct ProviderInfo {
 pub struct QuoteFetcherService {
     investment_repo: Arc<dyn InvestmentRepository>,
     price_repo: Arc<dyn InvestmentPriceRepository>,
-    settings_repo: Arc<dyn SettingsRepository>,
+    base_currency: String,
     currency_converter: CurrencyConverter,
-    providers: HashMap<String, Arc<dyn QuoteProvider>>,
 }
 
 impl QuoteFetcherService {
     pub fn new(
         investment_repo: Arc<dyn InvestmentRepository>,
         price_repo: Arc<dyn InvestmentPriceRepository>,
-        settings_repo: Arc<dyn SettingsRepository>,
+        base_currency: String,
     ) -> Self {
-        let mut providers: HashMap<String, Arc<dyn QuoteProvider>> = HashMap::new();
-        providers.insert("yahoo".to_string(), Arc::new(YahooFinanceProvider::new()));
-        providers.insert("justetf".to_string(), Arc::new(JustETFProvider::new()));
-
         Self {
             investment_repo,
             price_repo,
-            settings_repo,
+            base_currency,
             currency_converter: CurrencyConverter::new(),
-            providers,
         }
     }
 
     /// Get list of available quote providers
     pub fn get_available_providers(&self) -> Vec<ProviderInfo> {
-        self.providers
-            .keys()
-            .map(|id| ProviderInfo {
-                id: id.clone(),
-                name: id.clone(),
-            })
-            .collect()
+        vec![
+            ProviderInfo {
+                id: "yahoo".to_string(),
+                name: "Yahoo Finance".to_string(),
+            },
+            ProviderInfo {
+                id: "justetf".to_string(),
+                name: "JustETF".to_string(),
+            },
+        ]
     }
 
-    /// Get base currency from settings
-    async fn get_base_currency(&self) -> Result<String> {
-        match self.settings_repo.get().await? {
-            Some(settings) => Ok(settings.base_currency),
-            None => Ok("EUR".to_string()), // Default fallback
+    /// Create a provider instance on-demand based on provider name
+    fn create_provider(&self, provider_name: &str) -> Option<Arc<dyn QuoteProvider>> {
+        match provider_name {
+            "yahoo" => Some(Arc::new(YahooFinanceProvider::new())),
+            "justetf" => Some(Arc::new(JustETFProvider::new())),
+            _ => None,
         }
     }
 
@@ -89,9 +84,9 @@ impl QuoteFetcherService {
             }
         };
 
-        // Get provider
-        let provider = match self.providers.get(quote_provider) {
-            Some(p) => p.clone(),
+        // Get provider (create on-demand)
+        let provider = match self.create_provider(quote_provider) {
+            Some(p) => p,
             None => {
                 return Ok(QuoteFetchResult {
                     investment_id,
@@ -132,20 +127,17 @@ impl QuoteFetcherService {
             }
         };
 
-        // Get base currency
-        let base_currency = self.get_base_currency().await?;
-
         // Process and store quotes
         let mut stored_count = 0;
         for quote_data in quotes_data {
             // Convert to base currency if needed
-            let price_in_base_currency = if quote_data.currency != base_currency {
+            let price_in_base_currency = if quote_data.currency != self.base_currency {
                 match self
                     .currency_converter
                     .convert(
                         quote_data.price,
                         &quote_data.currency,
-                        &base_currency,
+                        &self.base_currency,
                         quote_data.date,
                     )
                     .await?
@@ -157,7 +149,7 @@ impl QuoteFetcherService {
                             ticker,
                             quote_data.date,
                             quote_data.currency,
-                            base_currency
+                            self.base_currency
                         );
                         continue;
                     }
@@ -191,6 +183,152 @@ impl QuoteFetcherService {
             error: None,
             quotes_stored: stored_count,
         })
+    }
+
+    /// Fetch only the latest quote for a single investment
+    pub async fn fetch_latest_quote_for_investment(
+        &self,
+        investment_id: i64,
+    ) -> Result<(QuoteFetchResult, Option<InvestmentPrice>)> {
+        // Get investment
+        let investment = self
+            .investment_repo
+            .find_by_id(investment_id)
+            .await?
+            .ok_or_else(|| crate::error::AppError::NotFound)?;
+
+        // Validate investment has required configuration
+        let quote_provider = match &investment.quote_provider {
+            Some(provider) if !provider.is_empty() => provider,
+            _ => {
+                return Ok((
+                    QuoteFetchResult {
+                        investment_id,
+                        success: false,
+                        error: Some("No quote provider configured".to_string()),
+                        quotes_stored: 0,
+                    },
+                    None,
+                ));
+            }
+        };
+
+        // Get provider (create on-demand)
+        let provider = match self.create_provider(quote_provider) {
+            Some(p) => p,
+            None => {
+                return Ok((
+                    QuoteFetchResult {
+                        investment_id,
+                        success: false,
+                        error: Some(format!("Unknown provider: {}", quote_provider)),
+                        quotes_stored: 0,
+                    },
+                    None,
+                ));
+            }
+        };
+
+        // Determine ticker to use
+        let ticker = investment
+            .ticker_symbol
+            .as_ref()
+            .or(investment.isin.as_ref())
+            .ok_or_else(|| {
+                crate::error::AppError::InvalidInput("Investment has no ticker or ISIN".to_string())
+            })?;
+
+        // Fetch latest quote from provider (None = latest)
+        let quote_data = match provider.get_quote(ticker, None).await {
+            Ok(Some(quote)) => quote,
+            Ok(None) => {
+                return Ok((
+                    QuoteFetchResult {
+                        investment_id,
+                        success: false,
+                        error: Some("No quote data returned from provider".to_string()),
+                        quotes_stored: 0,
+                    },
+                    None,
+                ));
+            }
+            Err(e) => {
+                return Ok((
+                    QuoteFetchResult {
+                        investment_id,
+                        success: false,
+                        error: Some(format!("Provider error: {}", e)),
+                        quotes_stored: 0,
+                    },
+                    None,
+                ));
+            }
+        };
+
+        // Convert to base currency if needed
+        let price_in_base_currency = if quote_data.currency != self.base_currency {
+            match self
+                .currency_converter
+                .convert(
+                    quote_data.price,
+                    &quote_data.currency,
+                    &self.base_currency,
+                    quote_data.date,
+                )
+                .await?
+            {
+                Some(converted) => converted,
+                None => {
+                    tracing::warn!(
+                        "Currency conversion failed for {} on {}: {} to {}",
+                        ticker,
+                        quote_data.date,
+                        quote_data.currency,
+                        self.base_currency
+                    );
+                    return Ok((
+                        QuoteFetchResult {
+                            investment_id,
+                            success: false,
+                            error: Some("Currency conversion failed".to_string()),
+                            quotes_stored: 0,
+                        },
+                        None,
+                    ));
+                }
+            }
+        } else {
+            quote_data.price
+        };
+
+        // Store in database (upsert)
+        let price = InvestmentPrice {
+            date: Some(quote_data.date),
+            investment_id: Some(investment_id),
+            price: Some(price_in_base_currency),
+            source: Some(quote_data.source.clone()),
+        };
+
+        self.price_repo.upsert(&price).await?;
+
+        tracing::info!(
+            "Successfully fetched latest quote for {} ({}): {} {} on {}",
+            investment.name.as_deref().unwrap_or("Unknown"),
+            ticker,
+            price_in_base_currency,
+            self.base_currency,
+            quote_data.date
+        );
+
+        Ok((
+            QuoteFetchResult {
+                investment_id,
+                success: true,
+                error: None,
+                quotes_stored: 1,
+            },
+            Some(price),
+        ))
     }
 
     /// Fetch quotes for multiple investments

@@ -1,5 +1,5 @@
 use crate::error::{AppError, Result};
-use crate::services::providers::{QuoteData, QuoteProvider};
+use crate::services::quotes::{QuoteData, QuoteProvider};
 use chrono::NaiveDate;
 use reqwest::Client;
 
