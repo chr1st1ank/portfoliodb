@@ -119,6 +119,16 @@ tasks:
     cmds:
       - cargo clean
 
+  api-test:
+    desc: "Run API integration tests against Rust backend"
+    cmds:
+      - pkill -f portfoliodb-rust || true
+      - cd backend-rust && cargo run > /dev/null 2>&1 &
+      - sleep 3
+      - python scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
+      - python scripts/api_test.py --dataset minimal --api-url http://localhost:8001
+      - pkill -f portfoliodb-rust
+
   codex:
     desc: "Run Codex"
     cmds:

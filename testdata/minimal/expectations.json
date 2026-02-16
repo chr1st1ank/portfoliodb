@@ -1,0 +1,129 @@
+{
+    "developments": [
+        {
+            "investment": 1,
+            "date": "2025-04-01",
+            "price": 110.1,
+            "quantity": 40.2904,
+            "value": 4435.97304
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-02",
+            "price": 110.2,
+            "quantity": 51.7511,
+            "value": 5702.97122
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-03",
+            "price": 110.3,
+            "quantity": 24.6601,
+            "value": 2720.00903
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-04",
+            "price": 110.4,
+            "quantity": 24.6601,
+            "value": 2722.47504
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-05",
+            "price": 120.0,
+            "quantity": 24.6601,
+            "value": 2959.212
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-07",
+            "price": 110.5,
+            "quantity": 70.217,
+            "value": 7758.9785
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-08",
+            "price": 110.6,
+            "quantity": 91.8184,
+            "value": 10155.11504
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-09",
+            "price": 110.7,
+            "quantity": 83.9466,
+            "value": 9292.88862
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-10",
+            "price": 110.8,
+            "quantity": 83.9466,
+            "value": 9301.28328
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-11",
+            "price": 110.9,
+            "quantity": 107.6502,
+            "value": 11938.40718
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-14",
+            "price": 111.0,
+            "quantity": 134.4798,
+            "value": 14927.2578
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-15",
+            "price": 111.1,
+            "quantity": 94.7075,
+            "value": 10522.00325
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-16",
+            "price": 111.2,
+            "quantity": 111.6378,
+            "value": 12414.12336
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-17",
+            "price": 111.3,
+            "quantity": 118.6538,
+            "value": 13206.16794
+        },
+        {
+            "investment": 1,
+            "date": "2025-04-18",
+            "price": 111.4,
+            "quantity": 127.0026,
+            "value": 14148.08964
+        },
+        {
+            "investment": 1,
+            "date": "2025-05-01",
+            "price": 112.0,
+            "quantity": 127.0026,
+            "value": 14224.2912
+        }
+    ],
+    "settings": {
+        "base_currency": "EUR"
+    },
+    "quote_providers": [
+        {
+            "id": "yahoo",
+            "name": "yahoo"
+        },
+        {
+            "id": "justetf",
+            "name": "justetf"
+        }
+    ]
+}
