@@ -71,14 +71,13 @@ impl traits::InvestmentPriceRepository for SqliteInvestmentPriceRepository {
         sqlx::query(
             "INSERT INTO InvestmentPrice (Date, InvestmentID, Price, Source) 
              VALUES (?, ?, ?, ?)
-             ON CONFLICT(Date, InvestmentID) DO UPDATE SET Price = ?, Source = ?",
+             ON CONFLICT(Date, InvestmentID, Source) DO UPDATE SET Price = ?",
         )
         .bind(price.date)
         .bind(price.investment_id)
         .bind(price.price)
         .bind(&price.source)
         .bind(price.price)
-        .bind(&price.source)
         .execute(&self.pool)
         .await?;
 

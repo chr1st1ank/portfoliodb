@@ -167,9 +167,6 @@ class DataIngester:
             new_investment_id = investment_mapping.get(old_investment_id)
 
             if not new_investment_id:
-                self.log(
-                    f"  ⚠️  Skipping price: unknown investment ID {old_investment_id}"
-                )
                 self.stats["investmentprices"]["failed"] += 1
                 continue
 
@@ -186,12 +183,13 @@ class DataIngester:
                 )
                 response.raise_for_status()
                 self.stats["investmentprices"]["created"] += 1
-                self.log(
-                    f"  ✓ Created price for investment {new_investment_id} on {record['date']}"
-                )
             except Exception as e:
                 self.stats["investmentprices"]["failed"] += 1
-                self.log(f"  ✗ Failed to create price: {e}")
+
+        self.log(
+            f"  ✓ Created {self.stats['investmentprices']['created']} prices "
+            f"({self.stats['investmentprices']['failed']} failed)"
+        )
 
     def ingest_movements(
         self,
@@ -211,14 +209,10 @@ class DataIngester:
             new_investment_id = investment_mapping.get(old_investment_id)
 
             if not new_action_id:
-                self.log(f"  ⚠️  Skipping movement: unknown action ID {old_action_id}")
                 self.stats["movements"]["failed"] += 1
                 continue
 
             if not new_investment_id:
-                self.log(
-                    f"  ⚠️  Skipping movement: unknown investment ID {old_investment_id}"
-                )
                 self.stats["movements"]["failed"] += 1
                 continue
 
@@ -228,7 +222,7 @@ class DataIngester:
                 "investment_id": new_investment_id,
                 "quantity": float(record["quantity"]),
                 "amount": float(record["amount"]),
-                "fee": float(record["fee"]),
+                "fee": float(record["fee"]) if record["fee"] else 0.0,
             }
 
             try:
@@ -237,12 +231,13 @@ class DataIngester:
                 )
                 response.raise_for_status()
                 self.stats["movements"]["created"] += 1
-                self.log(
-                    f"  ✓ Created movement for investment {new_investment_id} on {record['date']}"
-                )
             except Exception as e:
                 self.stats["movements"]["failed"] += 1
-                self.log(f"  ✗ Failed to create movement: {e}")
+
+        self.log(
+            f"  ✓ Created {self.stats['movements']['created']} movements "
+            f"({self.stats['movements']['failed']} failed)"
+        )
 
     def print_summary(self) -> None:
         """Print ingestion summary statistics."""

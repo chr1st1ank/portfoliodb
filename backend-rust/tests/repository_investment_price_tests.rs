@@ -250,20 +250,33 @@ async fn test_upsert_update() {
     };
     price_repo.create(&price1).await.unwrap();
 
-    // Upsert with updated price
+    // Upsert with same source - should update
     let price2 = InvestmentPrice {
         date: Some(date),
         investment_id: Some(inv_id),
         price: Some(150.0),
-        source: Some("updated".to_string()),
+        source: Some("yahoo".to_string()),
     };
     price_repo.upsert(&price2).await.unwrap();
 
-    // Should still have only 1 record, but updated
+    // Should still have only 1 record, but with updated price
     let prices = price_repo.find_all(None, None, None).await.unwrap();
     assert_eq!(prices.len(), 1);
     assert_eq!(prices[0].price, Some(150.0));
-    assert_eq!(prices[0].source, Some("updated".to_string()));
+    assert_eq!(prices[0].source, Some("yahoo".to_string()));
+
+    // Upsert with different source - should create new record
+    let price3 = InvestmentPrice {
+        date: Some(date),
+        investment_id: Some(inv_id),
+        price: Some(200.0),
+        source: Some("justetf".to_string()),
+    };
+    price_repo.upsert(&price3).await.unwrap();
+
+    // Should now have 2 records (different sources)
+    let prices = price_repo.find_all(None, None, None).await.unwrap();
+    assert_eq!(prices.len(), 2);
 }
 
 #[tokio::test]

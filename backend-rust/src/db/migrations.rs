@@ -88,7 +88,7 @@ async fn create_schema(pool: &SqlitePool) -> Result<()> {
             InvestmentID INTEGER,
             Price DECIMAL,
             Source VARCHAR(20),
-            UNIQUE(Date, InvestmentID)
+            UNIQUE(Date, InvestmentID, Source)
         )
         "#,
     )
