@@ -136,6 +136,8 @@ class DataIngester:
                 "name": record.get("name"),
                 "isin": record.get("isin"),
                 "shortname": record.get("shortname"),
+                "ticker_symbol": record.get("ticker_symbol"),
+                "quote_provider": record.get("quote_provider"),
             }
 
             try:
