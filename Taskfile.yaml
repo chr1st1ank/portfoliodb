@@ -91,21 +91,11 @@ tasks:
     cmds:
       - cargo test
 
-  rust-test-unit:
-    desc: "Run Rust unit tests only"
+  rust-online-tests:
+    desc: "Run all Rust online tests"
     dir: backend-rust
     cmds:
-      - cargo test --test portfolio_calculator_tests
-
-  rust-test-integration:
-    desc: "Run Rust integration tests (repositories)"
-    dir: backend-rust
-    cmds:
-      - cargo test --test repository_investment_tests
-      - cargo test --test repository_movement_tests
-      - cargo test --test repository_investment_price_tests
-      - cargo test --test repository_action_type_tests
-      - cargo test --test repository_settings_tests
+      - cargo test -- --ignored
 
   rust-clean:
     desc: "Clean Rust build artifacts"
@@ -113,21 +103,23 @@ tasks:
     cmds:
       - cargo clean
 
-  api-run:
-    desc: "Run Rust backend server"
-    dir: backend-rust
-    cmds:
-      - cargo run
-
-  api-run-minimal-data:
-    desc: "Load minimal sample data into DB"
+  api-serve:
+    desc: "Start the Rust backend"
     dir: backend-rust
     cmds:
       - pkill -f portfoliodb-rust || true
-      - cargo build
-      - cargo run > /dev/null 2>&1 &
+      - cargo run
+
+  api-ingest:
+    desc: "Ingest minimal dataset"
+    cmds:
       - sleep 1
-      - python ../scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
+      # - until curl -s http://localhost:8001/health > /dev/null 2>&1; do sleep 1; done
+      - python scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
+
+  api-serve-minimal-data:
+    desc: "Run backend API with minimal sample dataset"
+    deps: [api-serve, api-ingest]
 
   api-test:
     desc: "Run API integration tests against Rust backend"
@@ -140,12 +132,6 @@ tasks:
       - sleep 1
       - python ../scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
       - python ../scripts/api_test.py --dataset minimal --api-url http://localhost:8001
-
-  x:
-    desc: "Run API integration tests against Rust backend"
-    cmds:
-      - cd backend-rust && sleep 30 > log.txt 2>&1 &
-      - sleep 1
 
   codex:
     desc: "Run Codex"

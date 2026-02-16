@@ -2,11 +2,9 @@ mod test_helpers;
 
 use portfoliodb_rust::models::Investment;
 use portfoliodb_rust::repository::sqlite::{
-    SqliteInvestmentPriceRepository, SqliteInvestmentRepository, SqliteSettingsRepository,
+    SqliteInvestmentPriceRepository, SqliteInvestmentRepository,
 };
-use portfoliodb_rust::repository::traits::{
-    InvestmentPriceRepository, InvestmentRepository, SettingsRepository,
-};
+use portfoliodb_rust::repository::traits::{InvestmentPriceRepository, InvestmentRepository};
 use portfoliodb_rust::services::QuoteFetcherService;
 use std::sync::Arc;
 use test_helpers::setup_test_db;
@@ -20,10 +18,8 @@ async fn test_quote_fetcher_creation() {
         Arc::new(SqliteInvestmentRepository::new(pool.clone()));
     let price_repo: Arc<dyn InvestmentPriceRepository> =
         Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
-    let settings_repo: Arc<dyn SettingsRepository> =
-        Arc::new(SqliteSettingsRepository::new(pool.clone()));
 
-    let service = QuoteFetcherService::new(investment_repo, price_repo, settings_repo);
+    let service = QuoteFetcherService::new(investment_repo, price_repo, "EUR".to_string());
 
     let providers = service.get_available_providers();
     assert_eq!(
@@ -46,8 +42,6 @@ async fn test_fetch_quotes_no_provider() {
         Arc::new(SqliteInvestmentRepository::new(pool.clone()));
     let price_repo: Arc<dyn InvestmentPriceRepository> =
         Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
-    let settings_repo: Arc<dyn SettingsRepository> =
-        Arc::new(SqliteSettingsRepository::new(pool.clone()));
 
     // Create investment without quote provider
     let investment = Investment {
@@ -66,7 +60,7 @@ async fn test_fetch_quotes_no_provider() {
         .unwrap()
         .unwrap();
 
-    let service = QuoteFetcherService::new(investment_repo, price_repo, settings_repo);
+    let service = QuoteFetcherService::new(investment_repo, price_repo, "EUR".to_string());
 
     let result = service.fetch_quotes_for_investment(&created).await.unwrap();
 
@@ -87,8 +81,6 @@ async fn test_fetch_quotes_unknown_provider() {
         Arc::new(SqliteInvestmentRepository::new(pool.clone()));
     let price_repo: Arc<dyn InvestmentPriceRepository> =
         Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
-    let settings_repo: Arc<dyn SettingsRepository> =
-        Arc::new(SqliteSettingsRepository::new(pool.clone()));
 
     // Create investment with invalid provider
     let investment = Investment {
@@ -107,7 +99,7 @@ async fn test_fetch_quotes_unknown_provider() {
         .unwrap()
         .unwrap();
 
-    let service = QuoteFetcherService::new(investment_repo, price_repo, settings_repo);
+    let service = QuoteFetcherService::new(investment_repo, price_repo, "EUR".to_string());
 
     let result = service.fetch_quotes_for_investment(&created).await.unwrap();
 
@@ -125,8 +117,6 @@ async fn test_fetch_quotes_no_ticker() {
         Arc::new(SqliteInvestmentRepository::new(pool.clone()));
     let price_repo: Arc<dyn InvestmentPriceRepository> =
         Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
-    let settings_repo: Arc<dyn SettingsRepository> =
-        Arc::new(SqliteSettingsRepository::new(pool.clone()));
 
     // Create investment without ticker or ISIN
     let investment = Investment {
@@ -145,7 +135,7 @@ async fn test_fetch_quotes_no_ticker() {
         .unwrap()
         .unwrap();
 
-    let service = QuoteFetcherService::new(investment_repo, price_repo, settings_repo);
+    let service = QuoteFetcherService::new(investment_repo, price_repo, "EUR".to_string());
 
     let result = service.fetch_quotes_for_investment(&created).await;
 
@@ -167,8 +157,6 @@ async fn test_fetch_quotes_yahoo_online() {
         Arc::new(SqliteInvestmentRepository::new(pool.clone()));
     let price_repo: Arc<dyn InvestmentPriceRepository> =
         Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
-    let settings_repo: Arc<dyn SettingsRepository> =
-        Arc::new(SqliteSettingsRepository::new(pool.clone()));
 
     // Create investment with Yahoo provider
     let investment = Investment {
@@ -187,8 +175,11 @@ async fn test_fetch_quotes_yahoo_online() {
         .unwrap()
         .unwrap();
 
-    let service =
-        QuoteFetcherService::new(investment_repo.clone(), price_repo.clone(), settings_repo);
+    let service = QuoteFetcherService::new(
+        investment_repo.clone(),
+        price_repo.clone(),
+        "EUR".to_string(),
+    );
 
     let result = service.fetch_quotes_for_investment(&created).await.unwrap();
 
@@ -229,8 +220,6 @@ async fn test_fetch_quotes_multiple_investments_online() {
         Arc::new(SqliteInvestmentRepository::new(pool.clone()));
     let price_repo: Arc<dyn InvestmentPriceRepository> =
         Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
-    let settings_repo: Arc<dyn SettingsRepository> =
-        Arc::new(SqliteSettingsRepository::new(pool.clone()));
 
     // Create multiple investments
     let inv1 = Investment {
@@ -254,7 +243,7 @@ async fn test_fetch_quotes_multiple_investments_online() {
     let created1_id = investment_repo.create(&inv1).await.unwrap();
     let created2_id = investment_repo.create(&inv2).await.unwrap();
 
-    let service = QuoteFetcherService::new(investment_repo, price_repo, settings_repo);
+    let service = QuoteFetcherService::new(investment_repo, price_repo, "EUR".to_string());
 
     // Fetch quotes for specific investments
     let results = service
@@ -287,8 +276,6 @@ async fn test_fetch_quotes_all_with_provider() {
         Arc::new(SqliteInvestmentRepository::new(pool.clone()));
     let price_repo: Arc<dyn InvestmentPriceRepository> =
         Arc::new(SqliteInvestmentPriceRepository::new(pool.clone()));
-    let settings_repo: Arc<dyn SettingsRepository> =
-        Arc::new(SqliteSettingsRepository::new(pool.clone()));
 
     // Create investment with provider
     let inv1 = Investment {
@@ -313,7 +300,7 @@ async fn test_fetch_quotes_all_with_provider() {
     investment_repo.create(&inv1).await.unwrap();
     investment_repo.create(&inv2).await.unwrap();
 
-    let service = QuoteFetcherService::new(investment_repo, price_repo, settings_repo);
+    let service = QuoteFetcherService::new(investment_repo, price_repo, "EUR".to_string());
 
     // Fetch quotes for all (should only process inv1)
     let results = service.fetch_quotes(None).await.unwrap();

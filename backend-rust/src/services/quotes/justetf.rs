@@ -2,6 +2,23 @@ use crate::error::{AppError, Result};
 use crate::services::quotes::{QuoteData, QuoteProvider};
 use chrono::NaiveDate;
 use reqwest::Client;
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct JustETFResponse {
+    series: Vec<JustETFDataPoint>,
+}
+
+#[derive(Debug, Deserialize)]
+struct JustETFDataPoint {
+    date: String,
+    value: JustETFValue,
+}
+
+#[derive(Debug, Deserialize)]
+struct JustETFValue {
+    raw: f64,
+}
 
 pub struct JustETFProvider {
     client: Client,
@@ -16,6 +33,70 @@ impl JustETFProvider {
                 .unwrap_or_default(),
         }
     }
+
+    async fn fetch_quotes_range(
+        &self,
+        ticker: &str,
+        date_from: NaiveDate,
+        date_to: NaiveDate,
+    ) -> Result<Vec<QuoteData>> {
+        tracing::info!(
+            "Fetching quotes from JustETF API for ISIN: {} ({} to {})",
+            ticker,
+            date_from,
+            date_to
+        );
+
+        let url = format!(
+            "https://www.justetf.com/api/etfs/{}/performance-chart?locale=en&currency=EUR&valuesType=MARKET_VALUE&reduceData=false&includeDividends=false&dateFrom={}&dateTo={}",
+            ticker,
+            date_from.format("%Y-%m-%d"),
+            date_to.format("%Y-%m-%d")
+        );
+
+        let response = self
+            .client
+            .get(&url)
+            .send()
+            .await
+            .map_err(|e| AppError::ExternalApi(format!("JustETF API request failed: {}", e)))?;
+
+        if response.status() == 404 {
+            tracing::warn!("ISIN {} not found on JustETF", ticker);
+            return Ok(vec![]);
+        }
+
+        if !response.status().is_success() {
+            return Err(AppError::ExternalApi(format!(
+                "JustETF API returned status: {}",
+                response.status()
+            )));
+        }
+
+        let data: JustETFResponse = response.json().await.map_err(|e| {
+            AppError::ExternalApi(format!("Failed to parse JustETF API response: {}", e))
+        })?;
+
+        let mut quotes = Vec::new();
+        for point in data.series {
+            if let Ok(date) = NaiveDate::parse_from_str(&point.date, "%Y-%m-%d") {
+                quotes.push(QuoteData::new(
+                    ticker.to_string(),
+                    date,
+                    point.value.raw,
+                    "EUR".to_string(),
+                    "justetf".to_string(),
+                ));
+            }
+        }
+
+        tracing::info!(
+            "Fetched {} quotes from JustETF API for {}",
+            quotes.len(),
+            ticker
+        );
+        Ok(quotes)
+    }
 }
 
 impl Default for JustETFProvider {
@@ -29,88 +110,25 @@ impl QuoteProvider for JustETFProvider {
     async fn get_quote(
         &self,
         ticker: &str,
-        _quote_date: Option<NaiveDate>,
+        quote_date: Option<NaiveDate>,
     ) -> Result<Option<QuoteData>> {
-        tracing::info!("Fetching quote from JustETF for ISIN: {}", ticker);
-
-        // JustETF URL format: https://www.justetf.com/en/etf-profile.html?isin=<ISIN>
-        let url = format!(
-            "https://www.justetf.com/en/etf-profile.html?isin={}",
-            ticker
-        );
-
-        let response = self
-            .client
-            .get(&url)
-            .send()
-            .await
-            .map_err(|e| AppError::ExternalApi(format!("JustETF request failed: {}", e)))?;
-
-        if !response.status().is_success() {
-            return Err(AppError::ExternalApi(format!(
-                "JustETF returned status: {}",
-                response.status()
-            )));
+        if let Some(target_date) = quote_date {
+            let date_from = target_date - chrono::Duration::days(3);
+            let date_to = target_date + chrono::Duration::days(3);
+            let quotes = self.fetch_quotes_range(ticker, date_from, date_to).await?;
+            Ok(quotes.into_iter().find(|q| q.date == target_date))
+        } else {
+            let date_to = chrono::Utc::now().date_naive();
+            let date_from = date_to - chrono::Duration::days(7);
+            let quotes = self.fetch_quotes_range(ticker, date_from, date_to).await?;
+            Ok(quotes.into_iter().max_by_key(|q| q.date))
         }
-
-        let html = response.text().await.map_err(|e| {
-            AppError::ExternalApi(format!("Failed to read JustETF response: {}", e))
-        })?;
-
-        // Parse HTML to extract price
-        // Note: This is a simplified implementation
-        // In production, you'd use a proper HTML parser like scraper crate
-
-        // Look for price pattern in HTML (this is fragile and may need updates)
-        // JustETF typically shows price in format like "€123.45" or "USD 123.45"
-        let price_pattern = regex::Regex::new(r"(?:€|USD|EUR|GBP)\s*([0-9]+[.,][0-9]{2})")
-            .map_err(|e| AppError::ExternalApi(format!("Regex error: {}", e)))?;
-
-        if let Some(captures) = price_pattern.captures(&html) {
-            if let Some(price_str) = captures.get(1) {
-                let price_str = price_str.as_str().replace(',', ".");
-                if let Ok(price) = price_str.parse::<f64>() {
-                    // Determine currency from HTML (simplified)
-                    let currency = if html.contains("€") || html.contains("EUR") {
-                        "EUR"
-                    } else if html.contains("USD") {
-                        "USD"
-                    } else if html.contains("GBP") {
-                        "GBP"
-                    } else {
-                        "EUR" // Default
-                    };
-
-                    let quote = QuoteData::new(
-                        ticker.to_string(),
-                        chrono::Local::now().date_naive(),
-                        price,
-                        currency.to_string(),
-                        "justetf".to_string(),
-                    );
-
-                    tracing::info!(
-                        "Fetched quote from JustETF: {} {} {}",
-                        ticker,
-                        price,
-                        currency
-                    );
-                    return Ok(Some(quote));
-                }
-            }
-        }
-
-        tracing::warn!("Could not extract price from JustETF for {}", ticker);
-        Ok(None)
     }
 
     async fn get_quotes(&self, ticker: &str) -> Result<Vec<QuoteData>> {
-        // JustETF doesn't provide historical data easily via scraping
-        // Return single latest quote
-        match self.get_quote(ticker, None).await? {
-            Some(quote) => Ok(vec![quote]),
-            None => Ok(vec![]),
-        }
+        let date_to = chrono::Utc::now().date_naive();
+        let date_from = date_to - chrono::Duration::days(90);
+        self.fetch_quotes_range(ticker, date_from, date_to).await
     }
 
     fn get_provider_name(&self) -> &str {

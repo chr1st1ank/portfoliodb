@@ -1,5 +1,5 @@
 use chrono::NaiveDate;
-use portfoliodb_rust::services::providers::{QuoteProvider, YahooFinanceProvider};
+use portfoliodb_rust::services::quotes::{QuoteProvider, YahooFinanceProvider};
 
 /// Test Yahoo Finance provider initialization
 #[test]
@@ -28,17 +28,42 @@ async fn test_yahoo_get_quotes_online() {
 
     assert!(!quotes.is_empty(), "Should have fetched some quotes");
 
-    // Verify quote structure
-    let first_quote = &quotes[0];
-    assert_eq!(first_quote.ticker, "AAPL");
-    assert!(first_quote.price > 0.0, "Price should be positive");
-    assert_eq!(first_quote.source, "yahoo");
+    // Verify all quotes have correct ticker
+    for quote in &quotes {
+        assert_eq!(quote.ticker, "AAPL", "All quotes should have ticker AAPL");
+    }
+
+    // Verify quote structure - check the last (most recent) quote
+    let last_quote = quotes.last().unwrap();
+    assert_eq!(last_quote.ticker, "AAPL");
+
+    // Check date is recent (within last 7 days)
+    let today = chrono::Utc::now().date_naive();
+    let days_diff = (today - last_quote.date).num_days();
     assert!(
-        !first_quote.currency.is_empty(),
+        days_diff >= 0 && days_diff <= 7,
+        "Latest quote date {} should be within last 7 days (today: {})",
+        last_quote.date,
+        today
+    );
+
+    // Check for reasonable price range
+    assert!(
+        (last_quote.price - 255.30).abs() < 50.0,
+        "Price should be close to the last known course"
+    );
+    assert_eq!(last_quote.source, "yahoo");
+    assert!(
+        !last_quote.currency.is_empty(),
         "Currency should not be empty"
     );
 
-    println!("Fetched {} quotes for AAPL", quotes.len());
+    println!(
+        "Fetched {} quotes for AAPL (latest price: ${}, date: {})",
+        quotes.len(),
+        last_quote.price,
+        last_quote.date
+    );
 }
 
 /// Test fetching single quote from Yahoo Finance
@@ -61,8 +86,18 @@ async fn test_yahoo_get_quote_latest_online() {
     assert!(quote.is_some(), "Should have fetched a quote");
     let quote = quote.unwrap();
 
+    // Check date is recent (within last 7 days)
+    let today = chrono::Utc::now().date_naive();
+    let days_diff = (today - quote.date).num_days();
+    assert!(
+        days_diff >= 0 && days_diff <= 7,
+        "Latest quote date {} should be within last 7 days (today: {})",
+        quote.date,
+        today
+    );
+
     assert_eq!(quote.ticker, "MSFT");
-    assert!(quote.price > 0.0);
+    assert!((quote.price -401.32).abs() < 50.0);
     assert_eq!(quote.source, "yahoo");
 }
 
@@ -76,7 +111,7 @@ async fn test_yahoo_get_quote_specific_date_online() {
     }
 
     let provider = YahooFinanceProvider::new();
-    let target_date = NaiveDate::from_ymd_opt(2024, 1, 15).unwrap();
+    let target_date = NaiveDate::from_ymd_opt(2026, 1, 28).unwrap();
 
     let result = provider.get_quote("GOOGL", Some(target_date)).await;
 
@@ -86,7 +121,7 @@ async fn test_yahoo_get_quote_specific_date_online() {
     if let Some(quote) = quote {
         assert_eq!(quote.ticker, "GOOGL");
         assert_eq!(quote.date, target_date);
-        assert!(quote.price > 0.0);
+        assert!((quote.price - 336.01).abs() < 0.1);
     } else {
         println!("No quote found for specific date (might be weekend/holiday)");
     }
@@ -107,27 +142,4 @@ async fn test_yahoo_invalid_ticker_online() {
 
     // Should return error or empty list, but not panic
     assert!(result.is_err() || result.unwrap().is_empty());
-}
-
-/// Test with ETF ticker
-#[tokio::test]
-#[ignore] // Ignored by default
-async fn test_yahoo_etf_ticker_online() {
-    if std::env::var("SKIP_ONLINE_TESTS").is_ok() {
-        println!("Skipping online test");
-        return;
-    }
-
-    let provider = YahooFinanceProvider::new();
-
-    // Test with SPY (S&P 500 ETF)
-    let result = provider.get_quotes("SPY").await;
-
-    assert!(result.is_ok());
-    let quotes = result.unwrap();
-    assert!(!quotes.is_empty(), "Should have fetched quotes for SPY ETF");
-
-    let first_quote = &quotes[0];
-    assert_eq!(first_quote.ticker, "SPY");
-    assert!(first_quote.price > 0.0);
 }

@@ -1,4 +1,4 @@
-use portfoliodb_rust::services::providers::{JustETFProvider, QuoteProvider};
+use portfoliodb_rust::services::quotes::{JustETFProvider, QuoteProvider};
 
 /// Test JustETF provider initialization
 #[test]
@@ -22,23 +22,41 @@ async fn test_justetf_get_quote_online() {
     // Test with a real ISIN (iShares Core MSCI World UCITS ETF)
     let result = provider.get_quote("IE00B4L5Y983", None).await;
 
-    // JustETF scraping is fragile, so we just check it doesn't panic
-    // and returns a valid result type
-    assert!(result.is_ok() || result.is_err());
+    assert!(
+        result.is_ok(),
+        "Failed to fetch quote from JustETF: {:?}",
+        result.err()
+    );
 
-    if let Ok(Some(quote)) = result {
-        println!("Successfully fetched quote from JustETF:");
-        println!("  ISIN: {}", quote.ticker);
-        println!("  Price: {}", quote.price);
-        println!("  Currency: {}", quote.currency);
-        println!("  Date: {}", quote.date);
+    let quote = result
+        .unwrap()
+        .expect("JustETF should return a quote for valid ISIN");
 
-        assert_eq!(quote.ticker, "IE00B4L5Y983");
-        assert!(quote.price > 0.0, "Price should be positive");
-        assert_eq!(quote.source, "justetf");
-    } else {
-        println!("JustETF scraping failed (expected - HTML may have changed)");
-    }
+    println!("Successfully fetched quote from JustETF:");
+    println!("  ISIN: {}", quote.ticker);
+    println!("  Price: {}", quote.price);
+    println!("  Currency: {}", quote.currency);
+    println!("  Date: {}", quote.date);
+
+    // Check date is recent (within last 7 days)
+    let today = chrono::Utc::now().date_naive();
+    let days_diff = (today - quote.date).num_days();
+    assert!(
+        days_diff >= 0 && days_diff <= 7,
+        "Latest quote date {} should be within last 7 days (today: {})",
+        quote.date,
+        today
+    );
+
+    assert_eq!(quote.ticker, "IE00B4L5Y983");
+    // Check for reasonable price range (iShares Core MSCI World typically 80-150 EUR)
+    assert!(
+        quote.price > 50.0 && quote.price < 200.0,
+        "Price {} is outside reasonable range for this ETF",
+        quote.price
+    );
+    assert_eq!(quote.currency, "EUR");
+    assert_eq!(quote.source, "justetf");
 }
 
 /// Test fetching quotes (historical) from JustETF
@@ -55,16 +73,31 @@ async fn test_justetf_get_quotes_online() {
 
     let result = provider.get_quotes("IE00B4L5Y983").await;
 
-    assert!(result.is_ok() || result.is_err());
+    assert!(
+        result.is_ok(),
+        "Failed to fetch quotes from JustETF: {:?}",
+        result.err()
+    );
 
-    if let Ok(quotes) = result {
-        // Should return 0 or 1 quote (JustETF only provides current price)
-        assert!(quotes.len() <= 1, "JustETF should return at most 1 quote");
+    let quotes = result.unwrap();
+    // JustETF API returns historical data (last 90 days)
+    assert!(
+        !quotes.is_empty(),
+        "JustETF should return quotes for valid ISIN"
+    );
+    assert!(
+        quotes.len() > 10,
+        "JustETF should return multiple historical quotes"
+    );
 
-        if !quotes.is_empty() {
-            println!("JustETF returned {} quote(s)", quotes.len());
-        }
+    // Verify all quotes have correct ISIN
+    for quote in &quotes {
+        assert_eq!(quote.ticker, "IE00B4L5Y983");
+        assert_eq!(quote.currency, "EUR");
+        assert_eq!(quote.source, "justetf");
     }
+
+    println!("JustETF returned {} quote(s)", quotes.len());
 }
 
 /// Test with invalid ISIN
@@ -80,10 +113,13 @@ async fn test_justetf_invalid_isin_online() {
 
     let result = provider.get_quote("INVALID_ISIN", None).await;
 
-    // Should handle gracefully (return None or error)
-    assert!(result.is_ok() || result.is_err());
+    // Should handle gracefully - return Ok(None) for invalid ISIN
+    assert!(
+        result.is_ok(),
+        "Should handle invalid ISIN gracefully: {:?}",
+        result.err()
+    );
 
-    if let Ok(quote) = result {
-        assert!(quote.is_none(), "Should not find quote for invalid ISIN");
-    }
+    let quote = result.unwrap();
+    assert!(quote.is_none(), "Should not find quote for invalid ISIN");
 }
