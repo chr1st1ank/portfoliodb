@@ -9,7 +9,7 @@ use axum::{
     Router,
 };
 use std::sync::Arc;
-use tower_http::cors::CorsLayer;
+use tower_http::{cors::CorsLayer, services::ServeDir};
 
 #[derive(Clone)]
 pub struct QuoteFetchState {
@@ -120,4 +120,6 @@ pub fn create_router(
         .route("/api/quotes/:investment_id", get(handlers::get_quotes))
         .with_state(quote_fetch_state)
         .layer(CorsLayer::permissive())
+        // Serve static frontend files (must be last to not interfere with API routes)
+        .fallback_service(ServeDir::new("static").append_index_html_on_directories(true))
 }

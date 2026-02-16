@@ -143,6 +143,26 @@ tasks:
       - python ../scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
       - python ../scripts/api_test.py --dataset minimal --api-url http://localhost:8001
 
+  docker-build:
+    desc: "Build Docker image"
+    cmds:
+      - docker build -t portfoliodb .
+
+  docker-run:
+    desc: "Run Docker container with in-memory database"
+    deps:
+      - docker-build
+    cmds:
+      - docker run --rm -it -p 8001:8001 -e DATABASE_URL=sqlite:file::memory:?cache=shared portfoliodb
+
+  docker-run-persistent:
+    desc: "Run Docker container with persistent database"
+    deps:
+      - docker-build
+    cmds:
+      - mkdir -p local/data
+      - docker run --rm -it -p 8001:8001 -v $(pwd)/local/data:/app/data -e DATABASE_URL=sqlite:///app/data/portfolio.db portfoliodb
+
   codex:
     desc: "Run Codex"
     cmds:
