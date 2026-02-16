@@ -1,6 +1,7 @@
 use crate::error::{AppError, Result};
 use crate::models::Investment;
 use crate::repository::traits::InvestmentRepository;
+use crate::services::quote_fetcher::VALID_PROVIDER_IDS;
 use axum::{
     extract::{Path, State},
     Json,
@@ -40,6 +41,18 @@ pub struct CreateInvestmentRequest {
     pub quote_provider: Option<String>,
 }
 
+fn validate_quote_provider(provider: &str) -> Result<()> {
+    if !VALID_PROVIDER_IDS.contains(&provider) {
+        return Err(AppError::InvalidInput(format!(
+            "Invalid quote provider '{}'. Valid providers are: {}",
+            provider,
+            VALID_PROVIDER_IDS.join(", ")
+        )));
+    }
+
+    Ok(())
+}
+
 pub async fn list_investments(
     State(repo): State<Arc<dyn InvestmentRepository>>,
 ) -> Result<Json<Vec<InvestmentResponse>>> {
@@ -60,6 +73,11 @@ pub async fn create_investment(
     State(repo): State<Arc<dyn InvestmentRepository>>,
     Json(req): Json<CreateInvestmentRequest>,
 ) -> Result<Json<InvestmentResponse>> {
+    // Validate quote_provider if provided
+    if let Some(ref provider) = req.quote_provider {
+        validate_quote_provider(provider)?;
+    }
+
     let investment = Investment {
         id: 0,
         name: req.name,
@@ -79,6 +97,11 @@ pub async fn update_investment(
     Path(id): Path<i64>,
     Json(req): Json<CreateInvestmentRequest>,
 ) -> Result<Json<InvestmentResponse>> {
+    // Validate quote_provider if provided
+    if let Some(ref provider) = req.quote_provider {
+        validate_quote_provider(provider)?;
+    }
+
     let investment = Investment {
         id,
         name: req.name,

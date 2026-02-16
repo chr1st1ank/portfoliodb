@@ -20,6 +20,13 @@ pub struct ProviderInfo {
     pub name: String,
 }
 
+/// Centralized list of available quote providers (id, name)
+pub const AVAILABLE_PROVIDERS: &[(&str, &str)] =
+    &[("yahoo", "Yahoo Finance"), ("justetf", "JustETF")];
+
+/// Valid quote provider IDs (derived from AVAILABLE_PROVIDERS)
+pub const VALID_PROVIDER_IDS: &[&str] = &["yahoo", "justetf"];
+
 pub struct QuoteFetcherService {
     investment_repo: Arc<dyn InvestmentRepository>,
     price_repo: Arc<dyn InvestmentPriceRepository>,
@@ -43,16 +50,13 @@ impl QuoteFetcherService {
 
     /// Get list of available quote providers
     pub fn get_available_providers(&self) -> Vec<ProviderInfo> {
-        vec![
-            ProviderInfo {
-                id: "yahoo".to_string(),
-                name: "Yahoo Finance".to_string(),
-            },
-            ProviderInfo {
-                id: "justetf".to_string(),
-                name: "JustETF".to_string(),
-            },
-        ]
+        AVAILABLE_PROVIDERS
+            .iter()
+            .map(|(id, name)| ProviderInfo {
+                id: id.to_string(),
+                name: name.to_string(),
+            })
+            .collect()
     }
 
     /// Create a provider instance on-demand based on provider name
