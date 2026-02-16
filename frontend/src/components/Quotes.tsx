@@ -35,6 +35,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { Investment, InvestmentPrice } from '../types/api';
 import { api } from '../services/api';
+import { API_BASE_URL } from '../config';
 import PriceHistoryDialog from './PriceHistoryDialog';
 
 interface QuotesProps {
@@ -78,7 +79,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
   const [fetching, setFetching] = useState(false);
   const [fetchResult, setFetchResult] = useState<FetchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Edit investment dialog
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -106,12 +107,12 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch last 2 years of prices - enough to show latest price
       const endDate = new Date();
       const startDate = new Date();
       startDate.setFullYear(startDate.getFullYear() - 2);
-      
+
       const prices = await api.investmentPrices.getAll({
         start_date: startDate.toISOString().split('T')[0],
         end_date: endDate.toISOString().split('T')[0]
@@ -144,7 +145,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
     const prices = investmentPrices
       .filter(p => p.investment === investment.id)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
+
     const latestPrice = prices.length > 0 ? prices[0] : undefined;
 
     // Determine configuration status - only provider is required
@@ -178,7 +179,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
       setError(null);
 
       // Call the fetch endpoint
-      const response = await fetch('http://localhost:8000/api/quotes/fetch/', {
+      const response = await fetch(`${API_BASE_URL}/quotes/fetch/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +196,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
 
       // Reload prices after fetch
       await loadInvestmentPrices();
-      
+
       // Trigger portfolio data refresh
       if (onQuotesFetched) {
         onQuotesFetched();
@@ -257,35 +258,35 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
 
   const validateForm = (formData: InvestmentFormData): boolean => {
     const errors: Partial<Record<keyof InvestmentFormData, string>> = {};
-    
+
     if (!formData.name.trim()) {
       errors.name = 'Name is required';
     }
-    
+
     if (!formData.isin.trim()) {
       errors.isin = 'ISIN is required';
     } else if (!/^[A-Z0-9]{12}$/.test(formData.isin)) {
       errors.isin = 'ISIN must be 12 alphanumeric characters';
     }
-    
+
     if (!formData.shortname.trim()) {
       errors.shortname = 'Short name is required';
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleEditConfirm = async () => {
     if (!investmentToEdit) return;
-    
+
     if (!validateForm(editFormData)) {
       return;
     }
-    
+
     try {
       setIsEditing(true);
-      
+
       const updatedInvestment = {
         name: editFormData.name,
         isin: editFormData.isin,
@@ -293,12 +294,12 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
         ticker_symbol: editFormData.ticker_symbol.trim() || null,
         quote_provider: editFormData.quote_provider || null
       };
-      
+
       await api.investments.update(investmentToEdit.id, updatedInvestment);
-      
+
       setEditDialogOpen(false);
       setInvestmentToEdit(null);
-      
+
       // Notify parent to refresh data
       if (onInvestmentUpdated) {
         onInvestmentUpdated();
@@ -316,7 +317,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
       ...prev,
       [field]: value || ''
     }));
-    
+
     if (formErrors[field]) {
       setFormErrors(prev => ({
         ...prev,
@@ -378,7 +379,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
         {/* Fetch Result Alert */}
         {fetchResult && (
           <Grid size={{ xs: 12 }}>
-            <Alert 
+            <Alert
               severity={fetchResult.failed === 0 ? 'success' : 'warning'}
               onClose={() => setFetchResult(null)}
             >
@@ -524,7 +525,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
               error={!!formErrors.name}
               helperText={formErrors.name}
             />
-            
+
             <TextField
               label="ISIN"
               value={editFormData.isin}
@@ -533,7 +534,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
               error={!!formErrors.isin}
               helperText={formErrors.isin}
             />
-            
+
             <TextField
               label="Short Name"
               value={editFormData.shortname}
@@ -542,7 +543,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
               error={!!formErrors.shortname}
               helperText={formErrors.shortname}
             />
-            
+
             <TextField
               label="Ticker Symbol"
               value={editFormData.ticker_symbol}
@@ -550,7 +551,7 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
               fullWidth
               helperText="Optional: Symbol for quote fetching (e.g., AAPL, MSFT)"
             />
-            
+
             <FormControl fullWidth>
               <InputLabel id="quote-provider-label">Quote Provider</InputLabel>
               <Select
@@ -573,9 +574,9 @@ function Quotes({ investments, onInvestmentUpdated, onQuotesFetched }: QuotesPro
           <Button onClick={handleEditCancel} disabled={isEditing}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleEditConfirm} 
-            color="primary" 
+          <Button
+            onClick={handleEditConfirm}
+            color="primary"
             variant="contained"
             disabled={isEditing}
           >

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Movement, Investment, InvestmentPrice, Development, ActionType } from '../types/api';
-
-const API_BASE_URL = 'http://localhost:8000/api';
+import { API_BASE_URL } from '../config';
 
 const convertDates = (data: any[]): any[] => {
     return data.map(item => ({
@@ -18,20 +17,20 @@ const formatDateForBackend = (date: Date): string => {
 export const api = {
     actionTypes: {
         getAll: async (): Promise<ActionType[]> => {
-            const response = await axios.get(`${API_BASE_URL}/actiontypes/`);
+            const response = await axios.get(`${API_BASE_URL}/actiontypes`);
             return response.data;
         },
     },
     investments: {
         getAll: async (): Promise<Investment[]> => {
-            const response = await axios.get(`${API_BASE_URL}/investments/`);
+            const response = await axios.get(`${API_BASE_URL}/investments`);
             return response.data;
         },
         delete: async (id: number): Promise<void> => {
-            await axios.delete(`${API_BASE_URL}/investments/${id}/`);
+            await axios.delete(`${API_BASE_URL}/investments/${id}`);
         },
         create: async (investment: Omit<Investment, 'id'>): Promise<Investment> => {
-            const response = await axios.post(`${API_BASE_URL}/investments/`, investment);
+            const response = await axios.post(`${API_BASE_URL}/investments`, investment);
             return response.data;
         },
         update: async (id: number, investment: {
@@ -41,27 +40,27 @@ export const api = {
             ticker_symbol?: string | null;
             quote_provider?: string | null;
         }): Promise<Investment> => {
-            const response = await axios.put(`${API_BASE_URL}/investments/${id}/`, investment);
+            const response = await axios.put(`${API_BASE_URL}/investments/${id}`, investment);
             return response.data;
         },
     },
     investmentPrices: {
         getAll: async (params?: { start_date?: string; end_date?: string; investment?: number }): Promise<InvestmentPrice[]> => {
-            const response = await axios.get(`${API_BASE_URL}/investmentprices/`, { params });
+            const response = await axios.get(`${API_BASE_URL}/investmentprices`, { params });
             return convertDates(response.data);
         },
         getByInvestment: async (investmentId: number, params?: { start_date?: string; end_date?: string }): Promise<InvestmentPrice[]> => {
-            const response = await axios.get(`${API_BASE_URL}/investmentprices/?investment=${investmentId}`, { params });
+            const response = await axios.get(`${API_BASE_URL}/investmentprices?investment=${investmentId}`, { params });
             return convertDates(response.data);
         },
     },
     movements: {
         getAll: async (): Promise<Movement[]> => {
-            const response = await axios.get(`${API_BASE_URL}/movements/`);
+            const response = await axios.get(`${API_BASE_URL}/movements`);
             return convertDates(response.data);
         },
         delete: async (id: number): Promise<void> => {
-            await axios.delete(`${API_BASE_URL}/movements/${id}/`);
+            await axios.delete(`${API_BASE_URL}/movements/${id}`);
         },
         create: async (movement: Omit<Movement, 'id'>): Promise<Movement> => {
             // Format the date and ensure decimal fields are properly formatted
@@ -72,8 +71,8 @@ export const api = {
                 amount: Number(movement.amount),
                 fee: Number(movement.fee)
             };
-            
-            const response = await axios.post(`${API_BASE_URL}/movements/`, formattedMovement);
+
+            const response = await axios.post(`${API_BASE_URL}/movements`, formattedMovement);
             return {
                 ...response.data,
                 date: new Date(response.data.date)
@@ -88,8 +87,8 @@ export const api = {
                 amount: Number(movement.amount),
                 fee: Number(movement.fee)
             };
-            
-            const response = await axios.put(`${API_BASE_URL}/movements/${id}/`, formattedMovement);
+
+            const response = await axios.put(`${API_BASE_URL}/movements/${id}`, formattedMovement);
             return {
                 ...response.data,
                 date: new Date(response.data.date)
@@ -98,13 +97,13 @@ export const api = {
     },
     developments: {
         getAll: async (params?: { start_date?: string; end_date?: string }): Promise<Development[]> => {
-            const response = await axios.get(`${API_BASE_URL}/developments/`, { params });
+            const response = await axios.get(`${API_BASE_URL}/developments`, { params });
             return convertDates(response.data);
         },
     },
     quotes: {
-        getProviders: async (): Promise<Array<{id: string, name: string}>> => {
-            const response = await axios.get(`${API_BASE_URL}/quotes/providers/`);
+        getProviders: async (): Promise<Array<{ id: string, name: string }>> => {
+            const response = await axios.get(`${API_BASE_URL}/quotes/providers`);
             return response.data;
         },
     },
