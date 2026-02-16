@@ -36,7 +36,7 @@ A web-based tool for managing and analyzing a private securities portfolio. It e
 
 ## Architecture
 
-- **Backend**: Django + Django REST Framework
+- **Backend**: Django + Django REST Framework (legacy) / Rust + Axum (new)
 - **Frontend**: React + Vite + Tailwind + Chart.js/Recharts
 - **Deployment**: Can be started locally, optionally as Docker container for server operation
 
@@ -120,7 +120,105 @@ A web-based tool for managing and analyzing a private securities portfolio. It e
 
 ### Development Workflow
 
-- Backend development uses Django's development server
+- Backend development uses Django's development server or Rust backend
 - Frontend development uses Vite's development server
 - Tasks are managed using Taskfile.yaml for common operations
 - Dependencies are managed with uv for Python and npm for JavaScript
+
+## Rust Backend
+
+### Overview
+
+The Rust backend is a modern rewrite of the Django backend using:
+- **Axum** - Web framework
+- **SQLx** - Type-safe SQL with compile-time verification
+- **SQLite** - Shared database with Django backend
+- **Tokio** - Async runtime
+
+**Key Features:**
+- Trait-based repository pattern for database abstraction
+- Type-safe operations with compile-time guarantees
+- Async/await for non-blocking I/O
+- Quote fetching from Yahoo Finance and JustETF
+- Currency conversion via Frankfurter API
+- Portfolio development calculations
+
+### Structure
+
+```plaintext
+/backend-rust
+├── src/
+│   ├── db/                    # Database layer
+│   │   ├── repository/        # Repository traits and implementations
+│   │   └── schema.sql         # Database schema
+│   ├── dto/                   # Data transfer objects
+│   ├── handlers/              # API endpoint handlers
+│   ├── services/              # Business logic
+│   │   ├── portfolio_calculator.rs
+│   │   ├── quote_fetcher.rs
+│   │   └── currency_converter.rs
+│   ├── config.rs              # Configuration
+│   ├── error.rs               # Error handling
+│   └── lib.rs                 # Library exports
+├── tests/                     # Integration tests
+└── Cargo.toml                 # Rust dependencies
+```
+
+### API Endpoints
+
+**Investments:** `GET/POST/PUT/DELETE /api/investments`  
+**Movements:** `GET/POST/PUT/DELETE /api/movements`  
+**Investment Prices:** `GET/POST /api/investmentprices`, `POST /api/investmentprices/upsert`  
+**Action Types:** `GET /api/actiontypes`  
+**Settings:** `GET/PUT /api/settings`  
+**Developments:** `GET /api/developments` (portfolio calculations)  
+**Quotes:** `GET /api/quotes/providers`, `POST /api/quotes/fetch`
+
+### Development Commands
+
+Use task commands (defined in Taskfile.yaml):
+
+```bash
+task rust-build          # Build debug version
+task rust-build-release  # Build optimized release
+task rust-run            # Start server (http://localhost:8001)
+task rust-test           # Run all tests
+task rust-test-unit      # Run unit tests only
+task rust-check          # Quick syntax check
+task rust-clean          # Clean build artifacts
+```
+
+### Testing
+
+**Test Coverage:**
+- 37 total tests (6 unit, 31 integration)
+- Repository integration tests with in-memory SQLite
+- Portfolio calculator business logic tests
+- Mock implementations for isolated testing
+
+**Run tests:**
+```bash
+task rust-test              # All tests
+task rust-test-unit         # Unit tests only
+task rust-test-integration  # Integration tests only
+```
+
+### Repository Pattern
+
+Uses trait-based abstraction for database operations:
+
+```rust
+#[async_trait]
+pub trait InvestmentRepository: Send + Sync {
+    async fn find_all(&self) -> Result<Vec<Investment>>;
+    async fn find_by_id(&self, id: i64) -> Result<Option<Investment>>;
+    async fn create(&self, investment: &Investment) -> Result<i64>;
+    async fn update(&self, id: i64, investment: &Investment) -> Result<()>;
+    async fn delete(&self, id: i64) -> Result<()>;
+}
+```
+
+Handlers depend on traits (not concrete implementations), enabling:
+- Database flexibility (can swap SQLite for PostgreSQL)
+- Easy testing with mock implementations
+- Clean separation of concerns
