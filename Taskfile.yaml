@@ -110,26 +110,36 @@ tasks:
       - pkill -f portfoliodb-rust || true
       - cargo run
 
-  api-ingest:
+  api-ingest-minimal:
     desc: "Ingest minimal dataset"
     cmds:
       - sleep 1
-      # - until curl -s http://localhost:8001/health > /dev/null 2>&1; do sleep 1; done
+      - until curl -sf http://localhost:8001/api/health > /dev/null 2>&1; do sleep 1; done
       - python scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
 
   api-serve-minimal-data:
     desc: "Run backend API with minimal sample dataset"
-    deps: [api-serve, api-ingest]
+    deps: [api-serve, api-ingest-minimal]
+
+  api-ingest-real:
+    desc: "Ingest real dataset"
+    cmds:
+      - sleep 1
+      - until curl -sf http://localhost:8001/api/health > /dev/null 2>&1; do sleep 1; done
+      - python scripts/ingest_data.py --dataset real --api-url http://localhost:8001
+
+  api-serve-real-data:
+    desc: "Run backend API with real sample dataset"
+    deps: [api-serve, api-ingest-real]
 
   api-test:
     desc: "Run API integration tests against Rust backend"
     dir: backend-rust
     cmds:
       - pkill -f portfoliodb-rust || true
-      - cargo build
       - cargo run > /dev/null 2>&1 &
       - defer: pkill -f portfoliodb-rust
-      - sleep 1
+      - until curl -sf http://localhost:8001/api/health > /dev/null 2>&1; do sleep 1; done
       - python ../scripts/ingest_data.py --dataset minimal --api-url http://localhost:8001
       - python ../scripts/api_test.py --dataset minimal --api-url http://localhost:8001
 

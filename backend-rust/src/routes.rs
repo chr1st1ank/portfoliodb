@@ -59,6 +59,8 @@ pub fn create_router(
     };
 
     Router::new()
+        // Health check
+        .route("/api/health", get(handlers::health))
         // Investments
         .route(
             "/api/investments",
