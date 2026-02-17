@@ -9,7 +9,6 @@ import {
     Paper,
     Link,
     Tooltip,
-    TableSortLabel,
 } from '@mui/material';
 import { PortfolioData, InvestmentData } from '../types/portfolio';
 import { useNavigate } from 'react-router-dom';

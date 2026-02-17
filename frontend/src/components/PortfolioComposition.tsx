@@ -5,7 +5,6 @@ import {
     Cell,
     ResponsiveContainer,
     Tooltip,
-    Legend,
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
 import { PortfolioData } from '../types/portfolio';
@@ -13,12 +12,6 @@ import { PortfolioData } from '../types/portfolio';
 interface PortfolioCompositionProps {
     data: PortfolioData;
 }
-
-const ASSET_NAMES = {
-    'DE000A0F5UF5': 'MSCI World',
-    'IE00B4L5Y983': 'MSCI EM',
-    'DE000A0F5UH1': 'MSCI Europe',
-};
 
 const PortfolioComposition: React.FC<PortfolioCompositionProps> = ({ data }) => {
     const theme = useTheme();
@@ -71,10 +64,6 @@ const PortfolioComposition: React.FC<PortfolioCompositionProps> = ({ data }) => 
         return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
     };
 
-    const formatPercentage = (value: number) => {
-        return `${(value * 100).toFixed(1)}%`;
-    };
-
     // Prepare pie chart data with proper asset names
     const pieData = data.investments.map((investment, index) => {
         return {
@@ -110,7 +99,7 @@ const PortfolioComposition: React.FC<PortfolioCompositionProps> = ({ data }) => 
                     ))}
                 </Pie>
                 <Tooltip
-                    formatter={(value: number, name: string, props: any) => [
+                    formatter={(value: number, _name: string, props: any) => [
                         formatCurrency(value),
                         `${((value / totalValue) * 100).toFixed(1)}%`,
                         props.payload.fullName

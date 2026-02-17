@@ -1,4 +1,4 @@
-import { describe, it, expect, test } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { calculateInvestmentData, calculateInvestmentPerformance, calculateTotals } from './portfolioTransformations';
 import { Investment, Development, Movement } from '../types/api';
 
@@ -307,7 +307,7 @@ describe('portfolio transformations', () => {
             });
         });
     });
-}); 
+});
 
 
 import { filterDevelopmentsByDate } from './portfolioTransformations';
@@ -315,40 +315,40 @@ import { filterDevelopmentsByDate } from './portfolioTransformations';
 
 describe('filterDevelopmentsByDate', () => {
     const devs: Development[] = [
-      { investment: 1, date: new Date('2024-01-01'), quantity: 10, value: 100, price: 10 },
-      { investment: 2, date: new Date('2024-02-01'), quantity: 20, value: 200, price: 10 },
-      { investment: 3, date: new Date('2024-03-01'), quantity: 30, value: 300, price: 10 },
+        { investment: 1, date: new Date('2024-01-01'), quantity: 10, value: 100, price: 10 },
+        { investment: 2, date: new Date('2024-02-01'), quantity: 20, value: 200, price: 10 },
+        { investment: 3, date: new Date('2024-03-01'), quantity: 30, value: 300, price: 10 },
     ];
-  
+
     it('includes values strictly between min and max dates', () => {
-      const res = filterDevelopmentsByDate(devs, new Date('2024-01-15'), new Date('2024-02-15'));
-      expect(res).toHaveLength(1);
-      expect(res[0].investment).toBe(2);
+        const res = filterDevelopmentsByDate(devs, new Date('2024-01-15'), new Date('2024-02-15'));
+        expect(res).toHaveLength(1);
+        expect(res[0].investment).toBe(2);
     });
-  
+
     it('includes values equal to min and max date', () => {
-      const res = filterDevelopmentsByDate(devs, new Date('2024-01-01'), new Date('2024-03-01'));
-      expect(res).toHaveLength(3);
+        const res = filterDevelopmentsByDate(devs, new Date('2024-01-01'), new Date('2024-03-01'));
+        expect(res).toHaveLength(3);
     });
-  
+
     it('returns empty array if no match', () => {
-      const res = filterDevelopmentsByDate(devs, new Date('2025-01-01'), new Date('2025-12-31'));
-      expect(res).toHaveLength(0);
+        const res = filterDevelopmentsByDate(devs, new Date('2025-01-01'), new Date('2025-12-31'));
+        expect(res).toHaveLength(0);
     });
-  
+
     it('returns empty array for empty input', () => {
-      const res = filterDevelopmentsByDate([], new Date('2024-01-01'), new Date('2024-12-31'));
-      expect(res).toHaveLength(0);
+        const res = filterDevelopmentsByDate([], new Date('2024-01-01'), new Date('2024-12-31'));
+        expect(res).toHaveLength(0);
     });
-  
+
     it('handles reversed min/max date (no match)', () => {
-      const res = filterDevelopmentsByDate(devs, new Date('2024-03-01'), new Date('2024-01-01'));
-      expect(res).toHaveLength(0);
+        const res = filterDevelopmentsByDate(devs, new Date('2024-03-01'), new Date('2024-01-01'));
+        expect(res).toHaveLength(0);
     });
-  
+
     it('handles identical min and max date', () => {
-      const res = filterDevelopmentsByDate(devs, new Date('2024-02-01'), new Date('2024-02-01'));
-      expect(res).toHaveLength(1);
-      expect(res[0].investment).toBe(2);
+        const res = filterDevelopmentsByDate(devs, new Date('2024-02-01'), new Date('2024-02-01'));
+        expect(res).toHaveLength(1);
+        expect(res[0].investment).toBe(2);
     });
-  });
+});

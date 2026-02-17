@@ -15,7 +15,6 @@ import QuotesWrapper from './components/QuotesWrapper';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { portfolioData, loading, error, refetch } = usePortfolioData(selectedDate || undefined);
   const [mode, setMode] = useState<'light' | 'dark' | 'system'>('system');
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
@@ -27,17 +26,17 @@ function App() {
   // Detect system theme preference
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     // Set initial theme based on system preference
     setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
-    
+
     // Add listener for theme changes
     const handleChange = (e: MediaQueryListEvent) => {
       setSystemTheme(e.matches ? 'dark' : 'light');
     };
-    
+
     mediaQuery.addEventListener('change', handleChange);
-    
+
     // Clean up listener
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
@@ -120,18 +119,15 @@ function App() {
               <Route path="/movements" element={<MovementsWrapper onDataChanged={() => {
                 // Force refresh of portfolio data when returning to dashboard
                 refetch();
-                setRefreshTrigger(prev => prev + 1);
               }} />} />
               <Route path="/investments" element={<InvestmentsWrapper />} />
               <Route path="/quotes" element={<QuotesWrapper onQuotesFetched={() => {
                 // Force refresh of portfolio data after fetching quotes
                 refetch();
-                setRefreshTrigger(prev => prev + 1);
               }} />} />
               <Route path="/datenimport" element={<DatenimportWrapper onDataImported={() => {
                 // Force refresh of portfolio data when returning to dashboard
                 refetch();
-                setRefreshTrigger(prev => prev + 1);
               }} />} />
             </Routes>
           </AppLayout>
@@ -182,15 +178,15 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
       {/* Navigation Tabs */}
       <Paper sx={{ borderRadius: 0 }}>
         <Container maxWidth="xl" sx={{ px: 2 }}>
-          <Tabs 
+          <Tabs
             value={
-              currentPath === '/' ? 0 : 
-              currentPath === '/movements' ? 1 :
-              currentPath === '/investments' ? 2 :
-              currentPath === '/quotes' ? 3 :
-              currentPath === '/datenimport' ? 4 :
-              currentPath.startsWith('/investment/') ? false : false
-            } 
+              currentPath === '/' ? 0 :
+                currentPath === '/movements' ? 1 :
+                  currentPath === '/investments' ? 2 :
+                    currentPath === '/quotes' ? 3 :
+                      currentPath === '/datenimport' ? 4 :
+                        currentPath.startsWith('/investment/') ? false : false
+            }
             aria-label="navigation tabs"
           >
             <LinkTab label="Dashboard" to="/" />
@@ -205,10 +201,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
       <Divider />
 
       {/* Main Content */}
-      <Container 
-        maxWidth="xl" 
-        sx={{ 
-          flexGrow: 1, 
+      <Container
+        maxWidth="xl"
+        sx={{
+          flexGrow: 1,
           py: 3,
           px: 2,
           display: 'flex',
@@ -219,10 +215,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, mode, setMode }) => {
       </Container>
 
       {/* Footer */}
-      <Box 
-        component="footer" 
-        sx={{ 
-          py: 2, 
+      <Box
+        component="footer"
+        sx={{
+          py: 2,
           mt: 'auto',
           backgroundColor: (theme) => theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[800]
         }}

@@ -17,10 +17,10 @@
  * 
  */
 function uniroot(
-    func: (x: number) => number, 
-    lowerLimit: number, 
-    upperLimit: number, 
-    errorTol?: number, 
+    func: (x: number) => number,
+    lowerLimit: number,
+    upperLimit: number,
+    errorTol?: number,
     maxIter?: number
 ): number {
     let a = lowerLimit;
@@ -29,8 +29,6 @@ function uniroot(
     let fa = func(a);
     let fb = func(b);
     let fc = fa;
-    let s = 0;
-    let fs = 0;
     let tol_act: number;   // Actual tolerance
     let new_step: number;  // Step at this iteration
     let prev_step: number; // Distance from the last but one to the last approximation
